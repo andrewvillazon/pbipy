@@ -9,7 +9,7 @@ A Power BI Rest API wrapper for Python.
 ## Installation
 
 ```console
-pip install <?>
+pip install pbipy
 ```
 
 
