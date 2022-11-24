@@ -1,6 +1,8 @@
 import pytest
 import responses
 
+from pbipy.models import Dataset
+
 
 @responses.activate
 def test_get_dataset(powerbi):
@@ -27,6 +29,79 @@ def test_get_dataset(powerbi):
     assert dataset.name == "SalesMarketing"
     assert not dataset.add_rows_api_enabled
     assert dataset.is_refreshable
+
+
+@responses.activate
+def test_get_dataset_in_group_using_group_id(powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        body="""
+        {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "addRowsAPIEnabled": false,
+        "configuredBy": "john@contoso.com",
+        "isRefreshable": true,
+        "isEffectiveIdentityRequired": false,
+        "isEffectiveIdentityRolesRequired": false,
+        "isOnPremGatewayRequired": false
+        }
+        """,
+        content_type="application/json",
+    )
+
+    dataset = powerbi.get_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(dataset, Dataset)
+    assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    assert dataset.name == "SalesMarketing"
+    assert dataset.configured_by == "john@contoso.com"
+    assert dataset.is_refreshable
+    assert not dataset.is_effective_identity_required
+    assert not dataset.is_effective_identity_roles_required
+    assert not dataset.is_on_prem_gateway_required
+
+    # Keys not in the API response are set to None
+    assert dataset.target_storage_mode == None
+    assert dataset.upstream_datasets == None
+    assert dataset.users == None
+
+
+@responses.activate
+def test_get_dataset_in_group_using_group_object(powerbi, group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/3d9b93c6-7b6d-4801-a491-1738910904fd/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        body="""
+        {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "addRowsAPIEnabled": false,
+        "configuredBy": "john@contoso.com",
+        "isRefreshable": true,
+        "isEffectiveIdentityRequired": false,
+        "isEffectiveIdentityRolesRequired": false,
+        "isOnPremGatewayRequired": false,
+        "upstreamDatasets": []
+        }
+        """,
+        content_type="application/json",
+    )
+
+    dataset = powerbi.get_dataset_in_group(group, "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(dataset, Dataset)
+    assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    assert dataset.name == "SalesMarketing"
+    assert dataset.configured_by == "john@contoso.com"
+    assert dataset.is_refreshable
+    assert not dataset.is_effective_identity_required
+    assert not dataset.is_effective_identity_roles_required
+    assert not dataset.is_on_prem_gateway_required
+    assert len(dataset.upstream_datasets) == 0
+
+    # Keys not in the API response are set to None
+    assert dataset.target_storage_mode == None
+    assert dataset.users == None
 
 
 @responses.activate

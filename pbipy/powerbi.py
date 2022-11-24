@@ -134,6 +134,33 @@ class PowerBI:
         raw = self._get_resource(resource, id)
 
         return [Dataset.from_raw(raw=dataset) for dataset in raw]
+    
+    def get_dataset_in_group(self, group, dataset):
+        """
+        Return the specified dataset from the specified group.
+
+        Parameters
+        ----------
+        `group` : `str`
+            The Group Id or Group Object where the Dataset resides.
+        `dataset` : `str`
+            The Dataset Id of the Dataset to retrieve.
+
+        Returns
+        -------
+        `Dataset`
+            The specified Dataset.
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/groups/{0}/datasets/{1}"
+        raw = self._get_resource(resource, group_id, dataset)
+
+        return Dataset.from_raw(raw=raw)
 
     def get_refresh_history(self, dataset, top=None):
         """
