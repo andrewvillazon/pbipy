@@ -71,8 +71,8 @@ class Dataset(PBIObject):
     created_date: str = None
     create_report_embed_url: str = None
     qna_embed_url: str = None
-    upstream_datasets: str = None
-    users: Optional[list] = field(default_factory=list)
+    upstream_datasets: list = field(default=None)
+    users: list = field(default=None)
     configured_by: str = None
 
     def __post_init__(self):
