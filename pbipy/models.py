@@ -109,7 +109,7 @@ class ActivityEvent(PBIObject):
     instance. Examples of Activity Events can include: viewing reports, 
     refreshing datasets, updating apps, etc.
 
-    While there are many types of Activity Events, pybi consolidates these 
+    While there are many types of Activity Events, pbipy consolidates these 
     into an `ActivityEvent` object. Attributes not related to an activity 
     type will be set to `None`.
     """
