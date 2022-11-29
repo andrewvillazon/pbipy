@@ -9,7 +9,7 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 
 import requests
 
-from .models import Group, Dataset, Refresh
+from .models import Group, Dataset, Refresh, DatasetToDataflowLink
 
 
 class PowerBI:
@@ -134,7 +134,7 @@ class PowerBI:
         raw = self._get_resource(resource, id)
 
         return [Dataset.from_raw(raw=dataset) for dataset in raw]
-    
+
     def get_dataset_in_group(self, group, dataset):
         """
         Return the specified dataset from the specified group.
@@ -156,7 +156,7 @@ class PowerBI:
             group_id = group.id
         else:
             group_id = group
-        
+
         resource = "https://api.powerbi.com/v1.0/myorg/groups/{0}/datasets/{1}"
         raw = self._get_resource(resource, group_id, dataset)
 
@@ -186,7 +186,7 @@ class PowerBI:
         """
 
         # TODO: What if they pass in a partially constructed Dataset obj?
-        
+
         # If string, we need to find out if the dataset is refreshable.
         if isinstance(dataset, str):
             dataset = self.get_dataset(dataset)
@@ -243,10 +243,10 @@ class PowerBI:
         Parameters
         ----------
         `start_date_time` : `str`
-            Start date and time of the time period for audit event results. 
+            Start date and time of the time period for audit event results.
             Must be in ISO 8601 compliant UTC format: 'yyyy-mm-ddThh:mm:ss.SSSZ'
         `end_date_time` : `str`
-            End date and time of the time period for audit event results. Must 
+            End date and time of the time period for audit event results. Must
             be in ISO 8601 compliant UTC format: 'yyyy-mm-ddThh:mm:ss.SSSZ'
         `filter` : `str`
             Filters the results based on a boolean condition, using 'Activity',
@@ -300,3 +300,37 @@ class PowerBI:
             continuation_uri = raw["continuationUri"]
 
         return activity_events
+
+    def get_dataset_to_dataflow_links_in_group(self, group):
+        """
+        Returns a list of upstream dataflows for datasets from the specified group.
+
+        Parameters
+        ----------
+        `group` : `str`
+            Id of the specified group.
+
+        Returns
+        -------
+        `list`
+            List of `DatasetToDataflowLink` objects.
+        """        
+
+        # TODO: Add "resolve" arg that will return the links with PBI Objects 
+        # instead of strings
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = (
+            "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/upstreamDataflows"
+        )
+
+        raw = self._get_resource(resource, group_id)
+
+        return [
+            DatasetToDataflowLink.from_raw(raw=dataset_to_dataflow_link)
+            for dataset_to_dataflow_link in raw
+        ]

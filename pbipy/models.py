@@ -44,7 +44,7 @@ class Group(PBIObject):
     """A Power BI group. Commonly called a Workspace."""
 
     id: str
-    
+
     name: str = None
     type: str = None
     is_read_only: bool = None
@@ -58,7 +58,7 @@ class Dataset(PBIObject):
     """A Power BI Dataset."""
 
     id: str
-    
+
     name: str = None
     web_url: str = None
     add_rows_api_enabled: bool = None
@@ -83,9 +83,9 @@ class Dataset(PBIObject):
 @dataclass
 class Refresh(PBIObject):
     """A Power BI refresh history entry."""
-    
+
     id: int = None
-    
+
     request_id: str = None
     refresh_type: str = None
     start_time: str = None
@@ -104,18 +104,18 @@ class Refresh(PBIObject):
 @dataclass
 class ActivityEvent(PBIObject):
     """Power BI Auditing Events.
-    
-    Activity Events are audit and tracked activity on the Power BI 
-    instance. Examples of Activity Events can include: viewing reports, 
+
+    Activity Events are audit and tracked activity on the Power BI
+    instance. Examples of Activity Events can include: viewing reports,
     refreshing datasets, updating apps, etc.
 
-    While there are many types of Activity Events, pbipy consolidates these 
-    into an `ActivityEvent` object. Attributes not related to an activity 
+    While there are many types of Activity Events, pbipy consolidates these
+    into an `ActivityEvent` object. Attributes not related to an activity
     type will be set to `None`.
     """
-    
+
     id: str
-    
+
     activity: str = None
     activity_id: str = None
     app_dashboard_id: str = None
@@ -183,3 +183,11 @@ class ActivityEvent(PBIObject):
             self.creation_time = parse(self.creation_time)
         if self.last_refresh_time:
             self.last_refresh_time = parse(self.last_refresh_time)
+
+@dataclass
+class DatasetToDataflowLink(PBIObject):
+    """A Power BI dataset to dataflow link"""
+
+    dataset_object_id: str
+    dataflow_object_id: str
+    workspace_object_id: str

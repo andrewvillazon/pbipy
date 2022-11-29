@@ -50,7 +50,9 @@ def test_get_dataset_in_group_using_group_id(powerbi):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    dataset = powerbi.get_dataset_in_group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    )
 
     assert isinstance(dataset, Dataset)
     assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
@@ -87,7 +89,9 @@ def test_get_dataset_in_group_using_group_object(powerbi, group):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset_in_group(group, "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    dataset = powerbi.get_dataset_in_group(
+        group, "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    )
 
     assert isinstance(dataset, Dataset)
     assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
@@ -244,7 +248,7 @@ def test_get_refresh_history_from_dataset_object(powerbi, dataset):
 @responses.activate
 def test_get_refresh_history_from_dataset_id(powerbi):
     """Test get_refresh_history retrieves the Dataset details before retrieving the refresh history."""
-    
+
     dataset_get_request = responses.get(
         "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         body="""
@@ -296,6 +300,61 @@ def test_get_refresh_history_from_dataset_id(powerbi):
     assert len(refresh_history) == 2
     assert not refresh_history[0].service_exception_json
     assert refresh_history[1].service_exception_json
+
+
+@responses.activate
+def test_get_dataset_to_dataflow_links_in_group_from_group_id(powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/upstreamDataflows",
+        body="""
+        {
+        "value": [
+            {
+            "datasetObjectId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+            "dataflowObjectId": "928228ba-008d-4fd9-864a-92d2752ee5ce",
+            "workspaceObjectId": "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+            }
+        ]
+        }
+        """,
+        content_type="application/json",
+    )
+
+    group_id = "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    dataflow_links = powerbi.get_dataset_to_dataflow_links_in_group(group_id)
+
+    assert len(dataflow_links) == 1
+    assert hasattr(dataflow_links[0], "workspace_object_id")
+    assert (
+        dataflow_links[0].workspace_object_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
+
+
+@responses.activate
+def test_get_dataset_to_dataflow_links_in_group_from_group_object(powerbi, group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/3d9b93c6-7b6d-4801-a491-1738910904fd/datasets/upstreamDataflows",
+        body="""
+        {
+        "value": [
+            {
+            "datasetObjectId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+            "dataflowObjectId": "928228ba-008d-4fd9-864a-92d2752ee5ce",
+            "workspaceObjectId": "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+            }
+        ]
+        }
+        """,
+        content_type="application/json",
+    )
+
+    dataflow_links = powerbi.get_dataset_to_dataflow_links_in_group(group)
+
+    assert len(dataflow_links) == 1
+    assert hasattr(dataflow_links[0], "workspace_object_id")
+    assert (
+        dataflow_links[0].workspace_object_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
 
 
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
