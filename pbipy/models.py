@@ -191,3 +191,12 @@ class DatasetToDataflowLink(PBIObject):
     dataset_object_id: str
     dataflow_object_id: str
     workspace_object_id: str
+
+
+@dataclass
+class DatasetUserAccess(PBIObject):
+    """A Power BI principal access right entry for a dataset."""
+
+    dataset_user_access_right: str
+    identifier: str
+    principal_type: str

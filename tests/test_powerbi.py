@@ -1,7 +1,7 @@
 import pytest
 import responses
 
-from pbipy.models import Dataset
+from pbipy.models import Dataset, DatasetUserAccess
 
 
 @responses.activate
@@ -355,6 +355,85 @@ def test_get_dataset_to_dataflow_links_in_group_from_group_object(powerbi, group
     assert (
         dataflow_links[0].workspace_object_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     )
+
+
+@responses.activate
+def test_get_dataset_users_from_dataset_id(powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        body="""
+        {
+        "value": [
+            {
+            "identifier": "john@contoso.com",
+            "principalType": "User",
+            "datasetUserAccessRight": "Read"
+            },
+            {
+            "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+            "principalType": "Group",
+            "datasetUserAccessRight": "ReadReshare"
+            },
+            {
+            "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+            "principalType": "App",
+            "datasetUserAccessRight": "ReadWriteReshareExplore"
+            }
+        ]
+        }
+        """,
+    )
+
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    dataset_users = powerbi.get_dataset_users(dataset_id)
+
+    assert len(dataset_users) == 3
+    assert hasattr(dataset_users[0], "identifier")
+    assert hasattr(dataset_users[1], "principal_type")
+    assert hasattr(dataset_users[2], "dataset_user_access_right")
+    assert isinstance(dataset_users[1], DatasetUserAccess)
+    assert dataset_users[0].identifier == "john@contoso.com"
+    assert dataset_users[1].principal_type == "Group"
+    assert dataset_users[2].dataset_user_access_right == "ReadWriteReshareExplore"
+
+
+@responses.activate
+def test_get_dataset_users_from_dataset_object(powerbi, dataset):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        body="""
+        {
+        "value": [
+            {
+            "identifier": "john@contoso.com",
+            "principalType": "User",
+            "datasetUserAccessRight": "Read"
+            },
+            {
+            "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+            "principalType": "Group",
+            "datasetUserAccessRight": "ReadReshare"
+            },
+            {
+            "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+            "principalType": "App",
+            "datasetUserAccessRight": "ReadWriteReshareExplore"
+            }
+        ]
+        }
+        """,
+    )
+
+    dataset_users = powerbi.get_dataset_users(dataset)
+
+    assert len(dataset_users) == 3
+    assert hasattr(dataset_users[0], "identifier")
+    assert hasattr(dataset_users[1], "principal_type")
+    assert hasattr(dataset_users[2], "dataset_user_access_right")
+    assert isinstance(dataset_users[1], DatasetUserAccess)
+    assert dataset_users[0].identifier == "john@contoso.com"
+    assert dataset_users[1].principal_type == "Group"
+    assert dataset_users[2].dataset_user_access_right == "ReadWriteReshareExplore"
 
 
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(

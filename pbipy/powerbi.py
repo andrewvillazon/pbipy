@@ -9,7 +9,7 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 
 import requests
 
-from .models import Group, Dataset, Refresh, DatasetToDataflowLink
+from .models import Group, Dataset, Refresh, DatasetToDataflowLink, DatasetUserAccess
 
 
 class PowerBI:
@@ -314,9 +314,9 @@ class PowerBI:
         -------
         `list`
             List of `DatasetToDataflowLink` objects.
-        """        
+        """
 
-        # TODO: Add "resolve" arg that will return the links with PBI Objects 
+        # TODO: Add "resolve" arg that will return the links with PBI Objects
         # instead of strings
 
         if isinstance(group, Group):
@@ -333,4 +333,32 @@ class PowerBI:
         return [
             DatasetToDataflowLink.from_raw(raw=dataset_to_dataflow_link)
             for dataset_to_dataflow_link in raw
+        ]
+
+    def get_dataset_users(self, dataset):
+        """
+        Returns a list of principals that have access to the specified dataset.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or Dataset object to retrieve users for.
+
+        Returns
+        -------
+        `list`
+            List of `DatasetUserAccess` objects for the specified dataset.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+
+        resource = "https://api.powerbi.com/v1.0/myorg/datasets/{}/users"
+        raw = self._get_resource(resource, dataset_id)
+
+        return [
+            DatasetUserAccess.from_raw(dataset_user_access)
+            for dataset_user_access in raw
         ]
