@@ -23,7 +23,7 @@ def test_get_dataset(powerbi):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    dataset = powerbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 
     assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
     assert dataset.name == "SalesMarketing"
@@ -50,7 +50,7 @@ def test_get_dataset_in_group_using_group_id(powerbi):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset_in_group(
+    dataset = powerbi.datasets.get_dataset_in_group(
         "f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
     )
 
@@ -89,7 +89,7 @@ def test_get_dataset_in_group_using_group_object(powerbi, group):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset_in_group(
+    dataset = powerbi.datasets.get_dataset_in_group(
         group, "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
     )
 
@@ -131,7 +131,9 @@ def test_get_datasets_in_group_using_group_id(powerbi):
         content_type="application/json",
     )
 
-    datasets = powerbi.get_datasets_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    datasets = powerbi.datasets.get_datasets_in_group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
 
     assert len(datasets) == 1
     assert datasets[0].id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
@@ -162,52 +164,12 @@ def test_get_datasets_in_group_using_group_object(powerbi, group):
         content_type="application/json",
     )
 
-    datasets = powerbi.get_datasets_in_group(group)
+    datasets = powerbi.datasets.get_datasets_in_group(group)
 
     assert len(datasets) == 1
     assert datasets[0].id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
     assert hasattr(datasets[0], "is_effective_identity_roles_required")
     assert not datasets[0].is_effective_identity_roles_required
-
-
-@responses.activate
-def test_get_groups(powerbi):
-    responses.get(
-        "https://api.powerbi.com/v1.0/myorg/groups",
-        body="""
-        {
-        "value": [
-            {
-            "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
-            "isReadOnly": false,
-            "isOnDedicatedCapacity": false,
-            "name": "sample group"
-            },
-            {
-            "id": "3d9b93c6-7b6d-4801-a491-1738910904fd",
-            "isReadOnly": false,
-            "isOnDedicatedCapacity": false,
-            "name": "marketing group"
-            },
-            {
-            "id": "a2f89923-421a-464e-bf4c-25eab39bb09f",
-            "isReadOnly": false,
-            "isOnDedicatedCapacity": false,
-            "name": "contoso",
-            "dataflowStorageId": "d692ae06-708c-485e-9987-06ff0fbdbb1f"
-            }
-        ]
-        }
-        """,
-        content_type="application/json",
-    )
-
-    groups = powerbi.get_groups()
-
-    assert len(groups) == 3
-    assert groups[2].name == "contoso"
-    assert not groups[1].is_on_dedicated_capacity
-    assert hasattr(groups[0], "name")
 
 
 @responses.activate
@@ -238,7 +200,7 @@ def test_get_refresh_history_from_dataset_object(powerbi, dataset):
         content_type="application/json",
     )
 
-    refresh_history = powerbi.get_refresh_history(dataset)
+    refresh_history = powerbi.datasets.get_refresh_history(dataset)
 
     assert len(refresh_history) == 2
     assert not refresh_history[0].service_exception_json
@@ -294,7 +256,7 @@ def test_get_refresh_history_from_dataset_id(powerbi):
 
     dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
 
-    refresh_history = powerbi.get_refresh_history(dataset_id)
+    refresh_history = powerbi.datasets.get_refresh_history(dataset_id)
 
     assert dataset_get_request.call_count == 1
     assert len(refresh_history) == 2
@@ -321,7 +283,7 @@ def test_get_dataset_to_dataflow_links_in_group_from_group_id(powerbi):
     )
 
     group_id = "f089354e-8366-4e18-aea3-4cb4a3a50b48"
-    dataflow_links = powerbi.get_dataset_to_dataflow_links_in_group(group_id)
+    dataflow_links = powerbi.datasets.get_dataset_to_dataflow_links_in_group(group_id)
 
     assert len(dataflow_links) == 1
     assert hasattr(dataflow_links[0], "workspace_object_id")
@@ -348,7 +310,7 @@ def test_get_dataset_to_dataflow_links_in_group_from_group_object(powerbi, group
         content_type="application/json",
     )
 
-    dataflow_links = powerbi.get_dataset_to_dataflow_links_in_group(group)
+    dataflow_links = powerbi.datasets.get_dataset_to_dataflow_links_in_group(group)
 
     assert len(dataflow_links) == 1
     assert hasattr(dataflow_links[0], "workspace_object_id")
@@ -385,7 +347,7 @@ def test_get_dataset_users_from_dataset_id(powerbi):
     )
 
     dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
-    dataset_users = powerbi.get_dataset_users(dataset_id)
+    dataset_users = powerbi.datasets.get_dataset_users(dataset_id)
 
     assert len(dataset_users) == 3
     assert hasattr(dataset_users[0], "identifier")
@@ -424,7 +386,7 @@ def test_get_dataset_users_from_dataset_object(powerbi, dataset):
         """,
     )
 
-    dataset_users = powerbi.get_dataset_users(dataset)
+    dataset_users = powerbi.datasets.get_dataset_users(dataset)
 
     assert len(dataset_users) == 3
     assert hasattr(dataset_users[0], "identifier")
@@ -440,4 +402,4 @@ def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
     powerbi, dataset_not_refreshable
 ):
     with pytest.raises(TypeError):
-        powerbi.get_refresh_history(dataset_not_refreshable)
+        powerbi.datasets.get_refresh_history(dataset_not_refreshable)

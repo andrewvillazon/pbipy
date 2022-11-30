@@ -105,6 +105,7 @@ setup(
             "*.tests",
             "*.tests.*",
             "tests.*",
+            "tests/*"
         ]
     ),
     install_requires=requires,
