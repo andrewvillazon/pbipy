@@ -9,8 +9,8 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 
 import requests
 
-from .operation_groups import Datasets
-from .operation_groups import Groups
+from .operationgroups import Datasets
+from .operationgroups import Groups
 
 
 class PowerBI:
