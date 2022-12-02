@@ -136,6 +136,25 @@ class Datasets:
             DatasetUserAccess.from_raw(dataset_user_access)
             for dataset_user_access in raw
         ]
+    
+    def get_dataset_users_in_group(self, group, dataset):
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group.id
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/{}/users"
+        raw = self.client._get_resource(resource, group_id, dataset_id)
+
+        return [
+            DatasetUserAccess.from_raw(dataset_user_access)
+            for dataset_user_access in raw
+        ]
 
     def get_datasets_in_group(self, group):
         if isinstance(group, Group):
