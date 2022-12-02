@@ -5,6 +5,8 @@ import pytest
 from pbipy.models import Dataset, Group, Refresh
 from pbipy.powerbi import PowerBI
 
+from .fixtures.responsebodies import *
+
 
 @pytest.fixture
 def powerbi():
