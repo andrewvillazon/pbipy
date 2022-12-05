@@ -33,7 +33,7 @@ This `README` doesn't cover Authentication in detail, however, these are some he
 
 See below for an example that uses the `msal` library.
 
-## Usage
+## Using pbipy
 
 Start by creating the `PowerBI()` client. All interactions with the Power BI Rest API go through this object. 
 
@@ -62,19 +62,35 @@ bearer_token = acquire_bearer_token(
 pbi = PowerBI(bearer_token)
 ```
 
-Get all groups (workspaces).
+### Operation Groups
+
+`pbipy` methods are organized into Operation Groups that mirror the operation groups of the Power BI Rest API:
+
+[REST Operation Groups](https://learn.microsoft.com/en-us/rest/api/power-bi/#rest-operation-groups)
+
+For example:
 
 ```python
-groups = pbi.get_groups()
+pbi.groups.get_groups()
+pbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+...
+```
+
+### Functionality
+
+To interact with the API, simply call the relevant method from the client.
+
+```python
+groups = pbi.groups.groups.get_groups()
 print(groups[0])
 
 # Group(id='3d9b93c6-7b6d-4801-a491-1738910904fd', name='marketing group', type='Workspace', ...)
 ```
 
-What about the refresh history of a Dataset? Most methods support passing in an object id...
+Most methods support passing in an object id...
 
 ```python
-refresh_history = pbi.get_refresh_history("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+refresh_history = pbi.datasets.get_refresh_history("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 print(refresh_history[0])
 
 # Refresh(id=None, request_id='9399bb89-25d1-44f8-8576-136d7e9014b1', refresh_type='ViaApi', ...)
@@ -83,8 +99,8 @@ print(refresh_history[0])
 ... or just pass in the object itself.
 
 ```python
-sales = pbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
-refresh_history = pbi.get_refresh_history(sales)
+sales = pbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+refresh_history = pbi.datasets.get_refresh_history(sales)
 print(refresh_history[0])
 
 # Refresh(id=None, request_id='9399bb89-25d1-44f8-8576-136d7e9014b1', refresh_type='ViaApi', ...)
@@ -93,7 +109,7 @@ print(refresh_history[0])
 `pbipy` converts API responses into Python objects.
 
 ```python
-sales = pbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+sales = pbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 print(type(sales))
 
 # <class 'pbipy.models.Dataset'>
@@ -102,7 +118,7 @@ print(type(sales))
 To make life easier, attributes are also translated into sensible types.
 
 ```python
-sales = pbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+sales = pbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 print(isinstance(sales.created_date, datetime))
 
 # True
@@ -123,7 +139,7 @@ print(sales.is_refreshable)
 And if you need to access the raw json representation, this is supported to.
 
 ```python
-sales = pbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+sales = pbi.datasets.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 print(sales.raw)
 
 # {'id': 'cfafbeb1-8037-4d0c-896e-a46fb27ff229', 'name': 'SalesMarketing', 'addRowsAPIEnabled': False, ...},
@@ -137,4 +153,4 @@ In general, most of the `PowerBI()` methods follow the resources laid out in the
 
 ## Acknowledgements
 
-The design of this library was inspired by the [pycontribs/jira](https://github.com/pycontribs/jira) library. A personal Thank You to all the contributors to this library for a fantastic example of what an API Wrapper can be.
+The design of this library was inspired by the [pycontribs/jira](https://github.com/pycontribs/jira) library. It also borrows elements of [cmberryay's pypowerbi wrapper](https://github.com/cmberryau/pypowerbi). A personal Thank You to all the contributors to these libraries for the great examples of what an API Wrapper can be.
