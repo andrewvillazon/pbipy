@@ -44,6 +44,15 @@ class PowerBI:
 
         self.datasets = Datasets(self)
         self.groups = Groups(self)
+    
+    def _get_and_load_resource(self, url_format, *id, model, parameters={}):
+        raw = self._get_resource(url_format, *id, parameters=parameters)
+        raw_parsed = self._parse_raw(raw)
+
+        if isinstance(raw_parsed, list):
+            return [model.from_raw(raw=raw_model) for raw_model in raw_parsed]
+        else:
+            return model.from_raw(raw=raw_parsed)
 
     def _get_resource(self, url_format, *id, parameters={}):
         """
@@ -89,15 +98,14 @@ class PowerBI:
         resp = self.session.get(url, params=parameters)
         raw = resp.json()
 
-        # NOTE: Will we need this in future?
+        return raw
+
+    def _parse_raw(self, raw):
         if "@odata.context" in raw:
             del raw["@odata.context"]
 
         if "value" in raw:
             if isinstance(raw["value"], list):
                 raw = raw["value"]
-
+        
         return raw
-    
-
-    
