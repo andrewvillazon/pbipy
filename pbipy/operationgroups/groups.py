@@ -43,6 +43,4 @@ class Groups:
             "$top": top,
             "$skip": skip,
         }
-        raw = self.client._get_resource(resource, parameters=params)
-
-        return [Group.from_raw(raw=group) for group in raw]
+        return self.client._get_and_load_resource(resource, model=Group, parameters=params)
