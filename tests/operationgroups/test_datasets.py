@@ -228,6 +228,48 @@ def test_get_dataset_users_from_dataset_object(powerbi, dataset, get_dataset_use
     assert dataset_users[2].dataset_user_access_right == "ReadWriteReshareExplore"
 
 
+@responses.activate
+def test_get_datasources_from_dataset_id(powerbi, get_datasources):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json"
+    )
+
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    datasources = powerbi.datasets.get_datasources(dataset_id)
+
+    assert isinstance(datasources, list)
+    assert len(datasources) == 11
+    assert isinstance(datasources[0].connection_details, dict)
+    assert datasources[1].datasource_type == "AzureBlobs"
+    assert any(datasource.datasource_type == "SharePointList" for datasource in datasources)
+    assert getattr(datasources[0], "datasource_id")
+    assert getattr(datasources[0], "gateway_id")
+    assert getattr(datasources[0], "datasource_type")
+
+
+@responses.activate
+def test_get_datasources_from_dataset_object(powerbi, dataset, get_datasources):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json"
+    )
+
+    datasources = powerbi.datasets.get_datasources(dataset)
+
+    assert isinstance(datasources, list)
+    assert len(datasources) == 11
+    assert isinstance(datasources[0].connection_details, dict)
+    assert datasources[1].datasource_type == "AzureBlobs"
+    assert any(datasource.datasource_type == "SharePointList" for datasource in datasources)
+    assert getattr(datasources[0], "datasource_id")
+    assert getattr(datasources[0], "gateway_id")
+    assert getattr(datasources[0], "datasource_type")
+    assert getattr(datasources[0], "connection_details")
+
+
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
     powerbi, dataset_not_refreshable
 ):

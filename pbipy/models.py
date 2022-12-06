@@ -200,3 +200,13 @@ class DatasetUserAccess(PBIObject):
     dataset_user_access_right: str
     identifier: str
     principal_type: str
+
+
+@dataclass
+class Datasource(PBIObject):
+    """A Power BI data source"""
+    
+    datasource_id: str
+    datasource_type: str = None
+    connection_details: dict = None
+    gateway_id: dict = None

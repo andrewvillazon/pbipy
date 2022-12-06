@@ -116,3 +116,109 @@ def get_dataset_users():
         ]
         }
         """
+
+
+@pytest.fixture
+def get_datasources():
+    return """
+    {
+  "@odata.context": "http://api.powerbi.com/v1.0/myorg/groups/222f0f33-3abc-4a57-9f98-ff01bd2aaabb/$metadata#datasources",
+  "value": [
+    {
+      "datasourceType": "AnalysisServices",
+      "connectionDetails": {
+        "server": "My-As-Server",
+        "database": "My-As-Database"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "AzureBlobs",
+      "datasourceId": "e0315274-90b6-4fc0-abf2-2d60d448cb04",
+      "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+      "connectionDetails": {
+        "account": "myAccount",
+        "domain": "blob.core.windows.net"
+      }
+    },
+    {
+      "datasourceType": "File",
+      "connectionDetails": {
+        "path": "c:\\\\users\\\\username\\\\documents\\\\orders1.xlsx"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "Extension",
+      "datasourceId": "70540d95-4c8e-41ae-88c6-27a103b12841",
+      "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+      "connectionDetails": {
+        "kind": "AzureDataExplorer",
+        "path": "https://myserver.kusto.windows.net"
+      }
+    },
+    {
+      "datasourceType": "Exchange",
+      "datasourceId": "4d126fc8-1568-46aa-ba16-ccf19b18f012",
+      "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+      "connectionDetails": {
+        "emailAddress": "john@contoso.com"
+      }
+    },
+    {
+      "datasourceType": "OData",
+      "connectionDetails": {
+        "url": "http://services.odata.org/MyOdata/MyOdata.svc"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "Oracle",
+      "connectionDetails": {
+        "server": "My-Oracle-Server",
+        "database": "My-Oracle-Database"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "Salesforce",
+      "datasourceId": "e8a6e0f5-b244-402a-ba5a-4d578609ede3",
+      "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+      "connectionDetails": {
+        "classInfo": "report-detail",
+        "loginServer": "https://login.salesforce.com/"
+      }
+    },
+    {
+      "datasourceType": "SAPHana",
+      "connectionDetails": {
+        "server": "My-SapHana-Server",
+        "database": "My-SapHana-Database"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "SharePointList",
+      "connectionDetails": {
+        "url": "https://microsoft.sharepoint.com/hello/myproj/"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    },
+    {
+      "datasourceType": "Sql",
+      "connectionDetails": {
+        "server": "My-As-Server",
+        "database": "My-As-Database"
+      },
+      "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+      "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+    }
+  ]
+}
+    """

@@ -4,6 +4,7 @@ from ..models import (
     Dataset,
     DatasetToDataflowLink,
     DatasetUserAccess,
+    Datasource,
     Group,
     Refresh,
 )
@@ -209,3 +210,28 @@ class Datasets:
         raw = self.client._get_resource(resource, dataset.id, parameters=params)
 
         return [Refresh.from_raw(raw=refresh) for refresh in raw]
+
+    def get_datasources(self, dataset):
+        """
+        Returns a list of data sources for the specified dataset.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or Dataset object to retrieve datasources for.
+
+        Returns
+        -------
+        `list`
+            List of `Datasource` objects for the specified Dataset.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/datasets/{}/datasources"
+        raw = self.client._get_resource(resource, dataset_id)
+
+        return [Datasource.from_raw(datasource) for datasource in raw]
