@@ -128,7 +128,7 @@ class Datasets:
         if isinstance(group, Group):
             group_id = group.id
         else:
-            group_id = group.id
+            group_id = group
         
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
