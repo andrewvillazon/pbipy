@@ -148,3 +148,6 @@ class PowerBI:
                 raw = raw["value"]
         
         return raw
+    
+    # TODO: Add __getattr__()? This way method calls could be delegated without 
+    # using operation groups e.g., client.method(), vs client.og.method()
