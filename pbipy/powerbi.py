@@ -46,6 +46,33 @@ class PowerBI:
         self.groups = Groups(self)
     
     def _get_and_load_resource(self, url_format, *id, model, parameters={}):
+        """
+        Fetch and load a resource from the Power BI Rest API.
+
+        Takes a templated url, id(s) used in the resource, PBI model type, 
+        and optional parameters. Requests the resource and maps it to the 
+        supplied model type.
+
+        Parameters
+        ----------
+        `url_format` : str
+            The url path to the resource with placeholders for ID values.
+        `*id` : `tuple`
+            Id values to include in the url. Any placeholders in
+            `url_format` will be replaced with these values in the
+            order they are passed in.
+        `model` : `PBIObject`
+            `PBIObject` model type to map the response to.
+        `**parameters`: `dict`
+            Keyword argument of optional url parameters, e.g.,
+            `$top` to limit number of results returned.
+
+        Returns
+        -------
+        `Union[list, PBIObject]`
+            List of `PBIObject` or loaded `PBIObject`.
+        """
+
         raw = self._get_resource(url_format, *id, parameters=parameters)
         raw_parsed = self._parse_raw(raw)
 
@@ -61,9 +88,6 @@ class PowerBI:
         Takes a templated url, id(s) used in the resource, and optional
         parameters. Constructs the url to the resource and requests the
         resource from the Power BI Rest API. Returns the associated response.
-
-        If the response contains a list of Power BI objects, this will be
-        parsed and the list of objects returned.
 
         Parameters
         ----------
@@ -82,9 +106,7 @@ class PowerBI:
         Returns
         -------
         `json`
-            The json response as returned from the api call. Where the api response contains
-            a list of objects, e.g., a list of Datasets, the response will be parsed to only
-            return this list.
+            The json response as returned from the api call.
         """
 
         if id:
@@ -101,6 +123,23 @@ class PowerBI:
         return raw
 
     def _parse_raw(self, raw):
+        """
+        Parse a raw api response.
+
+        Removes unused attributes. If the response contains a list of objects, 
+        this is extracted and returned.
+
+        Parameters
+        ----------
+        `raw` : `dict`
+            `json` api response.
+
+        Returns
+        -------
+        `dict`
+            Parsed api response.
+        """        
+
         if "@odata.context" in raw:
             del raw["@odata.context"]
 
