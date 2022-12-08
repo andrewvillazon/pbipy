@@ -270,6 +270,54 @@ def test_get_datasources_from_dataset_object(powerbi, dataset, get_datasources):
     assert getattr(datasources[0], "connection_details")
 
 
+@responses.activate
+def test_get_datasources_in_group_from_ids(powerbi, get_datasources):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json"
+    )
+
+    group_id = "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    datasources = powerbi.datasets.get_datasources_in_group(group_id, dataset_id)
+
+    assert isinstance(datasources, list)
+    assert len(datasources) == 11
+    assert isinstance(datasources[0].connection_details, dict)
+    assert datasources[1].datasource_type == "AzureBlobs"
+    assert any(datasource.datasource_type == "SharePointList" for datasource in datasources)
+    assert getattr(datasources[0], "datasource_id")
+    assert getattr(datasources[0], "gateway_id")
+    assert getattr(datasources[0], "datasource_type")
+    assert getattr(datasources[0], "connection_details")
+
+
+@responses.activate
+def test_get_datasources_in_group_from_objects(powerbi, get_datasources, group, dataset):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/3d9b93c6-7b6d-4801-a491-1738910904fd/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json"
+    )
+
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    datasources = powerbi.datasets.get_datasources_in_group(group, dataset)
+
+    assert isinstance(datasources, list)
+    assert len(datasources) == 11
+    assert isinstance(datasources[0].connection_details, dict)
+    assert datasources[1].datasource_type == "AzureBlobs"
+    assert any(datasource.datasource_type == "SharePointList" for datasource in datasources)
+    assert getattr(datasources[0], "datasource_id")
+    assert getattr(datasources[0], "gateway_id")
+    assert getattr(datasources[0], "datasource_type")
+    assert getattr(datasources[0], "connection_details")
+
+
+
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
     powerbi, dataset_not_refreshable
 ):

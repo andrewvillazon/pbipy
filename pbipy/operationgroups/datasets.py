@@ -211,4 +211,34 @@ class Datasets:
         
         resource = "https://api.powerbi.com/v1.0/myorg/datasets/{}/datasources"
         return self.client._get_and_load_resource(resource, dataset_id, model=Datasource)
+    
+    def get_datasources_in_group(self, group, dataset):
+        """
+        Returns a list of data sources for the specified dataset from the specified group.
 
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            The Group Id or Group object where the Dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or Dataset object to retrieve datasources for.
+
+        Returns
+        -------
+        `list`
+            List of `Datasource` objects for the specified Dataset and Group.
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/{}/datasources"
+
+        return self.client._get_and_load_resource(resource, group_id, dataset_id, model=Datasource)
