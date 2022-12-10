@@ -302,8 +302,6 @@ def test_get_datasources_in_group_from_objects(powerbi, get_datasources, group, 
         content_type="application/json"
     )
 
-    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
-
     datasources = powerbi.datasets.get_datasources_in_group(group, dataset)
 
     assert isinstance(datasources, list)
