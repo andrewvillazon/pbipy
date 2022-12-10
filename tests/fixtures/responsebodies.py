@@ -222,3 +222,23 @@ def get_datasources():
   ]
 }
     """
+
+
+@pytest.fixture
+def get_direct_query_refresh_schedule():
+  return """
+  {
+  "days": [
+    "Sunday",
+    "Friday",
+    "Saturday"
+  ],
+  "times": [
+    "05:00",
+    "11:30",
+    "17:30",
+    "23:00"
+  ],
+  "localTimeZoneId": "UTC"
+  }
+  """

@@ -210,3 +210,13 @@ class Datasource(PBIObject):
     datasource_type: str = None
     connection_details: dict = None
     gateway_id: dict = None
+
+
+@dataclass
+class DirectQueryRefreshSchedule(PBIObject):
+    """A Power BI refresh schedule for DirectQuery or LiveConnection."""
+
+    days: list = field(default=None)
+    frequency: int = None
+    local_time_zone_id: str = None
+    times: list = field(default=None)

@@ -5,6 +5,7 @@ from ..models import (
     DatasetToDataflowLink,
     DatasetUserAccess,
     Datasource,
+    DirectQueryRefreshSchedule,
     Group,
     Refresh,
 )
@@ -242,3 +243,14 @@ class Datasets:
         resource = "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/{}/datasources"
 
         return self.client._get_and_load_resource(resource, group_id, dataset_id, model=Datasource)
+    
+    def get_direct_query_refresh_schedule(self, dataset):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/datasets/{}/directQueryRefreshSchedule"
+
+        return self.client._get_and_load_resource(resource, dataset_id, model=DirectQueryRefreshSchedule)
+        

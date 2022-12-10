@@ -315,6 +315,42 @@ def test_get_datasources_in_group_from_objects(powerbi, get_datasources, group, 
     assert getattr(datasources[0], "connection_details")
 
 
+@responses.activate
+def test_get_direct_query_refresh_schedule_with_dataset_id(powerbi, get_direct_query_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        body=get_direct_query_refresh_schedule,
+        content_type="application/json"
+    )
+
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    schedule=powerbi.datasets.get_direct_query_refresh_schedule(dataset_id)
+
+    assert isinstance(schedule.days, list)
+    assert len(schedule.days) == 3
+    assert isinstance(schedule.times, list)
+    assert len(schedule.times) == 4
+    assert schedule.local_time_zone_id == "UTC"
+    assert schedule.days[0] == "Sunday"
+
+
+@responses.activate
+def test_get_direct_query_refresh_schedule_with_dataset_object(powerbi, dataset ,get_direct_query_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        body=get_direct_query_refresh_schedule,
+        content_type="application/json"
+    )
+
+    schedule=powerbi.datasets.get_direct_query_refresh_schedule(dataset)
+
+    assert isinstance(schedule.days, list)
+    assert len(schedule.days) == 3
+    assert isinstance(schedule.times, list)
+    assert len(schedule.times) == 4
+    assert schedule.local_time_zone_id == "UTC"
+    assert schedule.days[0] == "Sunday"
+
 
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
     powerbi, dataset_not_refreshable
