@@ -1,7 +1,7 @@
 import pytest
 import responses
 
-from pbipy.models import Dataset, DatasetUserAccess
+from pbipy.models import Dataset, DatasetUserAccess, MashupParameter
 
 
 @responses.activate
@@ -389,6 +389,44 @@ def test_get_direct_query_refresh_schedule_in_group_from_objects(powerbi, group,
     assert len(schedule.times) == 4
     assert schedule.local_time_zone_id == "UTC"
     assert schedule.days[0] == "Sunday"
+
+
+@responses.activate
+def test_get_parameters_from_dataset_id(powerbi, get_parameters):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters",
+        body=get_parameters,
+        content_type="application/json"
+    )
+
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    parameters = powerbi.datasets.get_parameters(dataset_id)
+
+    assert isinstance(parameters, list)
+    assert isinstance(parameters[0], MashupParameter)
+    assert parameters[3].is_required
+    assert len(parameters) == 6
+    assert parameters[2].type == "DateTime"
+    assert parameters[2].name == "FromDate"
+
+
+@responses.activate
+def test_get_parameters_from_dataset_object(powerbi, get_parameters, dataset):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters",
+        body=get_parameters,
+        content_type="application/json"
+    )
+
+    parameters = powerbi.datasets.get_parameters(dataset)
+
+    assert isinstance(parameters, list)
+    assert isinstance(parameters[0], MashupParameter)
+    assert parameters[3].is_required
+    assert len(parameters) == 6
+    assert parameters[2].type == "DateTime"
+    assert parameters[2].name == "FromDate"
 
 
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(

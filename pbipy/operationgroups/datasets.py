@@ -7,6 +7,7 @@ from ..models import (
     Datasource,
     DirectQueryRefreshSchedule,
     Group,
+    MashupParameter,
     Refresh,
 )
 
@@ -268,4 +269,14 @@ class Datasets:
         resource = "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/{}/directQueryRefreshSchedule"
 
         return self.client._get_and_load_resource(resource, group_id, dataset_id, model=DirectQueryRefreshSchedule)
+    
+    def get_parameters(self, dataset):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
         
+        resource = "https://api.powerbi.com/v1.0/myorg/datasets/{}/parameters"
+
+        return self.client._get_and_load_resource(resource, dataset_id, model=MashupParameter)
+    

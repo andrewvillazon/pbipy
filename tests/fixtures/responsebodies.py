@@ -242,3 +242,49 @@ def get_direct_query_refresh_schedule():
   "localTimeZoneId": "UTC"
   }
   """
+
+
+@pytest.fixture
+def get_parameters():
+  return """
+  {
+  "value": [
+    {
+      "name": "ServerName",
+      "type": "Text",
+      "isRequired": true,
+      "currentValue": "MyTest.database.windows.net"
+    },
+    {
+      "name": "DatabaseName",
+      "type": "Text",
+      "isRequired": true,
+      "currentValue": "MyTestDB"
+    },
+    {
+      "name": "FromDate",
+      "type": "DateTime",
+      "isRequired": true,
+      "currentValue": "2/8/2002 12:00:00 AM"
+    },
+    {
+      "name": "FilterBlanks",
+      "type": "Logical",
+      "isRequired": true,
+      "currentValue": "TRUE"
+    },
+    {
+      "name": "MaxId",
+      "type": "Number",
+      "isRequired": true,
+      "currentValue": "77"
+    },
+    {
+      "name": "AnyParam",
+      "type": "Any",
+      "isRequired": true,
+      "currentValue": "uu63"
+    }
+  ]
+  }
+  """

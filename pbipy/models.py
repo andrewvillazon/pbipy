@@ -220,3 +220,14 @@ class DirectQueryRefreshSchedule(PBIObject):
     frequency: int = None
     local_time_zone_id: str = None
     times: list = field(default=None)
+
+
+@dataclass
+class MashupParameter(PBIObject):
+    """A Power BI dataset parameter."""
+
+    current_value: str = None
+    is_required: bool = None
+    name: str = None
+    suggested_values: list = field(default=None)
+    type: str = None
