@@ -11,6 +11,7 @@ import requests
 
 from .operationgroups import Datasets
 from .operationgroups import Groups
+from .operationgroups import Apps
 
 
 class PowerBI:
@@ -44,6 +45,7 @@ class PowerBI:
 
         self.datasets = Datasets(self)
         self.groups = Groups(self)
+        self.apps = Apps(self)
     
     def _get_and_load_resource(self, url_format, *id, model, parameters={}):
         """

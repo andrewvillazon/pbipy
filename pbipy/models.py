@@ -231,3 +231,35 @@ class MashupParameter(PBIObject):
     name: str = None
     suggested_values: list = field(default=None)
     type: str = None
+
+
+@dataclass
+class Report(PBIObject):
+    """A Power BI report."""
+
+    id: str
+    report_type: str = None
+    name: str = None
+    web_url: str = None
+    embed_url: str = None
+    is_owned_by_me: bool = None
+    dataset_id: str = None
+    users: list = field(default=None)
+    subscriptions: list = field(default=None)
+
+
+@dataclass
+class App(PBIObject):
+    """A Power BI App"""
+
+    id: str
+    name: str = None
+    last_update: str = None
+    description: str = None
+    published_by: str = None
+    workspace_id: str = None
+    users: list = field(default=None)
+
+    def __post_init__(self):
+        if self.last_update:
+            self.last_update = parse(self.last_update)
