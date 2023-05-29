@@ -53,6 +53,7 @@ def get_datasets_in_group():
     }
     """
 
+
 @pytest.fixture
 def get_refresh_history():
     return """
@@ -226,7 +227,7 @@ def get_datasources():
 
 @pytest.fixture
 def get_direct_query_refresh_schedule():
-  return """
+    return """
   {
   "days": [
     "Sunday",
@@ -246,7 +247,7 @@ def get_direct_query_refresh_schedule():
 
 @pytest.fixture
 def get_parameters():
-  return """
+    return """
   {
   "value": [
     {
@@ -288,3 +289,27 @@ def get_parameters():
   ]
   }
   """
+
+
+@pytest.fixture
+def get_apps():
+    return """
+    {
+    "value": [
+      {
+        "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        "description": "The finance app",
+        "name": "Finance",
+        "publishedBy": "Bill",
+        "lastUpdate": "2019-01-13T09:46:53.094+02:00"
+      },
+      {
+        "id": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+        "description": "The marketing app",
+        "name": "Marketing",
+        "publishedBy": "Ben",
+        "lastUpdate": "2018-11-13T09:46:53.094+02:00"
+      }
+    ]
+  }
+    """
