@@ -42,3 +42,21 @@ def test_app_creation(app_from_raw):
     assert isinstance(app_from_raw.last_update, datetime)
     assert app_from_raw.id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
     assert app_from_raw.description == "The marketing app"
+
+def test_report_creation(report_from_raw):
+    assert hasattr(report_from_raw, "app_id")
+    assert hasattr(report_from_raw, "dataset_id")
+    assert hasattr(report_from_raw, "id")
+    assert hasattr(report_from_raw, "name")
+    assert hasattr(report_from_raw, "description")
+    assert hasattr(report_from_raw, "is_owned_by_me")
+    assert hasattr(report_from_raw, "web_url")
+    assert hasattr(report_from_raw, "embed_url")
+    assert hasattr(report_from_raw, "users")
+    assert hasattr(report_from_raw, "subscriptions")
+
+    assert report_from_raw.is_owned_by_me
+    assert report_from_raw.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
+    assert isinstance(report_from_raw.users, list)
+    assert not report_from_raw.report_type
+    assert not report_from_raw.subscriptions

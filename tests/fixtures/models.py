@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pbipy.models import App, Dataset, Group, Refresh
+from pbipy.models import App, Dataset, Group, Refresh, Report
 
 
 @pytest.fixture
@@ -106,3 +106,24 @@ def app_from_raw():
     )
 
     return App.from_raw(js)
+
+
+@pytest.fixture
+def report_from_raw():
+    js = json.loads(
+        """
+    {
+    "appId": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+    "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+    "id": "66b2570c-d9d3-40b2-83d9-1095c6700041",
+    "name": "SalesMarketing",
+    "description":"The Sales and Marketing App",
+    "isOwnedByMe": true,
+    "webUrl": "https://app.powerbi.com/reports/66b2570c-d9d3-40b2-83d9-1095c6700041",
+    "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=66b2570c-d9d3-40b2-83d9-1095c6700041&appId=3d9b93c6-7b6d-4801-a491-1738910904fd&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVNPVVRILUNFTlRSQUwtVVMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQifQ",
+    "users":[]
+    }
+    """
+    )
+
+    return Report.from_raw(js)
