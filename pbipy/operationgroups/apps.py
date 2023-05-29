@@ -1,6 +1,6 @@
 """Operations for working with Apps."""
 
-from ..models import App
+from ..models import App, Report
 
 
 class Apps:
@@ -33,3 +33,25 @@ class Apps:
         resource = "https://api.powerbi.com/v1.0/myorg/apps"
 
         return self.client._get_and_load_resource(resource, model=App)
+
+    def get_reports(self, app):
+        """
+        Returns a list of the reports attached to the specified app.
+
+        Parameters
+        ----------
+        `app` : `Union[str, App]`
+            The App Id or `App` object to retrieve the Reports for.
+
+        Returns
+        -------
+        `list`
+            List of `Report` objects attached to the specified app.
+        """
+        if isinstance(app, App):
+            app_id = app.id
+        else:
+            app_id = app
+
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{0}/reports"
+        return self.client._get_and_load_resource(resource, app_id, model=Report)

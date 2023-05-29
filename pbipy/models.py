@@ -246,6 +246,9 @@ class Report(PBIObject):
     dataset_id: str = None
     users: list = field(default=None)
     subscriptions: list = field(default=None)
+    app_id: str = None
+    description: str = None
+    original_report_object_id: str = None
 
 
 @dataclass

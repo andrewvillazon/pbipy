@@ -313,3 +313,32 @@ def get_apps():
     ]
   }
     """
+
+
+@pytest.fixture
+def get_reports():
+    return """
+    {
+    "value": [
+      {
+        "appId": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+        "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "id": "66b2570c-d9d3-40b2-83d9-1095c6700041",
+        "name": "SalesMarketing",
+        "webUrl": "https://app.powerbi.com/reports/66b2570c-d9d3-40b2-83d9-1095c6700041",
+        "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=66b2570c-d9d3-40b2-83d9-1095c6700041&appId=3d9b93c6-7b6d-4801-a491-1738910904fd&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVNPVVRILUNFTlRSQUwtVVMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQifQ"
+      },
+      {
+        "appId": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+        "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "id": "5b218778-e7a5-4d73-8187-f10824047715",
+        "name": "MarketingSales",
+        "webUrl": "https://app.powerbi.com/reports/5b218778-e7a5-4d73-8187-f10824047715",
+        "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715&appId=3d9b93c6-7b6d-4801-a491-1738910904fd&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVNPVVRILUNFTlRSQUwtVVMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQifQ",
+        "isOwnedByMe": false,
+        "users": [],
+        "subscriptions": []
+      }
+    ]
+  }
+  """
