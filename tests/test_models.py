@@ -30,3 +30,15 @@ def test_dataset_creation_from_raw(dataset_from_raw):
 
 def test_dataset_post_init_parses_dates(dataset_from_raw):
     assert isinstance(dataset_from_raw.created_date, datetime)
+
+
+def test_app_creation(app_from_raw):
+    assert hasattr(app_from_raw, "id")
+    assert hasattr(app_from_raw, "description")
+    assert hasattr(app_from_raw, "name")
+    assert hasattr(app_from_raw, "published_by")
+    assert hasattr(app_from_raw, "last_update")
+
+    assert isinstance(app_from_raw.last_update, datetime)
+    assert app_from_raw.id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
+    assert app_from_raw.description == "The marketing app"

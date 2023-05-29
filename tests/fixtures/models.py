@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pbipy.models import Dataset, Group, Refresh
+from pbipy.models import App, Dataset, Group, Refresh
 
 
 @pytest.fixture
@@ -17,7 +17,6 @@ def refresh_from_raw():
     }
 
     return Refresh.from_raw(raw=raw)
-
 
 
 @pytest.fixture
@@ -90,3 +89,20 @@ def dataset_not_refreshable():
         """
     )
     return Dataset.from_raw(js)
+
+
+@pytest.fixture
+def app_from_raw():
+    js = json.loads(
+        """
+        {
+        "id": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+        "description": "The marketing app",
+        "name": "Marketing",
+        "publishedBy": "Ben",
+        "lastUpdate": "2018-11-13T09:46:53.094+02:00"
+        }
+    """
+    )
+
+    return App.from_raw(js)
