@@ -1,6 +1,6 @@
 """Operations for working with Apps."""
 
-from ..models import App, Dashboard, Report
+from ..models import App, Dashboard, Report, Tile
 
 
 class Apps:
@@ -149,3 +149,17 @@ class Apps:
 
         resource = "https://api.powerbi.com/v1.0/myorg/apps/{0}/reports"
         return self.client._get_and_load_resource(resource, app_id, model=Report)
+    
+    def get_tile(self, app, dashboard, tile_id):
+        if isinstance(app, App):
+            app_id = app.id
+        else:
+            app_id = app
+        
+        if isinstance(dashboard, Dashboard):
+            dashboard_id = dashboard.id
+        else:
+            dashboard_id = dashboard
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards/{}/tiles/{}"
+        return self.client._get_and_load_resource(resource, app_id, dashboard_id, tile_id, model=Tile)

@@ -3,7 +3,7 @@ import re
 from datetime import datetime
 import responses
 
-from pbipy.models import App, Report, Dashboard
+from pbipy.models import App, Report, Dashboard, Tile
 
 
 any_url = re.compile(".*")
@@ -189,3 +189,39 @@ def test_get_report_using_app(powerbi, get_report, app_from_raw):
     assert not report.is_owned_by_me
     assert report.subscriptions is None
     assert report.users is None
+
+
+@responses.activate
+def test_get_tile_using_app_id_and_dashboard_id(powerbi, get_tile):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/dashboards/03dac094-2ff8-47e8-b2b9-dedbbc4d22ac/tiles/312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+        body=get_tile,
+        content_type="application/json",
+    )
+
+    tile = powerbi.apps.get_tile("3d9b93c6-7b6d-4801-a491-1738910904fd", "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac", "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b")
+
+    assert isinstance(tile, Tile)
+    assert tile.id == "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b"
+    assert tile.row_span == 0
+    assert tile.col_span == 0
+    assert tile.title == "SalesMarketingTile"
+    assert tile.sub_title == "SalesMarketing"
+
+
+@responses.activate
+def test_get_tile_using_app_and_dashboard(powerbi, app_from_raw, dashboard_from_raw, get_tile):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/apps/{app_from_raw.id}/dashboards/{dashboard_from_raw.id}/tiles/312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+        body=get_tile,
+        content_type="application/json",
+    )
+
+    tile = powerbi.apps.get_tile(app_from_raw, dashboard_from_raw, "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b")
+
+    assert isinstance(tile, Tile)
+    assert tile.id == "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b"
+    assert tile.row_span == 0
+    assert tile.col_span == 0
+    assert tile.title == "SalesMarketingTile"
+    assert tile.sub_title == "SalesMarketing"
