@@ -1,7 +1,12 @@
+import re
+
 from datetime import datetime
 import responses
 
 from pbipy.models import App, Report, Dashboard
+
+
+any_url = re.compile(".*")
 
 
 @responses.activate
@@ -109,3 +114,38 @@ def test_get_dashboard_using_app_and_dashboard_id(powerbi, app_from_raw, get_das
     assert not dashboard.is_read_only
     assert not dashboard.users
     assert not isinstance(dashboard.subscriptions, list)
+
+
+@responses.activate
+def test_get_dashboards_using_app_id(powerbi, get_dashboards):
+    responses.get(
+        any_url
+        ,body=get_dashboards
+        ,content_type="application/json",
+    )
+    
+    dashboards = powerbi.apps.get_dashboards("3d9b93c6-7b6d-4801-a491-1738910904fd")
+
+    assert len(dashboards) == 2
+    assert any(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+    assert dashboards[1].display_name == "FinanceMarketing"
+    assert not dashboards[0].is_read_only
+    assert dashboards[1].is_read_only
+
+
+@responses.activate
+def test_get_dashboards_using_app(powerbi, get_dashboards, app_from_raw):
+    responses.get(
+        any_url
+        ,body=get_dashboards
+        ,content_type="application/json",
+    )
+    
+    dashboards = powerbi.apps.get_dashboards(app_from_raw)
+
+    assert len(dashboards) == 2
+    assert any(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+    assert dashboards[1].display_name == "FinanceMarketing"
+    assert not dashboards[0].is_read_only
+    assert dashboards[1].is_read_only
+    assert any(dashboard.app_id == app_from_raw.id for dashboard in dashboards)

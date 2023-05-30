@@ -79,6 +79,29 @@ class Apps:
 
         resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards/{}"
         return self.client._get_and_load_resource(resource, app_id, dashboard_id, model=Dashboard)
+    
+    def get_dashboards(self, app):
+        """
+        Returns a list of dashboards from the specified app.
+
+        Parameters
+        ----------
+        `app` : `Union[str, App]`
+            The App Id or App object to retrieve the Dashboards for.
+
+        Returns
+        -------
+        `list`
+            List of `Dashboard` objects for the specified App.
+        """
+
+        if isinstance(app, App):
+            app_id = app.id
+        else:
+            app_id = app
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards"
+        return self.client._get_and_load_resource(resource, app_id, model=Dashboard)
 
     def get_reports(self, app):
         """
