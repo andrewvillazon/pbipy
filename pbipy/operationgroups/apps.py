@@ -1,6 +1,6 @@
 """Operations for working with Apps."""
 
-from ..models import App, Report
+from ..models import App, Dashboard, Report
 
 
 class Apps:
@@ -54,6 +54,31 @@ class Apps:
         resource = "https://api.powerbi.com/v1.0/myorg/apps"
 
         return self.client._get_and_load_resource(resource, model=App)
+    
+    def get_dashboard(self, app, dashboard_id):
+        """
+        Returns the specified dashboard from the specified app.
+
+        Parameters
+        ----------
+        `app` : `Union[str, App]`
+            The App Id or App object to retrieve the Dashboard for.
+        `dashboard_id` : `str`
+            Id of the Dashboard to retrieve
+
+        Returns
+        -------
+        `Dashboard`
+            The specified Dashboard.
+        """
+
+        if isinstance(app, App):
+            app_id = app.id
+        else:
+            app_id = app
+
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards/{}"
+        return self.client._get_and_load_resource(resource, app_id, dashboard_id, model=Dashboard)
 
     def get_reports(self, app):
         """

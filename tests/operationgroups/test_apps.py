@@ -1,7 +1,7 @@
 from datetime import datetime
 import responses
 
-from pbipy.models import App, Report
+from pbipy.models import App, Report, Dashboard
 
 
 @responses.activate
@@ -59,9 +59,9 @@ def test_get_reports_from_app(powerbi, app_from_raw, get_reports):
 @responses.activate
 def test_get_app(powerbi, get_app):
     responses.get(
-        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48"
-        ,body=get_app
-        ,content_type="application/json",
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        body=get_app,
+        content_type="application/json",
     )
 
     app = powerbi.apps.get_app("f089354e-8366-4e18-aea3-4cb4a3a50b48")
@@ -71,3 +71,41 @@ def test_get_app(powerbi, get_app):
     assert isinstance(app.last_update, datetime)
     assert hasattr(app, "workspace_id")
     assert not app.users
+
+
+@responses.activate
+def test_get_dashboard_using_app_id_and_dashboard_id(powerbi, get_dashboard):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/dashboards/03dac094-2ff8-47e8-b2b9-dedbbc4d22ac",
+        body=get_dashboard,
+        content_type="application/json",
+    )
+
+    dashboard = powerbi.apps.get_dashboard(
+        "3d9b93c6-7b6d-4801-a491-1738910904fd", "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac"
+    )
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.display_name == "SalesMarketing"
+    assert not dashboard.is_read_only
+    assert not dashboard.users
+    assert not isinstance(dashboard.subscriptions, list)
+
+
+@responses.activate
+def test_get_dashboard_using_app_and_dashboard_id(powerbi, app_from_raw, get_dashboard):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/dashboards/03dac094-2ff8-47e8-b2b9-dedbbc4d22ac",
+        body=get_dashboard,
+        content_type="application/json",
+    )
+
+    dashboard = powerbi.apps.get_dashboard(
+        app_from_raw, "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac"
+    )
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.display_name == "SalesMarketing"
+    assert not dashboard.is_read_only
+    assert not dashboard.users
+    assert not isinstance(dashboard.subscriptions, list)
