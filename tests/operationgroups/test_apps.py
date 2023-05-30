@@ -1,3 +1,4 @@
+from datetime import datetime
 import responses
 
 from pbipy.models import App, Report
@@ -53,3 +54,20 @@ def test_get_reports_from_app(powerbi, app_from_raw, get_reports):
     assert not reports[1].is_owned_by_me
     assert reports[1].embed_url
     assert not len(reports[1].subscriptions)
+
+
+@responses.activate
+def test_get_app(powerbi, get_app):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48"
+        ,body=get_app
+        ,content_type="application/json",
+    )
+
+    app = powerbi.apps.get_app("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert app.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert app.name == "Finance"
+    assert isinstance(app.last_update, datetime)
+    assert hasattr(app, "workspace_id")
+    assert not app.users

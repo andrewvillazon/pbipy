@@ -19,6 +19,27 @@ class Apps:
 
     def __init__(self, client):
         self.client = client
+    
+    def get_app(self, app_id):
+        """
+        Returns the specified installed app.
+
+        Parameters
+        ----------
+        id : `str`
+            Id of the App to get.
+        
+        Returns
+        -------
+        `App`
+            App matching the specified Id.
+        """
+
+        # TODO: What if the App isn't found?
+
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{0}"
+
+        return self.client._get_and_load_resource(resource, app_id, model=App)
 
     def get_apps(self):
         """
