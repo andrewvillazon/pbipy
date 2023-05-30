@@ -119,11 +119,11 @@ def test_get_dashboard_using_app_and_dashboard_id(powerbi, app_from_raw, get_das
 @responses.activate
 def test_get_dashboards_using_app_id(powerbi, get_dashboards):
     responses.get(
-        any_url
-        ,body=get_dashboards
-        ,content_type="application/json",
+        any_url,
+        body=get_dashboards,
+        content_type="application/json",
     )
-    
+
     dashboards = powerbi.apps.get_dashboards("3d9b93c6-7b6d-4801-a491-1738910904fd")
 
     assert len(dashboards) == 2
@@ -136,11 +136,11 @@ def test_get_dashboards_using_app_id(powerbi, get_dashboards):
 @responses.activate
 def test_get_dashboards_using_app(powerbi, get_dashboards, app_from_raw):
     responses.get(
-        any_url
-        ,body=get_dashboards
-        ,content_type="application/json",
+        any_url,
+        body=get_dashboards,
+        content_type="application/json",
     )
-    
+
     dashboards = powerbi.apps.get_dashboards(app_from_raw)
 
     assert len(dashboards) == 2
@@ -154,12 +154,14 @@ def test_get_dashboards_using_app(powerbi, get_dashboards, app_from_raw):
 @responses.activate
 def test_get_report_using_app_id(powerbi, get_report):
     responses.get(
-        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/reports/66b2570c-d9d3-40b2-83d9-1095c6700041"
-        ,body=get_report
-        ,content_type="application/json",
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/reports/66b2570c-d9d3-40b2-83d9-1095c6700041",
+        body=get_report,
+        content_type="application/json",
     )
 
-    report = powerbi.apps.get_report("3d9b93c6-7b6d-4801-a491-1738910904fd", "66b2570c-d9d3-40b2-83d9-1095c6700041")
+    report = powerbi.apps.get_report(
+        "3d9b93c6-7b6d-4801-a491-1738910904fd", "66b2570c-d9d3-40b2-83d9-1095c6700041"
+    )
 
     assert isinstance(report, Report)
     assert report.name == "SalesMarketing"
@@ -172,12 +174,14 @@ def test_get_report_using_app_id(powerbi, get_report):
 @responses.activate
 def test_get_report_using_app(powerbi, get_report, app_from_raw):
     responses.get(
-        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/reports/66b2570c-d9d3-40b2-83d9-1095c6700041"
-        ,body=get_report
-        ,content_type="application/json",
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/reports/66b2570c-d9d3-40b2-83d9-1095c6700041",
+        body=get_report,
+        content_type="application/json",
     )
 
-    report = powerbi.apps.get_report(app_from_raw, "66b2570c-d9d3-40b2-83d9-1095c6700041")
+    report = powerbi.apps.get_report(
+        app_from_raw, "66b2570c-d9d3-40b2-83d9-1095c6700041"
+    )
 
     assert isinstance(report, Report)
     assert report.name == "SalesMarketing"
