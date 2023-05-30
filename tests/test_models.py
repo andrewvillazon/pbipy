@@ -60,3 +60,19 @@ def test_report_creation(report_from_raw):
     assert isinstance(report_from_raw.users, list)
     assert not report_from_raw.report_type
     assert not report_from_raw.subscriptions
+
+
+def test_dashboard_creation(dashboard_from_raw):
+    assert hasattr(dashboard_from_raw, "id")
+    assert hasattr(dashboard_from_raw, "display_name")
+    assert hasattr(dashboard_from_raw, "is_read_only")
+    assert hasattr(dashboard_from_raw, "web_url")
+    assert hasattr(dashboard_from_raw, "app_id")
+    assert hasattr(dashboard_from_raw, "embed_url")
+    assert hasattr(dashboard_from_raw, "users")
+    assert hasattr(dashboard_from_raw, "subscriptions")
+
+    assert not dashboard_from_raw.is_read_only
+    assert dashboard_from_raw.display_name == "SalesMarketing"
+    assert dashboard_from_raw.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
+    assert dashboard_from_raw.id == "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac"

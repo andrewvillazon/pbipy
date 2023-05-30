@@ -184,6 +184,7 @@ class ActivityEvent(PBIObject):
         if self.last_refresh_time:
             self.last_refresh_time = parse(self.last_refresh_time)
 
+
 @dataclass
 class DatasetToDataflowLink(PBIObject):
     """A Power BI dataset to dataflow link"""
@@ -205,7 +206,7 @@ class DatasetUserAccess(PBIObject):
 @dataclass
 class Datasource(PBIObject):
     """A Power BI data source"""
-    
+
     datasource_id: str
     datasource_type: str = None
     connection_details: dict = None
@@ -266,3 +267,17 @@ class App(PBIObject):
     def __post_init__(self):
         if self.last_update:
             self.last_update = parse(self.last_update)
+
+
+@dataclass
+class Dashboard(PBIObject):
+    """A Power BI dashboard."""
+
+    id: str
+    app_id: str = None
+    display_name: str = None
+    embed_url: str = None
+    is_read_only: bool = None
+    subscriptions: list = field(default=None)
+    users: list = field(default=None)
+    web_url: str = None
