@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pbipy.models import App, Dashboard, Dataset, Group, Refresh, Report
+from pbipy.models import App, Dashboard, Dataset, Group, Refresh, Report, Tile
 
 
 @pytest.fixture
@@ -146,3 +146,22 @@ def dashboard_from_raw():
     )
 
     return Dashboard.from_raw(js)
+
+
+@pytest.fixture
+def tile_from_raw():
+    js = json.loads(
+        """
+        {
+        "id": "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+        "title": "SalesMarketingTile",
+        "embedUrl": "https://app.powerbi.com/embed?dashboardId=69ffaa6c-b36d-4d01-96f5-1ed67c64d4af&tileId=312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b&groupId=f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        "rowSpan": 0,
+        "colSpan": 0,
+        "reportId": "5b218778-e7a5-4d73-8187-f10824047715",
+        "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    }
+        """
+    )
+
+    return Tile.from_raw(js)

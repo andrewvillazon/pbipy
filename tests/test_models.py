@@ -76,3 +76,15 @@ def test_dashboard_creation(dashboard_from_raw):
     assert dashboard_from_raw.display_name == "SalesMarketing"
     assert dashboard_from_raw.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
     assert dashboard_from_raw.id == "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac"
+
+
+def test_tile_creation(tile_from_raw):
+    assert hasattr(tile_from_raw, "col_span")
+    assert hasattr(tile_from_raw, "dataset_id")
+    assert hasattr(tile_from_raw, "embed_data")
+    assert hasattr(tile_from_raw, "embed_url")
+    assert hasattr(tile_from_raw, "id")
+    assert hasattr(tile_from_raw, "report_id")
+    assert hasattr(tile_from_raw, "row_span")
+    assert hasattr(tile_from_raw, "title")
+    assert hasattr(tile_from_raw, "sub_title")

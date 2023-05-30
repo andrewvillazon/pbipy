@@ -281,3 +281,18 @@ class Dashboard(PBIObject):
     subscriptions: list = field(default=None)
     users: list = field(default=None)
     web_url: str = None
+
+
+@dataclass
+class Tile(PBIObject):
+    """A Power BI tile."""
+
+    id: str
+    col_span: int = None
+    dataset_id: str = None
+    embed_data: str = None
+    embed_url: str = None
+    report_id: str = None
+    row_span: int = None
+    title: str = None
+    sub_title: str = None
