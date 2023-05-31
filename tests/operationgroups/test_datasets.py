@@ -1,7 +1,7 @@
 import pytest
 import responses
 
-from pbipy.models import Dataset, DatasetUserAccess, MashupParameter
+from pbipy.models import Dataset, DatasetUserAccess, Gateway, MashupParameter
 
 
 @responses.activate
@@ -434,3 +434,47 @@ def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
 ):
     with pytest.raises(TypeError):
         powerbi.datasets.get_refresh_history(dataset_not_refreshable)
+
+
+@responses.activate
+def test_discover_gateways_using_dataset_id(powerbi, discover_gateways):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.DiscoverGateways",
+        body=discover_gateways,
+        content_type="application/json",
+    )
+
+    gateways = powerbi.datasets.discover_gateways("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(gateways, list)
+    assert len(gateways) == 2
+    assert any(isinstance(gateway, Gateway) for gateway in gateways)
+
+
+@responses.activate
+def test_discover_gateways_using_dataset(powerbi, discover_gateways, dataset_from_raw):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_from_raw.id}/Default.DiscoverGateways",
+        body=discover_gateways,
+        content_type="application/json",
+    )
+
+    gateways = powerbi.datasets.discover_gateways(dataset_from_raw)
+
+    assert isinstance(gateways, list)
+    assert len(gateways) == 2
+    assert any(isinstance(gateway, Gateway) for gateway in gateways)
+
+
+@responses.activate
+def test_discover_gateways_no_gateways_using_dataset_id(powerbi, discover_gateways_no_gateways, dataset_from_raw):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_from_raw.id}/Default.DiscoverGateways",
+        body=discover_gateways_no_gateways,
+        content_type="application/json",
+    )
+
+    gateways = powerbi.datasets.discover_gateways(dataset_from_raw)
+
+    assert isinstance(gateways, list)
+    assert len(gateways) == 0

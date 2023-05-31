@@ -6,6 +6,7 @@ from ..models import (
     DatasetUserAccess,
     Datasource,
     DirectQueryRefreshSchedule,
+    Gateway,
     Group,
     MashupParameter,
     Refresh,
@@ -280,3 +281,37 @@ class Datasets:
 
         return self.client._get_and_load_resource(resource, dataset_id, model=MashupParameter)
     
+    def discover_gateways(self, dataset):
+        """
+        Returns a list of gateways that the specified dataset from My workspace 
+        can be bound to.
+
+        This API call is only relevant to datasets that have at least one on-premises 
+        connection. For datasets with cloud-only connections, this API call returns 
+        an empty list.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to discover Gateways for.
+
+        Returns
+        -------
+        `list`
+            List of `Gateway` objects for the specified Dataset.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/Default.DiscoverGateways"
+        response = self.client.session.get(resource)
+        raw = response.json()
+        
+        if not raw["value"]:
+            return []
+        else:
+            return [Gateway.from_raw(gateway) for gateway in raw["value"]]
+        
