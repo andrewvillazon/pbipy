@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pbipy.models import App, Dashboard, Dataset, Group, Refresh, Report, Tile
+from pbipy.models import App, Dashboard, Dataset, Gateway, Group, Refresh, Report, Tile
 
 
 @pytest.fixture
@@ -165,3 +165,21 @@ def tile_from_raw():
     )
 
     return Tile.from_raw(js)
+
+@pytest.fixture
+def gateway_from_raw():
+    js = json.loads(
+        """
+        {
+        "id": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        "name": "My_Sample_Gateway",
+        "type": "Resource",
+        "publicKey": {
+            "exponent": "AQAB",
+            "modulus": "o6j2....cLk="
+            }
+        }
+        """
+    )
+
+    return Gateway.from_raw(js)

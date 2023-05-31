@@ -1,5 +1,7 @@
 from datetime import datetime
 
+from pbipy.models import Gateway
+
 
 def test_refresh_post_init_parses_dates(refresh_from_raw):
     assert isinstance(refresh_from_raw.start_time, datetime)
@@ -88,3 +90,19 @@ def test_tile_creation(tile_from_raw):
     assert hasattr(tile_from_raw, "row_span")
     assert hasattr(tile_from_raw, "title")
     assert hasattr(tile_from_raw, "sub_title")
+
+
+def test_gateway_creation(gateway_from_raw):
+    assert hasattr(gateway_from_raw, "id")
+    assert hasattr(gateway_from_raw, "gateway_id")
+    assert hasattr(gateway_from_raw, "gateway_annotation")
+    assert hasattr(gateway_from_raw, "gateway_status")
+    assert hasattr(gateway_from_raw, "name")
+    assert hasattr(gateway_from_raw, "public_key")
+    assert hasattr(gateway_from_raw, "type")
+
+    assert isinstance(gateway_from_raw, Gateway)
+    assert gateway_from_raw.id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert gateway_from_raw.type == "Resource"
+    assert gateway_from_raw.name == "My_Sample_Gateway"
+    assert isinstance(gateway_from_raw.public_key, dict)

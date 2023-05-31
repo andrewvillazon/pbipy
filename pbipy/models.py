@@ -296,3 +296,16 @@ class Tile(PBIObject):
     row_span: int = None
     title: str = None
     sub_title: str = None
+
+
+@dataclass
+class Gateway(PBIObject):
+    """A Power BI gateway"""
+
+    id: str
+    gateway_id: int = None
+    gateway_annotation: str=None
+    gateway_status: str=None
+    name: str=None
+    public_key: dict = None
+    type: str=None
