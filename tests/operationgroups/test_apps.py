@@ -225,3 +225,33 @@ def test_get_tile_using_app_and_dashboard(powerbi, app_from_raw, dashboard_from_
     assert tile.col_span == 0
     assert tile.title == "SalesMarketingTile"
     assert tile.sub_title == "SalesMarketing"
+
+
+@responses.activate
+def test_get_tiles_using_app_id_and_dashboard_id(powerbi, get_tiles):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/3d9b93c6-7b6d-4801-a491-1738910904fd/dashboards/03dac094-2ff8-47e8-b2b9-dedbbc4d22ac/tiles",
+        body=get_tiles,
+        content_type="application/json",
+    )
+
+    tiles = powerbi.apps.get_tiles("3d9b93c6-7b6d-4801-a491-1738910904fd","03dac094-2ff8-47e8-b2b9-dedbbc4d22ac")
+
+    assert isinstance(tiles, list)
+    assert any(isinstance(tile, Tile) for tile in tiles)
+    assert len(tiles) == 1
+
+
+@responses.activate
+def test_get_tiles_using_app_and_dashboard(powerbi, app_from_raw, dashboard_from_raw, get_tiles):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/apps/{app_from_raw.id}/dashboards/{dashboard_from_raw.id}/tiles",
+        body=get_tiles,
+        content_type="application/json",
+    )
+
+    tiles = powerbi.apps.get_tiles(app_from_raw, dashboard_from_raw)
+
+    assert isinstance(tiles, list)
+    assert any(isinstance(tile, Tile) for tile in tiles)
+    assert len(tiles) == 1

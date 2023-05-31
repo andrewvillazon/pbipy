@@ -163,3 +163,17 @@ class Apps:
         
         resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards/{}/tiles/{}"
         return self.client._get_and_load_resource(resource, app_id, dashboard_id, tile_id, model=Tile)
+    
+    def get_tiles(self, app, dashboard):
+        if isinstance(app, App):
+            app_id = app.id
+        else:
+            app_id = app
+        
+        if isinstance(dashboard, Dashboard):
+            dashboard_id = dashboard.id
+        else:
+            dashboard_id = dashboard
+        
+        resource = "https://api.powerbi.com/v1.0/myorg/apps/{}/dashboards/{}/tiles"
+        return self.client._get_and_load_resource(resource, app_id, dashboard_id, model=Tile)
