@@ -519,7 +519,7 @@ def test_cancel_refresh_in_group(powerbi):
 
 
 @responses.activate
-def test_cancel_refresh_in_group(powerbi):
+def test_cancel_refresh_in_group_raises(powerbi):
     responses.delete(
         "https://api.powerbi.com/v1.0/myorg/groups/fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e"
         ,status=301
