@@ -282,6 +282,42 @@ class Datasets:
 
         return self.client._get_and_load_resource(resource, dataset_id, model=MashupParameter)
     
+    def get_parameters_in_group(self, group, dataset):
+        """
+        Returns a list of parameters for the specified dataset from the specified workspace.
+
+        Parameters
+        ----------
+        group : `Union[str, Group]`
+            Group Id or `Group` object to retrieve the parameters for.
+        dataset : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to retrieve the parameters for.
+
+        Returns
+        -------
+        `List[MashupParameter]`
+            List of `MashupParameter` objects from the specified group and dataset.
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/parameters"
+        response = self.client.session.get(resource)
+        raw = response.json()
+        
+        if not raw["value"]:
+            return []
+        else:
+            return [MashupParameter.from_raw(parameter) for parameter in raw["value"]]
+    
     def discover_gateways(self, dataset):
         """
         Returns a list of gateways that the specified dataset from My workspace 

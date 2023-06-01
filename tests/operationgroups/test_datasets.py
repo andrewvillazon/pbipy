@@ -430,6 +430,36 @@ def test_get_parameters_from_dataset_object(powerbi, get_parameters, dataset):
     assert parameters[2].name == "FromDate"
 
 
+@responses.activate
+def test_get_parameters_in_group_from_group_object_and_dataset_object(powerbi, get_parameters, group_from_raw, dataset_from_raw):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/groups/{group_from_raw.id}/datasets/{dataset_from_raw.id}/parameters",
+        body=get_parameters,
+        content_type="application/json",
+    )
+
+    parameters = powerbi.datasets.get_parameters_in_group(group_from_raw, dataset_from_raw)
+
+    assert isinstance(parameters, list)
+    assert len(parameters) == 6
+    assert all(isinstance(parameter, MashupParameter) for parameter in parameters)
+
+
+@responses.activate
+def test_get_parameters_in_group_from_group_id_and_dataset_id(powerbi, get_parameters, group_from_raw, dataset_from_raw):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters",
+        body=get_parameters,
+        content_type="application/json",
+    )
+
+    parameters = powerbi.datasets.get_parameters_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(parameters, list)
+    assert len(parameters) == 6
+    assert all(isinstance(parameter, MashupParameter) for parameter in parameters)
+
+
 def test_get_refresh_history_raises_type_error_on_not_refreshable_dataset(
     powerbi, dataset_not_refreshable
 ):
