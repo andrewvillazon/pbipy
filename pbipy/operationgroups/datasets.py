@@ -346,3 +346,43 @@ class Datasets:
         resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{refresh_id}"
         response = self.client.session.delete(resource)
         response.raise_for_status()
+
+    def cancel_refresh_in_group(self, dataset, refresh, group):
+        """
+        Cancels the specified refresh operation for the specified dataset from the specified workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to cancel the refresh for.
+        `refresh` : `Union[str, Refresh]`
+            Refresh Id or `Refresh` object to cancel the refresh for.
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object to cancel the refresh for.
+        
+        Raises
+        ------
+        `HTTPError`
+            If api response status code is not equal to 200.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(refresh, Refresh):
+            refresh_id = refresh.id
+        else:
+            refresh_id = refresh
+        
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshes/{refresh_id}"
+        response = self.client.session.delete(resource)
+        
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem cancelling refresh. Group id: {group_id}, Dataset id: {dataset_id}, Refresh id: {refresh_id}. Response details: {response}")
