@@ -37,7 +37,7 @@ def test_get_reports_from_app_id(powerbi, app_from_raw, get_reports):
     reports = powerbi.apps.get_reports(app_from_raw.id)
 
     assert len(reports) == 2
-    assert any(isinstance(report, Report) for report in reports)
+    assert all(isinstance(report, Report) for report in reports)
     assert reports[0].name == "SalesMarketing"
     assert hasattr(reports[0], "dataset_id")
     assert hasattr(reports[0], "web_url")
@@ -127,7 +127,7 @@ def test_get_dashboards_using_app_id(powerbi, get_dashboards):
     dashboards = powerbi.apps.get_dashboards("3d9b93c6-7b6d-4801-a491-1738910904fd")
 
     assert len(dashboards) == 2
-    assert any(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+    assert all(isinstance(dashboard, Dashboard) for dashboard in dashboards)
     assert dashboards[1].display_name == "FinanceMarketing"
     assert not dashboards[0].is_read_only
     assert dashboards[1].is_read_only
@@ -144,11 +144,11 @@ def test_get_dashboards_using_app(powerbi, get_dashboards, app_from_raw):
     dashboards = powerbi.apps.get_dashboards(app_from_raw)
 
     assert len(dashboards) == 2
-    assert any(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+    assert all(isinstance(dashboard, Dashboard) for dashboard in dashboards)
     assert dashboards[1].display_name == "FinanceMarketing"
     assert not dashboards[0].is_read_only
     assert dashboards[1].is_read_only
-    assert any(dashboard.app_id == app_from_raw.id for dashboard in dashboards)
+    assert all(dashboard.app_id == app_from_raw.id for dashboard in dashboards)
 
 
 @responses.activate
@@ -238,7 +238,7 @@ def test_get_tiles_using_app_id_and_dashboard_id(powerbi, get_tiles):
     tiles = powerbi.apps.get_tiles("3d9b93c6-7b6d-4801-a491-1738910904fd","03dac094-2ff8-47e8-b2b9-dedbbc4d22ac")
 
     assert isinstance(tiles, list)
-    assert any(isinstance(tile, Tile) for tile in tiles)
+    assert all(isinstance(tile, Tile) for tile in tiles)
     assert len(tiles) == 1
 
 
@@ -253,5 +253,5 @@ def test_get_tiles_using_app_and_dashboard(powerbi, app_from_raw, dashboard_from
     tiles = powerbi.apps.get_tiles(app_from_raw, dashboard_from_raw)
 
     assert isinstance(tiles, list)
-    assert any(isinstance(tile, Tile) for tile in tiles)
+    assert all(isinstance(tile, Tile) for tile in tiles)
     assert len(tiles) == 1

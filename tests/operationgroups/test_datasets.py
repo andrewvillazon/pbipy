@@ -479,7 +479,7 @@ def test_discover_gateways_using_dataset_id(powerbi, discover_gateways):
 
     assert isinstance(gateways, list)
     assert len(gateways) == 2
-    assert any(isinstance(gateway, Gateway) for gateway in gateways)
+    assert all(isinstance(gateway, Gateway) for gateway in gateways)
 
 
 @responses.activate
@@ -494,7 +494,7 @@ def test_discover_gateways_using_dataset(powerbi, discover_gateways, dataset_fro
 
     assert isinstance(gateways, list)
     assert len(gateways) == 2
-    assert any(isinstance(gateway, Gateway) for gateway in gateways)
+    assert all(isinstance(gateway, Gateway) for gateway in gateways)
 
 
 @responses.activate
