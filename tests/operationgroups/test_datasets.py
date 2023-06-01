@@ -551,3 +551,26 @@ def test_delete_dataset_using_dataset_object_raises(powerbi, dataset_from_raw):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.delete_dataset(dataset_from_raw)
+
+
+@responses.activate
+def test_delete_dataset_in_group(powerbi):
+    delete_response = responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+        ,status=200
+    )
+
+    powerbi.datasets.delete_dataset_in_group("cfafbeb1-8037-4d0c-896e-a46fb27ff229", "f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert delete_response.call_count == 1
+
+
+@responses.activate
+def test_delete_dataset_in_group_raises(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+        ,status=501
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.delete_dataset_in_group("cfafbeb1-8037-4d0c-896e-a46fb27ff229", "f089354e-8366-4e18-aea3-4cb4a3a50b48")

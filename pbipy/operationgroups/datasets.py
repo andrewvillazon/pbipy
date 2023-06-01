@@ -414,3 +414,20 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem deleting Dataset. Dataset id: {dataset_id}. Response details: {response}")
+    
+    def delete_dataset_in_group(self, dataset, group):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(group, Group):
+                    group_id = group.id
+        else:
+            group_id = group
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}"
+        response = self.client.session.delete(resource)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem deleting Dataset. Dataset id: {dataset_id}, Group id: {group_id} Response details: {response}")
