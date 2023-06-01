@@ -388,3 +388,29 @@ class Datasets:
         
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem cancelling refresh. Group id: {group_id}, Dataset id: {dataset_id}, Refresh id: {refresh_id}. Response details: {response}")
+    
+    def delete_dataset(self, dataset):
+        """
+        Deletes the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to delete.
+
+        Raises
+        ------
+        `HTTPError`
+            If api response status code is not equal to 200
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}"
+        response = self.client.session.delete(resource)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem deleting Dataset. Dataset id: {dataset_id}. Response details: {response}")
