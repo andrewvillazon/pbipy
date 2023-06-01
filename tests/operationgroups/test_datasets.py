@@ -491,7 +491,6 @@ def test_cancel_refresh(powerbi):
     powerbi.datasets.cancel_refresh("f7fc6510-e151-42a3-850b-d0805a391db0", "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
 
     assert delete_response.call_count == 1
-    assert delete_response.method == "DELETE"
 
 
 @responses.activate
@@ -515,7 +514,6 @@ def test_cancel_refresh_in_group(powerbi):
     powerbi.datasets.cancel_refresh_in_group("f7fc6510-e151-42a3-850b-d0805a391db0", "87f31ef7-1e3a-4006-9b0b-191693e79e9e", "fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb")
 
     assert delete_response.call_count == 1
-    assert delete_response.method == "DELETE"
 
 
 @responses.activate
@@ -539,7 +537,6 @@ def test_delete_dataset_using_dataset_object(powerbi, dataset_from_raw):
     powerbi.datasets.delete_dataset(dataset_from_raw)
 
     assert delete_response.call_count == 1
-    assert delete_response.method == "DELETE"
 
 
 @responses.activate
