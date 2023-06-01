@@ -1,4 +1,5 @@
 import pytest
+from requests import HTTPError
 import responses
 
 from pbipy.models import Dataset, DatasetUserAccess, Gateway, MashupParameter
@@ -478,3 +479,27 @@ def test_discover_gateways_no_gateways_using_dataset_id(powerbi, discover_gatewa
 
     assert isinstance(gateways, list)
     assert len(gateways) == 0
+
+
+@responses.activate
+def test_cancel_refresh(powerbi):
+    delete_response = responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e"
+        ,status=200
+    )
+
+    powerbi.datasets.cancel_refresh("f7fc6510-e151-42a3-850b-d0805a391db0", "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+    assert delete_response.call_count == 1
+    assert delete_response.method == "DELETE"
+
+
+@responses.activate
+def test_cancel_refresh_raises_error(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e"
+        ,status=404
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.cancel_refresh("f7fc6510-e151-42a3-850b-d0805a391db0", "87f31ef7-1e3a-4006-9b0b-191693e79e9e")

@@ -1,5 +1,6 @@
 """Operations for working with datasets."""
 
+from requests import HTTPError
 from ..models import (
     Dataset,
     DatasetToDataflowLink,
@@ -314,4 +315,34 @@ class Datasets:
             return []
         else:
             return [Gateway.from_raw(gateway) for gateway in raw["value"]]
+
+    def cancel_refresh(self, dataset, refresh):
+        """
+        Cancels the specified refresh operation for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to cancel the refresh for.
+        `refresh` : `Union[str, Refresh]`
+            Refresh Id or `Refresh` object to cancel the refresh for.
         
+        Raises
+        ------
+        `HTTPError`
+            If api response status code is not equal to 200.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(refresh, Refresh):
+            refresh_id = refresh.id
+        else:
+            refresh_id = refresh
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{refresh_id}"
+        response = self.client.session.delete(resource)
+        response.raise_for_status()
