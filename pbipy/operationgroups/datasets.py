@@ -345,7 +345,9 @@ class Datasets:
         
         resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{refresh_id}"
         response = self.client.session.delete(resource)
-        response.raise_for_status()
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem cancelling refresh. Dataset id: {dataset_id}, Refresh id: {refresh_id}. Response details: {response}")
 
     def cancel_refresh_in_group(self, dataset, refresh, group):
         """
