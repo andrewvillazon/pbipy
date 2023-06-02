@@ -2,7 +2,7 @@ import pytest
 from requests import HTTPError
 import responses
 
-from pbipy.models import Dataset, DatasetUserAccess, Gateway, MashupParameter
+from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter
 
 
 @responses.activate
@@ -601,3 +601,16 @@ def test_delete_dataset_in_group_raises(powerbi):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.delete_dataset_in_group("cfafbeb1-8037-4d0c-896e-a46fb27ff229", "f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+
+@responses.activate
+def test_get_refresh_execution_details_using_dataset_object_and_refresh_id(powerbi, get_refresh_execution_details, dataset_from_raw):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_from_raw.id}/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset_refresh_detail = powerbi.datasets.get_refresh_execution_details(dataset_from_raw, "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+    assert isinstance(dataset_refresh_detail, DatasetRefreshDetail)

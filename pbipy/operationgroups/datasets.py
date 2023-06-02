@@ -3,6 +3,7 @@
 from requests import HTTPError
 from ..models import (
     Dataset,
+    DatasetRefreshDetail,
     DatasetToDataflowLink,
     DatasetUserAccess,
     Datasource,
@@ -471,3 +472,35 @@ class Datasets:
     # TODO: Execute Queries
     # TODO: Execute Queries in Group
     
+    def get_refresh_execution_details(self, dataset, refresh):
+        """
+        Returns execution details of an enhanced refresh operation for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to get the execution detail for.
+        `refresh` : `Union[str, Refresh]`
+            Refresh Id or `Refresh` object to get the execution detail for.
+
+        Returns
+        -------
+        `DatasetRefreshDetail`
+            The detail of the Dataset refresh.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(refresh, Refresh):
+            refresh_id = refresh.id
+        else:
+            refresh_id = refresh
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{refresh_id}"
+        response = self.client.session.get(resource)
+        raw = response.json()
+
+        return DatasetRefreshDetail.from_raw(raw)

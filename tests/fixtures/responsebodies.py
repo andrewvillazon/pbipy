@@ -482,3 +482,25 @@ def discover_gateways_no_gateways():
       "value": []
     }
     """
+
+
+@pytest.fixture
+def get_refresh_execution_details():
+    return """
+    {
+      "startTime": "2021-12-10T08:39:28.517",
+      "endTime": "2021-12-10T08:39:30.04",
+      "type": "Full",
+      "commitMode": "PartialBatch",
+      "status": "Failed",
+      "extendedStatus": "Failed",
+      "currentRefreshType": "Full",
+      "numberOfAttempts": 0,
+      "messages": [
+        {
+          "message": "RefreshApiRequest for table refresh using refresh policy must have the property 'CommitMode' = 'Transactional' instead of 'PartialBatch'.",
+          "type": "Error"
+        }
+      ]
+    }
+    """
