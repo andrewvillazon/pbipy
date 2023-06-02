@@ -309,3 +309,25 @@ class Gateway(PBIObject):
     name: str=None
     public_key: dict = None
     type: str=None
+
+
+@dataclass
+class DatasetRefreshDetail(PBIObject):
+    """A Power BI refresh detail entry."""
+
+    start_time: str = None
+    end_time: str = None
+    type: str = None
+    commit_mode: str = None
+    status: str = None
+    extended_status: str = None
+    current_refresh_type: str = None
+    number_of_attempts: int = None
+    messages: list = field(default=None)
+    objects: list = field(default=None)
+
+    def __post_init__(self):
+        if self.start_time:
+            self.start_time = parse(self.start_time)
+        if self.end_time:
+            self.end_time = parse(self.end_time)

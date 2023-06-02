@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pbipy.models import Gateway
+from pbipy.models import DatasetRefreshDetail, Gateway
 
 
 def test_refresh_post_init_parses_dates(refresh_from_raw):
@@ -106,3 +106,43 @@ def test_gateway_creation(gateway_from_raw):
     assert gateway_from_raw.type == "Resource"
     assert gateway_from_raw.name == "My_Sample_Gateway"
     assert isinstance(gateway_from_raw.public_key, dict)
+
+
+def test_dataset_refresh_detail_status_code_200_creation(dataset_refresh_detail_200_status_code_from_raw):
+    assert isinstance(dataset_refresh_detail_200_status_code_from_raw, DatasetRefreshDetail)
+    
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "start_time")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "end_time")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "type")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "commit_mode")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "status")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "extended_status")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "current_refresh_type")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "number_of_attempts")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "messages")
+    assert hasattr(dataset_refresh_detail_200_status_code_from_raw, "objects")
+
+    assert isinstance(dataset_refresh_detail_200_status_code_from_raw.start_time, datetime)
+    assert isinstance(dataset_refresh_detail_200_status_code_from_raw.end_time, datetime)
+    assert isinstance(dataset_refresh_detail_200_status_code_from_raw.objects, list)
+
+    assert len(dataset_refresh_detail_200_status_code_from_raw.objects) == 18
+    assert dataset_refresh_detail_200_status_code_from_raw.messages is None
+
+
+def test_dataset_refresh_detail_status_code_202_creation(dataset_refresh_detail_202_status_code_from_raw):
+    assert isinstance(dataset_refresh_detail_202_status_code_from_raw, DatasetRefreshDetail)
+    
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "start_time")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "end_time")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "type")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "commit_mode")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "status")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "extended_status")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "current_refresh_type")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "number_of_attempts")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "messages")
+    assert hasattr(dataset_refresh_detail_202_status_code_from_raw, "objects")
+
+    assert dataset_refresh_detail_202_status_code_from_raw.end_time is None
+    assert dataset_refresh_detail_202_status_code_from_raw.objects is None
