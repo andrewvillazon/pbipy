@@ -504,3 +504,43 @@ class Datasets:
         raw = response.json()
 
         return DatasetRefreshDetail.from_raw(raw)
+    
+    def get_refresh_execution_details_in_group(self, dataset, group, refresh):
+        """
+        Returns execution details of an enhanced refresh operation for the specified dataset from the specified workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to get the execution detail for.
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object to get the execution detail for.
+        `refresh` : `Union[str, Refresh]`
+            Refresh Id or `Refresh` object to get the execution detail for.
+
+        Returns
+        -------
+        `DatasetRefreshDetail`
+            The detail of the Dataset refresh.
+        """
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(refresh, Refresh):
+            refresh_id = refresh.id
+        else:
+            refresh_id = refresh
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshes/{refresh_id}"
+        response = self.client.session.get(resource)
+        raw = response.json()
+
+        return DatasetRefreshDetail.from_raw(raw)

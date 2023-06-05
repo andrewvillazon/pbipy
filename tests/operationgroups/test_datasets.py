@@ -614,3 +614,16 @@ def test_get_refresh_execution_details_using_dataset_object_and_refresh_id(power
     dataset_refresh_detail = powerbi.datasets.get_refresh_execution_details(dataset_from_raw, "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
 
     assert isinstance(dataset_refresh_detail, DatasetRefreshDetail)
+
+
+@responses.activate
+def test_get_refresh_execution_details_in_group(powerbi, get_refresh_execution_details):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset_refresh_detail = powerbi.datasets.get_refresh_execution_details_in_group("f7fc6510-e151-42a3-850b-d0805a391db0", "fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb", "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+    assert isinstance(dataset_refresh_detail, DatasetRefreshDetail)
