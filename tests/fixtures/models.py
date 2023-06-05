@@ -2,7 +2,7 @@ import json
 
 import pytest
 
-from pbipy.models import App, Dashboard, Dataset, DatasetRefreshDetail, Gateway, Group, Refresh, Report, Tile
+from pbipy.models import App, Dashboard, Dataset, DatasetRefreshDetail, Gateway, Group, Refresh, RefreshSchedule, Report, Tile
 
 
 @pytest.fixture
@@ -309,3 +309,27 @@ def dataset_refresh_detail_202_status_code_from_raw():
     """)
 
     return DatasetRefreshDetail.from_raw(js)
+
+
+@pytest.fixture
+def refresh_schedule_from_raw():
+    js = json.loads("""
+    {
+        "days": [
+            "Sunday",
+            "Friday",
+            "Saturday"
+        ],
+        "times": [
+            "05:00",
+            "11:30",
+            "17:30",
+            "23:00"
+        ],
+        "enabled": true,
+        "localTimeZoneId": "UTC",
+        "notifyOption": "MailOnFailure"
+    }
+    """)
+
+    return RefreshSchedule.from_raw(js)

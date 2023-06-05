@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pbipy.models import DatasetRefreshDetail, Gateway
+from pbipy.models import DatasetRefreshDetail, Gateway, RefreshSchedule
 
 
 def test_refresh_post_init_parses_dates(refresh_from_raw):
@@ -146,3 +146,15 @@ def test_dataset_refresh_detail_status_code_202_creation(dataset_refresh_detail_
 
     assert dataset_refresh_detail_202_status_code_from_raw.end_time is None
     assert dataset_refresh_detail_202_status_code_from_raw.objects is None
+
+def test_refresh_schedule_creation(refresh_schedule_from_raw):
+    assert isinstance(refresh_schedule_from_raw, RefreshSchedule)
+
+    assert hasattr(refresh_schedule_from_raw, "days")
+    assert hasattr(refresh_schedule_from_raw, "times")
+    assert hasattr(refresh_schedule_from_raw, "local_time_zone_id")
+    assert hasattr(refresh_schedule_from_raw, "enabled")
+    assert hasattr(refresh_schedule_from_raw, "notify_option")
+
+    assert len(refresh_schedule_from_raw.days) == 3
+    assert all(isinstance(time, str) for time in  refresh_schedule_from_raw.times)

@@ -331,3 +331,14 @@ class DatasetRefreshDetail(PBIObject):
             self.start_time = parse(self.start_time)
         if self.end_time:
             self.end_time = parse(self.end_time)
+
+
+@dataclass
+class RefreshSchedule(PBIObject):
+    """A Power BI refresh schedule for imported model."""
+
+    notify_option: str = None
+    days: list = field(default=None)
+    enabled: bool = None
+    local_time_zone_id: str = None
+    times: list = field(default=None)
