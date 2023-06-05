@@ -522,3 +522,25 @@ def get_refresh_execution_details():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_refresh_schedule():
+    return """
+    {
+      "days": [
+        "Sunday",
+        "Friday",
+        "Saturday"
+      ],
+      "times": [
+        "05:00",
+        "11:30",
+        "17:30",
+        "23:00"
+      ],
+      "enabled": true,
+      "localTimeZoneId": "UTC",
+      "notifyOption": "MailOnFailure"
+    }
+    """

@@ -2,7 +2,7 @@ import pytest
 from requests import HTTPError
 import responses
 
-from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter
+from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
 
 
 @responses.activate
@@ -642,3 +642,16 @@ def test_get_refresh_execution_details_in_group(powerbi, get_refresh_execution_d
     dataset_refresh_detail = powerbi.datasets.get_refresh_execution_details_in_group("f7fc6510-e151-42a3-850b-d0805a391db0", "fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb", "87f31ef7-1e3a-4006-9b0b-191693e79e9e")
 
     assert isinstance(dataset_refresh_detail, DatasetRefreshDetail)
+
+
+@responses.activate
+def test_get_refresh_schedule_from_dataset_id(powerbi, get_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshSchedule",
+        body=get_refresh_schedule,
+        content_type="application/json",
+    )
+
+    refresh_schedule = powerbi.datasets.get_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(refresh_schedule, RefreshSchedule)

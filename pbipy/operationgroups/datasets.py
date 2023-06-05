@@ -12,6 +12,7 @@ from ..models import (
     Group,
     MashupParameter,
     Refresh,
+    RefreshSchedule,
 )
 
 
@@ -586,3 +587,29 @@ class Datasets:
         raw = response.json()
 
         return DatasetRefreshDetail.from_raw(raw)
+    
+    def get_refresh_schedule(self, dataset):
+        """
+        Returns the refresh schedule for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to get the refresh schedule for.
+
+        Returns
+        -------
+        `RefreshSchedule`
+            The refresh schedule for the specified dataset.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshSchedule"
+        response = self.client.session.get(resource)
+        raw = response.json()
+
+        return RefreshSchedule.from_raw(raw)
