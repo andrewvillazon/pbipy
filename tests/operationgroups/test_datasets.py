@@ -152,6 +152,21 @@ def test_get_refresh_history_from_dataset_id(powerbi, get_dataset, get_refresh_h
 
 
 @responses.activate
+def test_get_refresh_history_in_group(powerbi,get_refresh_history_in_group_failed):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes?$top=1",
+        body=get_refresh_history_in_group_failed,
+        content_type="application/json",
+    )
+
+    refresh_history = powerbi.datasets.get_refresh_history_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229", top=1)
+
+    assert isinstance(refresh_history, list)
+    assert len(refresh_history) == 1
+    assert refresh_history[0].status == "Failed"
+
+
+@responses.activate
 def test_get_dataset_to_dataflow_links_in_group_from_group_id(
     powerbi, get_dataset_to_dataflow_links_in_group
 ):

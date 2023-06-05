@@ -193,6 +193,48 @@ class Datasets:
         }
 
         return self.client._get_and_load_resource(resource, dataset.id, model=Refresh, parameters=params)
+    
+    def get_refresh_history_in_group(self, group, dataset, top=None):
+        """
+        Returns the refresh history for the specified dataset from the specified workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object to get refresh history for.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to get refresh history for.
+        `top` : `int`, optional
+            The requested number of entries in the refresh history. If not provided,
+            the default is the last available 500 entries.
+
+        Returns
+        -------
+        `list`
+            List of `Refresh` objects for the specified group and dataset.
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshes"
+        parameters = {
+            "$top": top,
+        }
+        response = self.client.session.get(resource, params=parameters)
+        raw = response.json()
+
+        if not raw["value"]:
+            return []
+        else:
+            return [Refresh.from_raw(refresh) for refresh in raw["value"]]
 
     def get_datasources(self, dataset):
         """
@@ -523,7 +565,7 @@ class Datasets:
         `DatasetRefreshDetail`
             The detail of the Dataset refresh.
         """
-        
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:

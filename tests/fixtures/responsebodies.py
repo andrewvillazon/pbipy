@@ -80,6 +80,24 @@ def get_refresh_history():
 
 
 @pytest.fixture
+def get_refresh_history_in_group_failed():
+    return """
+    {
+      "value": [
+        {
+          "refreshType": "ViaApi",
+          "startTime": "2017-06-13T09:25:43.153Z",
+          "endTime": "2017-06-13T09:31:43.153Z",
+          "serviceExceptionJson": "{\\"errorCode\\":\\"ModelRefreshFailed_CredentialsNotSpecified\\"}",
+          "status": "Failed",
+          "requestId": "11bf290a-346b-48b7-8973-c5df149337ff"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
 def get_dataset_to_dataflow_links_in_group():
     return """
         {
