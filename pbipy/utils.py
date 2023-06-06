@@ -10,6 +10,16 @@ def camel_to_snake(s):
     return pattern.sub(r"_\1", s).lower()
 
 
+def to_camel_case(text):
+    s = text.replace("-", " ").replace("_", " ")
+    s = s.split()
+    
+    if len(text) == 0:
+        return text
+    
+    return s[0] + ''.join(i.capitalize() for i in s[1:])
+
+
 def camel_case_dict_keys(d):
     return {camel_to_snake(k): v for k, v in d.items()}
 

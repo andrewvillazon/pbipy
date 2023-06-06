@@ -22,3 +22,9 @@ def test_camel_case_dict_keys_converts_keys():
     }
     
     assert test_dict == expected_dict
+
+
+def test_to_camel_case():
+    assert(utils.to_camel_case("dataset_user_access_right")) == "datasetUserAccessRight"
+    assert(utils.to_camel_case("identifier")) == "identifier"
+    assert(utils.to_camel_case("principal_type")) == "principalType"
