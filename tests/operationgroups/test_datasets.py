@@ -735,3 +735,51 @@ def test_post_dataset_user_raises_http_error(powerbi):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.post_dataset_user("cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+@responses.activate
+def test_post_dataset_user_In_group_using_dataset_user_access_object(powerbi):
+    json_params = {
+        "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+        "principalType": "Group",
+        "datasetUserAccessRight": "ReadReshare"
+        }
+    
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params)
+        ]
+    )
+
+    dataset_user_access = DatasetUserAccess(
+        identifier="154aef10-47b8-48c4-ab97-f0bf9d5f8fcf", 
+        principal_type="Group", 
+        dataset_user_access_right="ReadReshare",
+        )
+
+    powerbi.datasets.post_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+def test_post_dataset_user_in_group_raises_type_error(powerbi):
+    dataset_user_access = ["154aef10-47b8-48c4-ab97-f0bf9d5f8fcf","Group","ReadReshare"]
+
+    with pytest.raises(TypeError):
+        powerbi.datasets.post_dataset_user("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+@responses.activate
+def test_post_dataset_user_in_group_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        status=501,
+    )
+
+    dataset_user_access = {
+        "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+        "principalType": "Group",
+        "datasetUserAccessRight": "ReadReshare"
+        }
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.post_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
