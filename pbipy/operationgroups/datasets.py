@@ -1,6 +1,9 @@
 """Operations for working with datasets."""
+from dataclasses import asdict
 
 from requests import HTTPError
+
+from pbipy.utils import to_camel_case
 from ..models import (
     Dataset,
     DatasetRefreshDetail,
@@ -631,3 +634,22 @@ class Datasets:
 
         return RefreshSchedule.from_raw(raw)
     
+    def post_dataset_user(self, dataset, dataset_user_access):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(dataset_user_access, DatasetUserAccess):
+            payload = {to_camel_case(k):v for k, v in asdict(dataset_user_access).items() if k in DatasetUserAccess.__annotations__.keys()}
+        # NOTE: Should there be checking of the user supplied dict?
+        elif isinstance(dataset_user_access, dict):
+            payload = dataset_user_access
+        else:
+            raise TypeError("dataset_user_access must be a DatasetUserAccess object or dict.")
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/users"
+        response = self.client.session.post(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")

@@ -1,6 +1,7 @@
 import pytest
 from requests import HTTPError
 import responses
+from responses import matchers
 
 from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
 
@@ -668,3 +669,69 @@ def test_get_refresh_schedule_from_group_object_and_dataset_object(powerbi, grou
     refresh_schedule = powerbi.datasets.get_refresh_schedule_in_group(group_from_raw, dataset_from_raw)
 
     assert isinstance(refresh_schedule, RefreshSchedule)
+
+
+@responses.activate
+def test_post_dataset_user_using_dataset_user_access_object(powerbi):
+    json_params = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read"
+        }
+    
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params)
+        ]
+    )
+
+    dataset_user_access = DatasetUserAccess(identifier="john@contoso.com", principal_type="User", dataset_user_access_right="Read")
+
+    powerbi.datasets.post_dataset_user("cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+@responses.activate
+def test_post_dataset_user_using_dataset_user_access_dict(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher({
+                "identifier": "john@contoso.com",
+                "principalType": "User",
+                "datasetUserAccessRight": "Read"
+                })
+        ]
+    )
+
+    dataset_user_access = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read"
+        }
+
+    powerbi.datasets.post_dataset_user("cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+def test_post_dataset_user_raises_type_error(powerbi):
+    dataset_user_access = ["john@contoso.com","User","Read"]
+
+    with pytest.raises(TypeError):
+        powerbi.datasets.post_dataset_user("cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+@responses.activate
+def test_post_dataset_user_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        status=501,
+    )
+
+    dataset_user_access = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read"
+        }
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.post_dataset_user("cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
