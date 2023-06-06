@@ -613,3 +613,21 @@ class Datasets:
         raw = response.json()
 
         return RefreshSchedule.from_raw(raw)
+    
+    def get_refresh_schedule_in_group(self, group, dataset):
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/refreshSchedule"
+        response = self.client.session.get(resource)
+        raw = response.json()
+
+        return RefreshSchedule.from_raw(raw)
+    

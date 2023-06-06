@@ -655,3 +655,16 @@ def test_get_refresh_schedule_from_dataset_id(powerbi, get_refresh_schedule):
     refresh_schedule = powerbi.datasets.get_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 
     assert isinstance(refresh_schedule, RefreshSchedule)
+
+
+@responses.activate
+def test_get_refresh_schedule_from_group_object_and_dataset_object(powerbi, group_from_raw, dataset_from_raw, get_refresh_schedule):
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/groups/{group_from_raw.id}/datasets/{dataset_from_raw.id}/refreshSchedule",
+        body=get_refresh_schedule,
+        content_type="application/json",
+    )
+
+    refresh_schedule = powerbi.datasets.get_refresh_schedule_in_group(group_from_raw, dataset_from_raw)
+
+    assert isinstance(refresh_schedule, RefreshSchedule)
