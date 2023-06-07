@@ -696,3 +696,27 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
+    
+    def put_dataset_user_in_group(self, group, dataset, dataset_user_access):
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(dataset_user_access, DatasetUserAccess):
+            payload = {to_camel_case(k):v for k, v in asdict(dataset_user_access).items() if k in DatasetUserAccess.__annotations__.keys()}
+        elif isinstance(dataset_user_access, dict):
+            payload = dataset_user_access
+        else:
+            raise TypeError("dataset_user_access must be a DatasetUserAccess object or dict.")
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/users"
+        response = self.client.session.put(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
