@@ -3,7 +3,7 @@ from requests import HTTPError
 import responses
 from responses import matchers
 
-from pbipy.models import Dataset, DatasetRefreshDetail, DatasetRefreshRequest, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
+from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
 
 
 @responses.activate

@@ -7,7 +7,6 @@ from pbipy.utils import to_camel_case
 from ..models import (
     Dataset,
     DatasetRefreshDetail,
-    DatasetRefreshRequest,
     DatasetToDataflowLink,
     DatasetUserAccess,
     Datasource,
