@@ -7,6 +7,7 @@ from pbipy.utils import to_camel_case
 from ..models import (
     Dataset,
     DatasetRefreshDetail,
+    DatasetRefreshRequest,
     DatasetToDataflowLink,
     DatasetUserAccess,
     Datasource,
@@ -720,3 +721,18 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
+    
+    def refresh_dataset(self, dataset, notify_option, **kwargs):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        payload = {"notifyOption": notify_option}
+        payload.update({to_camel_case(k):v for k,v in kwargs.items()})
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes"
+        response = self.client.session.post(resource, json=payload)
+
+        if response.status_code not in [200, 202]:
+            raise HTTPError(f"Encountered problem refreshing dataset. Response details: {response}")

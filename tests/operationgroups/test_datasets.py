@@ -3,7 +3,7 @@ from requests import HTTPError
 import responses
 from responses import matchers
 
-from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
+from pbipy.models import Dataset, DatasetRefreshDetail, DatasetRefreshRequest, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
 
 
 @responses.activate
@@ -875,3 +875,23 @@ def test_put_dataset_user_in_group_raises_http_error(powerbi):
     
     with pytest.raises(HTTPError):
         powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+
+
+@responses.activate
+def test_refresh_dataset(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        match=[matchers.json_params_matcher({"notifyOption": "MailOnFailure", "commitMode": "transactional", "type":"full"})]
+    )
+
+    powerbi.datasets.refresh_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure",type="full", commit_mode="transactional")
+
+
+def test_refresh_dataset_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        status=501
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.refresh_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure")
