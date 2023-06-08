@@ -900,3 +900,28 @@ def test_refresh_dataset_raises_http_error(powerbi):
 def test_refresh_dataset_raises_value_error(powerbi):
     with pytest.raises(ValueError):
         powerbi.datasets.refresh_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure", min_parallelism=5)
+
+
+@responses.activate
+def test_refresh_dataset_in_group(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        match=[matchers.json_params_matcher({"notifyOption": "MailOnFailure", "commitMode": "transactional", "type":"full"})]
+    )
+
+    powerbi.datasets.refresh_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure",type="full", commit_mode="transactional")
+
+
+def test_refresh_dataset_in_group_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        status=501
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.refresh_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure")
+
+
+def test_refresh_dataset_in_group_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.refresh_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure", min_parallelism=5)
