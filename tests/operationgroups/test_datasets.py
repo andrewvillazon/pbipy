@@ -895,3 +895,8 @@ def test_refresh_dataset_raises_http_error(powerbi):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.refresh_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure")
+
+
+def test_refresh_dataset_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.refresh_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure", min_parallelism=5)

@@ -721,14 +721,28 @@ class Datasets:
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
     
-    def refresh_dataset(self, dataset, notify_option, **kwargs):
+    def refresh_dataset(self, dataset, notify_option, **options):
+        supported_options = [
+            "apply_refresh_policy",
+            "commit_mode",
+            "effective_date",
+            "max_parallelism",
+            "objects",
+            "retry_count",
+            "type",
+        ]
+
+        for k in options.keys():
+            if k not in supported_options:
+                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_options}")
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
             dataset_id = dataset
         
         payload = {"notifyOption": notify_option}
-        payload.update({to_camel_case(k):v for k,v in kwargs.items()})
+        payload.update({to_camel_case(k):v for k,v in options.items()})
         
         resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes"
         response = self.client.session.post(resource, json=payload)
