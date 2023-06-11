@@ -925,3 +925,24 @@ def test_refresh_dataset_in_group_raises_http_error(powerbi):
 def test_refresh_dataset_in_group_raises_value_error(powerbi):
     with pytest.raises(ValueError):
         powerbi.datasets.refresh_dataset_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", notify_option="MailOnFailure", min_parallelism=5)
+
+
+@responses.activate
+def test_take_over_in_group(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.TakeOver",
+        status=200
+    )
+
+    powerbi.datasets.take_over_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+
+@responses.activate
+def test_take_over_in_group_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.TakeOver",
+        status=500
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.take_over_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")

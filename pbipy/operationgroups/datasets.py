@@ -784,3 +784,21 @@ class Datasets:
 
         if response.status_code not in [200, 202]:
             raise HTTPError(f"Encountered problem refreshing dataset. Response details: {response}")
+        
+    def take_over_in_group(self, group, dataset):
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/Default.TakeOver"
+        response = self.client.session.post(resource)
+
+        if response.status_code not in [200, 202]:
+            raise HTTPError(f"Encountered problem taking over group. Response details: {response}")
+    
