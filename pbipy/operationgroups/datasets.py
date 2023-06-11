@@ -828,3 +828,33 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem updating dataset. Response details: {response}")
+    
+    def update_dataset_in_group(self, group, dataset, **properties):
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if not properties:
+            raise ValueError("No dataset properties to modify were provided. Example of providing properties: update_dataset(group, datasets, target_storage_mode='PremiumFiles')")
+
+        # TODO: Check what is actually supported. Not all Dataset properties will be modifiable from this endpoint.
+        supported_properties = ["target_storage_mode",]
+
+        for k in properties.keys():
+            if k not in supported_properties:
+                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_properties}")
+        
+        payload = {to_camel_case(k):v for k, v in properties.items()}
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}"
+        response = self.client.session.patch(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem updating dataset. Response details: {response}")
+
