@@ -946,3 +946,35 @@ def test_take_over_in_group_raises_http_error(powerbi):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.take_over_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48", "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+
+@responses.activate
+def test_update_dataset(powerbi):
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        match=[matchers.json_params_matcher({"targetStorageMode": "PremiumFiles"})]        
+    )
+
+    powerbi.datasets.update_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", target_storage_mode="PremiumFiles")
+
+
+def test_update_dataset_raises_value_error_no_properties(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+
+def test_update_dataset_raises_value_error_unsupported_properties(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", target_storage_mode="PremiumFiles", created_date=None)
+
+
+@responses.activate
+def test_update_dataset_raises_http_error(powerbi):
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        match=[matchers.json_params_matcher({"targetStorageMode": "PremiumFiles"})],
+        status=500        
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.update_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", target_storage_mode="PremiumFiles")
