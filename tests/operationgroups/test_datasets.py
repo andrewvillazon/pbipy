@@ -1089,3 +1089,82 @@ def test_update_datasources_raises_http_error(powerbi):
 def test_update_datasources_raises_value_error(powerbi):
     with pytest.raises(ValueError):
         powerbi.datasets.update_datasources("cfafbeb1-8037-4d0c-896e-a46fb27ff229", update_details=[])
+
+
+@responses.activate
+def test_update_datasources_in_group(powerbi):
+    json_params = {
+        "updateDetails": [
+            {
+            "datasourceSelector": {
+                "datasourceType": "Sql",
+                "connectionDetails": {
+                "server": "My-Sql-Server",
+                "database": "My-Sql-Database"
+                }
+            },
+            "connectionDetails": {
+                "server": "New-Sql-Server",
+                "database": "New-Sql-Database"
+            }
+            },
+            {
+            "datasourceSelector": {
+                "datasourceType": "OData",
+                "connectionDetails": {
+                "url": "http://services.odata.org/V4/Northwind/Northwind.svc"
+                }
+            },
+            "connectionDetails": {
+                "url": "http://services.odata.org/V4/Odata/Northwind.svc"
+            }
+            }
+        ]
+    }
+
+    responses.post("https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateDatasources",
+        match=[matchers.json_params_matcher(json_params)]
+                   )
+
+    update_details = [
+        {
+        "datasourceSelector": {
+            "datasourceType": "Sql",
+            "connectionDetails": {
+            "server": "My-Sql-Server",
+            "database": "My-Sql-Database"
+            }
+        },
+        "connectionDetails": {
+            "server": "New-Sql-Server",
+            "database": "New-Sql-Database"
+        }
+        },
+        {
+        "datasourceSelector": {
+            "datasourceType": "OData",
+            "connectionDetails": {
+            "url": "http://services.odata.org/V4/Northwind/Northwind.svc"
+            }
+        },
+        "connectionDetails": {
+            "url": "http://services.odata.org/V4/Odata/Northwind.svc"
+        }
+        }
+    ]
+
+    powerbi.datasets.update_datasources_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", update_details)
+
+
+@responses.activate
+def test_update_datasources_in_group_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateDatasources",
+        status=500
+    )
+    with pytest.raises(HTTPError):
+        powerbi.datasets.update_datasources_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", update_details=[{}])
+
+def test_update_datasources_in_group_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_datasources_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", update_details=[])
