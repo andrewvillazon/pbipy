@@ -857,4 +857,22 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem updating dataset. Response details: {response}")
+    
+    def update_datasources(self, dataset, update_details:list[dict]):
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if not update_details:
+            raise ValueError("Update details is an empty list. Please provide update_details.")
+        
+        # TODO: Add some validation to the content?
+        payload = {"updateDetails": update_details}
 
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/Default.UpdateDatasources"
+        response = self.client.session.post(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem updating datasources. Response details: {response}")
+        
