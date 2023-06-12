@@ -946,6 +946,40 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
     
     def execute_queries(self, dataset, queries: Union[str, list], **options):
+        """
+        Executes Data Analysis Expressions (DAX) queries against the provided 
+        dataset. The dataset must reside in My workspace or another workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to execute the queries against.
+        `queries` : `Union[str, list]`
+            A single `str` query or `list` of queries. 
+            
+            If providing multiple queries, this should be provided as a list 
+            of dicts in the following form:
+
+            ```
+            queries=[
+                {"query": "query 1 text"},
+                {"query": "query 2 text"}
+            ]
+            ```
+
+        Returns
+        -------
+        `dict`
+            Results of the executed query.
+
+        Raises
+        ------
+        `ValueError`
+            If unsupported execution options are supplied.
+        `HTTPError`
+            If the Rest API returns a status code not equal to 200.
+        """
+
         supported_options = ["impersonated_user_name", "serializer_settings"]
 
         for k in options.keys():
@@ -974,6 +1008,42 @@ class Datasets:
         return response.json()
     
     def execute_queries_in_group(self, group, dataset, queries: Union[str, list], **options):
+        """
+        Executes Data Analysis Expressions (DAX) queries against the provided 
+        workspace (group) and dataset.
+
+        Parameters
+        ----------
+        `group`: `Union[str, Group]`
+            Group Id or `Group` object where the supplied Dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to execute the queries against.
+        `queries` : `Union[str, list]`
+            A single `str` query or `list` of queries. 
+            
+            If providing multiple queries, this should be provided as a list 
+            of dicts in the following form:
+
+            ```
+            queries=[
+                {"query": "query 1 text"},
+                {"query": "query 2 text"}
+            ]
+            ```
+
+        Returns
+        -------
+        `dict`
+            Results of the executed query.
+
+        Raises
+        ------
+        `ValueError`
+            If unsupported execution options are supplied.
+        `HTTPError`
+            If the Rest API returns a status code not equal to 200.
+        """
+
         supported_options = ["impersonated_user_name", "serializer_settings"]
 
         for k in options.keys():
