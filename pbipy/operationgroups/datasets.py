@@ -918,4 +918,29 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
+
+    def update_direct_query_refresh_schedule_in_group(self, group, dataset, **options):
+        supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
+
+        for k in options.keys():
+            if k not in supported_options:
+                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_options}")
+        
+        payload = {"value": {to_camel_case(k):v for k,v in options.items()}}
+        
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/directQueryRefreshSchedule"
+        response = self.client.session.patch(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
         
