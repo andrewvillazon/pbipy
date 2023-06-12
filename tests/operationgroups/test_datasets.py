@@ -3,7 +3,7 @@ from requests import HTTPError
 import responses
 from responses import matchers
 
-from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, MashupParameter, RefreshSchedule
+from pbipy.models import Dataset, DatasetRefreshDetail, DatasetUserAccess, Gateway, Group, MashupParameter, RefreshSchedule
 
 
 @responses.activate
@@ -1578,3 +1578,55 @@ def test_update_parameters_raises_http_error(powerbi):
 def test_update_parameters_raises_value_error(powerbi):
     with pytest.raises(ValueError):
         powerbi.datasets.update_parameters("cfafbeb1-8037-4d0c-896e-a46fb27ff229", [])
+
+
+@responses.activate
+def test_update_parameters_in_group(powerbi):
+    json_params = {
+        "updateDetails": [
+            {
+            "name": "DatabaseName",
+            "newValue": "NewDB"
+            },
+            {
+            "name": "MaxId",
+            "newValue": "5678"
+            }
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        match=[matchers.json_params_matcher(json_params)]
+    )
+
+    group = Group("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    dataset = Dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    update_details = [
+        {
+            "name": "DatabaseName",
+            "newValue": "NewDB"
+        },
+        {
+            "name": "MaxId",
+            "newValue": "5678"
+        }
+    ]
+
+    powerbi.datasets.update_parameters_in_group(group, dataset, update_details)
+
+
+@responses.activate
+def test_update_parameters_in_group_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        status=500
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.update_parameters_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", [{}])
+
+
+def test_update_parameters_in_group_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_parameters_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", [])
