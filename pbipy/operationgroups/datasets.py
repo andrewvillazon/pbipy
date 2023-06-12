@@ -972,4 +972,36 @@ class Datasets:
             raise HTTPError(f"Encountered problem executing query. Response details: {response}")
         
         return response.json()
+    
+    def execute_queries_in_group(self, group, dataset, queries: Union[str, list], **options):
+        supported_options = ["impersonated_user_name", "serializer_settings"]
+
+        for k in options.keys():
+            if k not in supported_options:
+                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_options}")
         
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        if isinstance(queries, str):
+            query_list = [{"query": queries}]
+        else:
+            query_list = queries
+        
+        payload = {"queries": query_list}
+        payload.update({to_camel_case(k):v for k,v in options.items()})
+
+        resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/executeQueries"
+        response = self.client.session.post(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem executing query. Response details: {response}")
+        
+        return response.json()
