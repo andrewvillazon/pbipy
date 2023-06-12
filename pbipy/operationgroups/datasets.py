@@ -1044,3 +1044,23 @@ class Datasets:
 
         if response.status_code != 200:
             raise HTTPError(f"Encountered updating parameters. Response details: {response}")
+    
+    def update_refresh_schedule(self, dataset, **options):
+        supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
+
+        for k in options.keys():
+            if k not in supported_options:
+                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_options}")
+        
+        payload = {"value": {to_camel_case(k):v for k,v in options.items()}}
+        
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+        
+        resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshSchedule"
+        response = self.client.session.patch(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
