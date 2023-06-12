@@ -1319,3 +1319,106 @@ def test_update_direct_query_refresh_schedule_in_group_raises_http_error(powerbi
 
     with pytest.raises(HTTPError):
         powerbi.datasets.update_direct_query_refresh_schedule_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", enabled=False)
+
+
+@responses.activate
+def test_execute_queries_request(powerbi, execute_query):
+    json_params = {
+        "queries": [
+            {
+            "query": "EVALUATE VALUES(MyTable)"
+            }
+        ],
+        "serializerSettings": {
+            "includeNulls": True
+        },
+        "impersonatedUserName": "someuser@mycompany.com"
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[matchers.json_params_matcher(json_params)],
+        body=execute_query
+    )
+
+    powerbi.datasets.execute_queries(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        queries="EVALUATE VALUES(MyTable)",
+        serializer_settings={"includeNulls": True },
+        impersonated_user_name="someuser@mycompany.com"
+    )
+
+
+@responses.activate
+def test_execute_queries_request_multiple_queries(powerbi):
+    json_params = {
+        "queries": [
+            {"query": "EVALUATE VALUES(MyTable)"},
+            {"query": "EVALUATE VALUES(TheirTable)"}
+        ],
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[matchers.json_params_matcher(json_params)],
+        body="{}"
+    )
+
+    powerbi.datasets.execute_queries(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        queries=[
+            {"query": "EVALUATE VALUES(MyTable)"},
+            {"query": "EVALUATE VALUES(TheirTable)"}
+        ]
+    )
+
+
+@responses.activate
+def test_execute_queries_response(powerbi, execute_query):
+    json_params = {
+        "queries": [
+            {
+            "query": "EVALUATE VALUES(MyTable)"
+            }
+        ],
+        "serializerSettings": {
+            "includeNulls": True
+        },
+        "impersonatedUserName": "someuser@mycompany.com"
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[matchers.json_params_matcher(json_params)],
+        body=execute_query
+    )
+
+    results = powerbi.datasets.execute_queries(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        queries="EVALUATE VALUES(MyTable)",
+        serializer_settings={"includeNulls": True },
+        impersonated_user_name="someuser@mycompany.com"
+    )
+
+    assert isinstance(results, dict)
+    assert "results" in results
+    assert results["results"][0]["tables"][0]["rows"][0]["MyTable[Year]"] == 2010
+
+
+@responses.activate
+def test_execute_queries_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.execute_queries("cfafbeb1-8037-4d0c-896e-a46fb27ff229", "EVALUATE VALUES(MyTable)", delay=500)
+
+
+@responses.activate
+def test_execute_queries_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        body="{}",
+        status=400
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.execute_queries("cfafbeb1-8037-4d0c-896e-a46fb27ff229", queries="EVALUATE VALUES(MyTable)")
+
