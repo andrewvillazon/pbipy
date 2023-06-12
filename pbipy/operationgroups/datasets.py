@@ -118,7 +118,7 @@ class Datasets:
         Parameters
         ----------
         `dataset` : `Union[str, Dataset]`
-            The Dataset Id or Dataset object to retrieve users for.
+            The Dataset Id or `Dataset` object to retrieve users for.
 
         Returns
         -------
@@ -135,6 +135,22 @@ class Datasets:
         return self.client._get_and_load_resource(resource, dataset_id, model=DatasetUserAccess)
     
     def get_dataset_users_in_group(self, group, dataset):
+        """
+        Returns a list of principals that have access to the specified dataset.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            The Group Id or `Group` object where the provided dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or `Dataset` object to retrieve users for.
+
+        Returns
+        -------
+        `list`
+            List of `DatasetUserAccess` objects for the specified dataset.
+        """
+
         if isinstance(group, Group):
             group_id = group.id
         else:
