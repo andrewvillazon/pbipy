@@ -1527,3 +1527,54 @@ def test_execute_queries_in_group_raises_http_error(powerbi):
 
     with pytest.raises(HTTPError):
         powerbi.datasets.execute_queries_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", queries="EVALUATE VALUES(MyTable)")
+
+
+@responses.activate
+def test_update_parameters(powerbi):
+    json_params = {
+        "updateDetails": [
+            {
+            "name": "DatabaseName",
+            "newValue": "NewDB"
+            },
+            {
+            "name": "MaxId",
+            "newValue": "5678"
+            }
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        match=[matchers.json_params_matcher(json_params)]
+    )
+
+    dataset = Dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    update_details = [
+        {
+            "name": "DatabaseName",
+            "newValue": "NewDB"
+        },
+        {
+            "name": "MaxId",
+            "newValue": "5678"
+        }
+    ]
+
+    powerbi.datasets.update_parameters(dataset, update_details)
+
+
+@responses.activate
+def test_update_parameters_raises_http_error(powerbi):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        status=500
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.update_parameters("cfafbeb1-8037-4d0c-896e-a46fb27ff229", [{}])
+
+
+def test_update_parameters_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_parameters("cfafbeb1-8037-4d0c-896e-a46fb27ff229", [])
