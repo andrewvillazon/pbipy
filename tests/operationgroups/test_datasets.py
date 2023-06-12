@@ -1168,3 +1168,78 @@ def test_update_datasources_in_group_raises_http_error(powerbi):
 def test_update_datasources_in_group_raises_value_error(powerbi):
     with pytest.raises(ValueError):
         powerbi.datasets.update_datasources_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", update_details=[])
+
+
+@responses.activate
+def test_update_direct_query_refresh_schedule_with_single_option(powerbi):
+    json_params = {
+        "value": {
+            "enabled": False
+            }
+        }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        match=[matchers.json_params_matcher(json_params)]
+    )
+
+    powerbi.datasets.update_direct_query_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229", enabled=False)
+
+
+@responses.activate
+def test_update_direct_query_refresh_schedule_with_multiple_options(powerbi):
+    json_params = {
+        "value": {
+            "days": [
+                "Sunday",
+                "Tuesday",
+                "Friday",
+                "Saturday",
+            ],
+            "times": [
+                "07:00",
+                "11:30",
+                "16:00",
+                "23:30",
+            ],
+            "localTimeZoneId": "UTC",
+        }
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    powerbi.datasets.update_direct_query_refresh_schedule(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        days=[
+            "Sunday",
+            "Tuesday",
+            "Friday",
+            "Saturday",
+        ],
+        times=[
+            "07:00",
+            "11:30",
+            "16:00",
+            "23:30",
+        ],
+        local_time_zone_id="UTC",
+    )
+
+
+def test_update_direct_query_refresh_schedule_raises_value_error(powerbi):
+    with pytest.raises(ValueError):
+        powerbi.datasets.update_direct_query_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229", disable=True)
+
+
+@responses.activate 
+def test_update_direct_query_refresh_schedule_raises_http_error(powerbi):
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        status=404
+    )
+
+    with pytest.raises(HTTPError):
+        powerbi.datasets.update_direct_query_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229", enabled=False)
