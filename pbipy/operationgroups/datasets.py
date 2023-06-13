@@ -758,6 +758,26 @@ class Datasets:
         return RefreshSchedule.from_raw(raw)
     
     def post_dataset_user(self, dataset, identifier, principal_type, dataset_user_access_right):
+        """
+        Grants the specified user's permissions to the specified dataset.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object the permissions will be applied to.
+        `identifier` : `str`
+            UPN or object id of the principal.
+        `principal_type` : `str`
+            Principal type of the above identifier, e.g., "User", "Group".
+        `dataset_user_access_right` : `str`
+            The access right to grant to the user for the dataset, e.g., "Read", "ReadReshare".
+
+        Raises
+        ------
+        `HTTPError`
+            If the api status code is not equal to 200.
+        """
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
