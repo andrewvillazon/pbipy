@@ -191,6 +191,20 @@ class Datasets:
 
 
     def get_datasets_in_group(self, group):
+        """
+        Returns a list of datasets from the specified workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            The Group Id or `Group` Object to get the datasets for.
+
+        Returns
+        -------
+        `list[Dataset]`
+            List of `Dataset` objects.
+        """
+
         if isinstance(group, Group):
             id = group.id
         else:
