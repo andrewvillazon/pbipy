@@ -1087,6 +1087,27 @@ class Datasets:
             raise HTTPError(f"Encountered problem taking over group. Response details: {response}")
     
     def update_dataset(self, dataset, **properties):
+        """
+        Updates the properties for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset or `Dataset` object to update properties for.
+        `**properties`
+            The property or properties of the dataset to modify, e.g.,
+            `target_storage_mode = "PremiumFiles"`.
+
+        Raises
+        ------
+        `ValueError`
+            If no dataset properties are provided.
+        `ValueError`
+            If unsupported properties provided.
+        `HTTPError`
+            If api response code is not equal to 200 (OK).
+        """
+
         # TODO: Should give the caller option to pass in modified Dataset obj?
         # TODO: Add option to return the dataset?
 
@@ -1114,6 +1135,29 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating dataset. Response details: {response}")
     
     def update_dataset_in_group(self, group, dataset, **properties):
+        """
+        Updates the properties for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset or `Dataset` object to update properties for.
+        `**properties`
+            The property or properties of the dataset to modify, e.g.,
+            `target_storage_mode = "PremiumFiles"`.
+
+        Raises
+        ------
+        `ValueError`
+            If no dataset properties are provided.
+        `ValueError`
+            If unsupported properties provided.
+        `HTTPError`
+            If api response code is not equal to 200 (OK).
+        """
+
         if isinstance(group, Group):
             group_id = group.id
         else:
