@@ -790,21 +790,8 @@ def test_put_dataset_user_in_group(powerbi):
         "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users"
         ,match=[matchers.json_params_matcher(json_params)]
     )
-
-    dataset_user_access = {
-        "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
-        "principalType": "Group",
-        "datasetUserAccessRight": "ReadReshare"
-        }
     
-    powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
-
-
-def test_put_dataset_user_in_group_raises_type_error(powerbi):
-    dataset_user_access = ["154aef10-47b8-48c4-ab97-f0bf9d5f8fcf","Group","ReadReshare"]
-
-    with pytest.raises(TypeError):
-        powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+    powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", identifier="154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",principal_type="Group", dataset_user_access_right="ReadReshare")
 
 
 @responses.activate
@@ -814,14 +801,8 @@ def test_put_dataset_user_in_group_raises_http_error(powerbi):
         status=501,
     )
     
-    dataset_user_access = {
-        "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
-        "principalType": "Group",
-        "datasetUserAccessRight": "ReadReshare"
-        }
-    
     with pytest.raises(HTTPError):
-        powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", dataset_user_access)
+        powerbi.datasets.put_dataset_user_in_group("f089354e-8366-4e18-aea3-4cb4a3a50b48","cfafbeb1-8037-4d0c-896e-a46fb27ff229", identifier="154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",principal_type="Group", dataset_user_access_right="ReadReshare")
 
 
 @responses.activate
