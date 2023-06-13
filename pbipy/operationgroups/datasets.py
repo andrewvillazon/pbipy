@@ -625,9 +625,6 @@ class Datasets:
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem deleting Dataset. Dataset id: {dataset_id}, Group id: {group_id} Response details: {response}")
     
-    # TODO: Execute Queries
-    # TODO: Execute Queries in Group
-    
     def get_refresh_execution_details(self, dataset, refresh):
         """
         Returns execution details of an enhanced refresh operation for the specified dataset from My workspace.
