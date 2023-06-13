@@ -795,7 +795,29 @@ class Datasets:
         if response.status_code != 200:
             raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
     
-    def post_dataset_user_in_group(self, group, dataset, dataset_user_access):
+    def post_dataset_user_in_group(self, group, dataset, identifier, principal_type, dataset_user_access_right):
+        """
+        Grants the specified user's permissions to the specified dataset.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object the permissions will be applied to.
+        `identifier` : `str`
+            UPN or object id of the principal.
+        `principal_type` : `str`
+            Principal type of the above identifier, e.g., "User", "Group".
+        `dataset_user_access_right` : `str`
+            The access right to grant to the user for the dataset, e.g., "Read", "ReadReshare".
+
+        Raises
+        ------
+        `HTTPError`
+            If the api status code is not equal to 200.
+        """
+        
         if isinstance(group, Group):
             group_id = group.id
         else:
@@ -806,12 +828,11 @@ class Datasets:
         else:
             dataset_id = dataset
         
-        if isinstance(dataset_user_access, DatasetUserAccess):
-            payload = {to_camel_case(k):v for k, v in asdict(dataset_user_access).items() if k in DatasetUserAccess.__annotations__.keys()}
-        elif isinstance(dataset_user_access, dict):
-            payload = dataset_user_access
-        else:
-            raise TypeError("dataset_user_access must be a DatasetUserAccess object or dict.")
+        payload = {
+            "identifier": identifier,
+            "principalType": principal_type,
+            "datasetUserAccessRight": dataset_user_access_right
+        }
         
         resource = f"https://api.powerbi.com/v1.0/myorg/groups/{group_id}/datasets/{dataset_id}/users"
         response = self.client.session.post(resource, json=payload)
