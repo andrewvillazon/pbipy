@@ -1053,6 +1053,23 @@ class Datasets:
             raise HTTPError(f"Encountered problem refreshing dataset. Response details: {response}")
         
     def take_over_in_group(self, group, dataset):
+        """
+        Transfers ownership over the specified dataset to the current authorized 
+        user.
+
+        Parameters
+        ----------
+        group : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides
+        dataset : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to take ownership of.
+
+        Raises
+        ------
+        HTTPError
+            If the api status code is not equal to 200.
+        """
+
         if isinstance(group, Group):
             group_id = group.id
         else:
