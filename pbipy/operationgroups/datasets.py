@@ -412,6 +412,22 @@ class Datasets:
         return self.client._get_and_load_resource(resource, group_id, dataset_id, model=DirectQueryRefreshSchedule)
     
     def get_parameters(self, dataset):
+        """
+        Returns a list of parameters for the specified dataset from My 
+        workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to retrieve the parameters for.
+
+        Returns
+        -------
+        `List[MashupParameter]`
+            List of `MashupParameter` objects from the specified group 
+            and dataset.
+        """
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
@@ -423,19 +439,21 @@ class Datasets:
     
     def get_parameters_in_group(self, group, dataset):
         """
-        Returns a list of parameters for the specified dataset from the specified workspace.
+        Returns a list of parameters for the specified dataset from the specified 
+        workspace.
 
         Parameters
         ----------
-        group : `Union[str, Group]`
+        `group` : `Union[str, Group]`
             Group Id or `Group` object to retrieve the parameters for.
-        dataset : `Union[str, Dataset]`
+        `dataset` : `Union[str, Dataset]`
             Dataset Id or `Dataset` object to retrieve the parameters for.
 
         Returns
         -------
         `List[MashupParameter]`
-            List of `MashupParameter` objects from the specified group and dataset.
+            List of `MashupParameter` objects from the specified group 
+            and dataset.
         """
 
         if isinstance(group, Group):
