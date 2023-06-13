@@ -1187,6 +1187,28 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating dataset. Response details: {response}")
     
     def update_datasources(self, dataset, update_details:list[dict]):
+        """
+        Updates the data sources of the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset or `Dataset` object to update datasources for.
+        `update_details` : `list[dict]`
+            List of updates to make to the datasources. Updates take the 
+            form of a list of dicts.
+
+            For examples what the update dict should look like see: 
+            https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-datasources#example
+
+        Raises
+        ------
+        `ValueError`
+            If update_details is empty list.
+        `HTTPError`
+            If api response code was not equal to 200 (OK).
+        """
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
@@ -1205,6 +1227,30 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating datasources. Response details: {response}")
     
     def update_datasources_in_group(self, group, dataset, update_details:list[dict]):
+        """
+        Updates the data sources of the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset or `Dataset` object to update datasources for.
+        `update_details` : `list[dict]`
+            List of updates to make to the datasources. Updates take the 
+            form of a list of dicts.
+
+            For examples what the update dict should look like see: 
+            https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-datasources#example
+
+        Raises
+        ------
+        `ValueError`
+            If update_details is empty list.
+        `HTTPError`
+            If api response code was not equal to 200 (OK).
+        """
+        
         if isinstance(group, Group):
             group_id = group.id
         else:
