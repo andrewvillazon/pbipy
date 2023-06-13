@@ -1274,6 +1274,30 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating datasources. Response details: {response}")
     
     def update_direct_query_refresh_schedule(self, dataset, **options):
+        """
+        Updates the refresh schedule for a specified DirectQuery or LiveConnection 
+        dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to update the refresh schedule for.
+        `**options`
+            Extra options to update on the refresh schedule. Supported options are:
+            `enabled`,
+            `days`,
+            `frequency`,
+            `local_time_zone_id`,
+            `times`
+
+        Raises
+        ------
+        `ValueError`
+            Unsupported options were provided.
+        `HTTPError`
+            If api response status code is not equal to 200 (OK).
+        """
+
         supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
 
         for k in options.keys():
@@ -1294,6 +1318,32 @@ class Datasets:
             raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
 
     def update_direct_query_refresh_schedule_in_group(self, group, dataset, **options):
+        """
+        Updates the refresh schedule for a specified DirectQuery or LiveConnection 
+        dataset from My workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to update the refresh schedule for.
+        `**options`
+            Extra options to update on the refresh schedule. Supported options are:
+            `enabled`,
+            `days`,
+            `frequency`,
+            `local_time_zone_id`,
+            `times`
+
+        Raises
+        ------
+        `ValueError`
+            Unsupported options were provided.
+        `HTTPError`
+            If api response status code is not equal to 200 (OK).
+        """
+
         supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
 
         for k in options.keys():
