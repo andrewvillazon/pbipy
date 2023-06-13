@@ -351,6 +351,23 @@ class Datasets:
         return self.client._get_and_load_resource(resource, group_id, dataset_id, model=Datasource)
     
     def get_direct_query_refresh_schedule(self, dataset):
+        """
+        Returns the refresh schedule for a specified DirectQuery or LiveConnection 
+        dataset from My workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or `Dataset` object to return the refresh schedule for.
+
+        Returns
+        -------
+        `DirectQueryRefreshSchedule`
+            The direct query refresh schedule for the specified dataset.
+        """
+
+        # TODO: What if there's no refresh schedule for the Dataset?
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
@@ -361,6 +378,25 @@ class Datasets:
         return self.client._get_and_load_resource(resource, dataset_id, model=DirectQueryRefreshSchedule)
     
     def get_direct_query_refresh_schedule_in_group(self, group, dataset):
+        """
+        Returns the refresh schedule for a specified DirectQuery or LiveConnection 
+        dataset from the specified workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            The Group Id or `Group` object to where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            The Dataset Id or `Dataset` object to return the refresh schedule for.
+
+        Returns
+        -------
+        `DirectQueryRefreshSchedule`
+            The direct query refresh schedule for the specified dataset.
+        """
+
+        # TODO: What if there's no refresh schedule for the Dataset?
+
         if isinstance(group, Group):
             group_id = group.id
         else:
