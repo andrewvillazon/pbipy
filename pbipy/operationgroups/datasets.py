@@ -928,6 +928,36 @@ class Datasets:
             raise HTTPError(f"Encountered problem posting dataset user. Response details: {response}")
     
     def refresh_dataset(self, dataset, notify_option, **options):
+        """
+        Triggers a refresh for the specified dataset from My workspace. 
+        An enhanced refresh is triggered only if a request payload other 
+        than `notifyOption` is set.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to trigger the refresh for.
+        `notify_option` : `str`
+            Mail notification options. This parameter is not applicable 
+            to enhanced refreshes or API operations with a service principal.
+        `**options`
+            Extra options to pass to the refresh request. Supported options are:
+            `apply_refresh_policy`,
+            `commit_mode`,
+            `effective_date`,
+            `max_parallelism`,
+            `objects`,
+            `retry_count`,
+            `type`
+
+        Raises
+        ------
+        `ValueError`
+            If an unsupported option is supplied.
+        `HTTPError`
+            If the api status code is not equal to 200.
+        """
+
         supported_options = [
             "apply_refresh_policy",
             "commit_mode",
@@ -956,8 +986,39 @@ class Datasets:
         if response.status_code not in [200, 202]:
             raise HTTPError(f"Encountered problem refreshing dataset. Response details: {response}")
     
-
     def refresh_dataset_in_group(self, group, dataset, notify_option, **options):
+        """
+        Triggers a refresh for the specified dataset from the specified 
+        workspace. An enhanced refresh is triggered only if a request 
+        payload other than `notifyOption` is set.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to trigger the refresh for.
+        `notify_option` : `str`
+            Mail notification options. This parameter is not applicable 
+            to enhanced refreshes or API operations with a service principal.
+        `**options`
+            Extra options to pass to the refresh request. Supported options are:
+            `apply_refresh_policy`,
+            `commit_mode`,
+            `effective_date`,
+            `max_parallelism`,
+            `objects`,
+            `retry_count`,
+            `type`
+
+        Raises
+        ------
+        `ValueError`
+            If an unsupported option is supplied.
+        `HTTPError`
+            If the api status code is not equal to 200.
+        """
+
         supported_options = [
             "apply_refresh_policy",
             "commit_mode",
