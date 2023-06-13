@@ -76,6 +76,20 @@ def test_get_dataset_in_group_using_group_object(powerbi, group, get_dataset_in_
 
 
 @responses.activate
+def test_get_datasets(powerbi, get_datasets):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets",
+        body=get_datasets
+    )
+
+    datasets = powerbi.datasets.get_datasets()
+
+    assert isinstance(datasets, list)
+    assert all(isinstance(dataset, Dataset) for dataset in datasets)
+    assert len(datasets) == 2
+
+
+@responses.activate
 def test_get_datasets_in_group_using_group_id(powerbi, get_datasets_in_group):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets",

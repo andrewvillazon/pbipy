@@ -163,6 +163,31 @@ class Datasets:
         
         resource = "https://api.powerbi.com/v1.0/myorg/groups/{}/datasets/{}/users"
         return self.client._get_and_load_resource(resource, group_id, dataset_id, model=DatasetUserAccess)
+    
+    def get_datasets(self):
+        """
+        Returns a list of datasets from My workspace.
+
+        Returns
+        -------
+        `list[Dataset]`
+            List of `Dataset` objects.
+
+        Raises
+        ------
+        `HTTPError`
+            If api response status code is not equal to 200.
+        """
+
+        resource = "https://api.powerbi.com/v1.0/myorg/datasets"
+        response = self.client.session.get(resource)
+
+        if response.status_code != 200:
+            raise HTTPError(f"Encountered problem getting datasets. Response details: {response}")
+        
+        raw = response.json()
+
+        return [Dataset.from_raw(refresh) for refresh in raw["value"]]
 
 
     def get_datasets_in_group(self, group):

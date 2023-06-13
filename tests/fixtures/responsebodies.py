@@ -53,6 +53,35 @@ def get_datasets_in_group():
     }
     """
 
+@pytest.fixture
+def get_datasets():
+    return """
+    {
+    "value": [
+        {
+            "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+            "name": "SalesMarketing",
+            "addRowsAPIEnabled": false,
+            "configuredBy": "john@contoso.com",
+            "isRefreshable": true,
+            "isEffectiveIdentityRequired": false,
+            "isEffectiveIdentityRolesRequired": false,
+            "isOnPremGatewayRequired": false
+        },
+        {
+            "id": "a46fb27ff229-cfafbeb1-8037-4d0c-896e",
+            "name": "MarketingSales",
+            "addRowsAPIEnabled": false,
+            "configuredBy": "john@contoso.com",
+            "isRefreshable": true,
+            "isEffectiveIdentityRequired": false,
+            "isEffectiveIdentityRolesRequired": false,
+            "isOnPremGatewayRequired": false
+        }
+    ]
+    }
+    """
+
 
 @pytest.fixture
 def get_refresh_history():
