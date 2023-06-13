@@ -725,6 +725,22 @@ class Datasets:
         return RefreshSchedule.from_raw(raw)
     
     def get_refresh_schedule_in_group(self, group, dataset):
+        """
+        Returns the refresh schedule for the specified dataset from My workspace.
+
+        Parameters
+        ----------
+        `group` : `Union[str, Group]`
+            The Group Id or `Group` object where the dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to get the refresh schedule for.
+
+        Returns
+        -------
+        `RefreshSchedule`
+            The refresh schedule for the specified dataset.
+        """
+
         if isinstance(group, Group):
             group_id = group.id
         else:
