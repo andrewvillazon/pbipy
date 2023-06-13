@@ -1059,14 +1059,14 @@ class Datasets:
 
         Parameters
         ----------
-        group : `Union[str, Group]`
+        `group` : `Union[str, Group]`
             Group Id or `Group` object where the dataset resides
-        dataset : `Union[str, Dataset]`
+        `dataset` : `Union[str, Dataset]`
             Dataset Id or `Dataset` object to take ownership of.
 
         Raises
         ------
-        HTTPError
+        `HTTPError`
             If the api status code is not equal to 200.
         """
 
