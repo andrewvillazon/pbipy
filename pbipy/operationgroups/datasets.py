@@ -1500,6 +1500,38 @@ class Datasets:
         return response.json()
     
     def update_parameters(self, dataset, update_details:list[dict]):
+        """
+        Updates the parameters values for the specified dataset from My 
+        workspace.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to update the parameters for.
+        `update_details` : `list[dict]`
+            A list of dataset parameters to update. e.g.,
+        
+            ```
+            update_details = [
+                {
+                "name": "DatabaseName",
+                "newValue": "NewDB"
+                },
+                {
+                "name": "MaxId",
+                "newValue": "5678"
+                }
+            ]
+            ```
+
+        Raises
+        ------
+        `ValueError`
+            If `update_details` is an empty list.
+        `HTTPError`
+            If api response code is not equal to 200 (OK).
+        """
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
@@ -1517,6 +1549,40 @@ class Datasets:
             raise HTTPError(f"Encountered updating parameters. Response details: {response}")
     
     def update_parameters_in_group(self, group, dataset, update_details:list[dict]):
+        """
+        Updates the parameters values for the specified dataset from the 
+        specified workspace.
+
+        Parameters
+        ----------
+        `group`: `Union[str, Group]`
+            Group Id or `Group` object where the supplied Dataset resides.
+        `dataset` : `Union[str, Dataset]`
+            Dataset Id or `Dataset` object to update the parameters for.
+        `update_details` : `list[dict]`
+            A list of dataset parameters to update. e.g.,
+        
+            ```
+            update_details = [
+                {
+                "name": "DatabaseName",
+                "newValue": "NewDB"
+                },
+                {
+                "name": "MaxId",
+                "newValue": "5678"
+                }
+            ]
+            ```
+
+        Raises
+        ------
+        `ValueError`
+            If `update_details` is an empty list.
+        `HTTPError`
+            If api response code is not equal to 200 (OK).
+        """
+
         if isinstance(group, Group):
             group_id = group.id
         else:
