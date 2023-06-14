@@ -1,5 +1,7 @@
-from pbipy.utils import to_snake_case
+from requests.exceptions import HTTPError
+
 from pbipy import settings
+from pbipy.utils import to_snake_case
 
 
 class Resource:
@@ -12,13 +14,7 @@ class Resource:
         self.raw = None
 
         if "group_id" in kwargs:
-            # If None, is not part of workspace, set to "me"
-            # as per pbi urls: /groups/me/etc.
-            if kwargs.get("group_id") is None:
-                group_id = "me"
-            else:
-                group_id = kwargs.get("group_id")
-
+            group_id = kwargs.get("group_id")
             setattr(self, "group_id", group_id)
 
     def _load_from_raw(self, raw):
@@ -45,6 +41,8 @@ class Dataset(Resource):
         group_id=None,
         raw=None,
     ) -> None:
+        self.id = id
+
         if group_id:
             path = f"groups/{group_id}/datasets/{id}"
         else:
@@ -54,3 +52,46 @@ class Dataset(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+    def get_refresh_history(
+        self,
+        top: int = None,
+    ) -> list[dict]:
+        """
+        Returns the refresh history for the dataset.
+
+        Parameters
+        ----------
+        `top` : `int`, optional
+            The requested number of entries in the refresh history. If
+            not provided, the default is the last available 500 entries.
+
+        Returns
+        -------
+        `list[dict]`
+            List of refresh history entries.
+
+        Raises
+        ------
+        `HTTPError`
+            If the api response status code is not equal to 200.
+        """
+        # TODO: implement Refresh object
+
+        if self.group_id:
+            path = f"groups/{self.group_id}/datasets/{self.id}/refreshes"
+        else:
+            path = f"datasets/{self.id}/refreshes"
+
+        resource = self.BASE_URL + path
+        params = {"$top": top}
+
+        response = self.session.get(resource, params=params)
+        raw = response.json()
+
+        if response.status_code != 200:
+            raise HTTPError(
+                f"Encountered error while getting refresh history. Response: {response.json()}"
+            )
+
+        return raw["value"]
