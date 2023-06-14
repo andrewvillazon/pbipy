@@ -1621,14 +1621,15 @@ def test_update_refresh_schedule_with_multiple_options(powerbi):
 
 def test_update_refresh_schedule_raises_value_error(powerbi):
     with pytest.raises(ValueError):
-        powerbi.datasets.update_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229", disable=True)
+        powerbi.datasets.update_refresh_schedule("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 
 
 @responses.activate 
 def test_update_refresh_schedule_raises_http_error(powerbi):
     responses.patch(
         "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshSchedule",
-        status=404
+        status=404,
+        json={}
     )
 
     with pytest.raises(HTTPError):

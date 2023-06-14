@@ -1604,25 +1604,75 @@ class Datasets:
         if response.status_code != 200:
             raise HTTPError(f"Encountered updating parameters. Response details: {response}")
     
-    def update_refresh_schedule(self, dataset, **options):
-        supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
+    def update_refresh_schedule(
+            self,
+            dataset,
+            notify_option:str=None, 
+            enabled:bool=None, 
+            days:list[str]=None, 
+            times:list[str]=None, 
+            local_time_zone_id:str=None,
+            ):
+        """
+        Updates the refresh schedule for the specified dataset from My 
+        workspace.
 
-        for k in options.keys():
-            if k not in supported_options:
-                raise ValueError(f"Unsupported option supplied: {k}. Supported options are: {supported_options}")
-        
-        payload = {"value": {to_camel_case(k):v for k,v in options.items()}}
-        
+        A request that disables the refresh schedule should contain no 
+        other changes.
+
+        At least one day must be specified. If no times are specified, 
+        then Power BI will use a default single time per day.
+
+        Parameters
+        ----------
+        `dataset` : `Union[str, Dataset]`
+            Dataset or `Dataset` object to update the refresh schedule 
+            for.
+        `notify_option` : `str`, optional
+            The notification option on termination of a scheduled refresh. 
+            Service principals only support the `NoNotification` value. 
+            Example values: `"MailOnFailure"`, `"NoNotification"`.
+        `enabled` : `bool`, optional
+            Whether the refresh is enabled.
+        `days` : `list[str]`, optional
+            The days on which to execute the refresh, e.g., `["Monday", "Tuesday"]`, etc.
+        `times` : `list[str]`, optional
+            The times of day to execute the refresh, e.g., `["07:00", "16:00"]`.
+        `local_time_zone_id` : str, optional
+            The ID of the time zone to use, e.g., `"UTC"`.
+
+        Raises
+        ------
+        `ValueError`
+            If no options are provided.
+        `HTTPError`
+            If the api response status code is not equal to 200.
+        """
+
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
         else:
             dataset_id = dataset
         
+        options = {
+            "notifyOption": notify_option,
+            "enabled": enabled,
+            "days": days,
+            "times": times,
+            "localTimeZoneId": local_time_zone_id
+        }
+        prepared_options = {k:v for k,v in options.items() if v is not None}
+
+        if not prepared_options:
+            raise ValueError("No options were provided. A request to update a refresh schedule must contain an option to be set.")
+
+        payload = {"value": prepared_options}
+        
         resource = f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshSchedule"
         response = self.client.session.patch(resource, json=payload)
 
         if response.status_code != 200:
-            raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response}")
+            raise HTTPError(f"Encountered problem updating direct query refresh schedule. Response details: {response.json()}")
     
     def update_refresh_schedule_in_group(self, group, dataset, **options):
         supported_options = ["enabled", "days", "frequency", "local_time_zone_id", "times"]
