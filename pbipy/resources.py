@@ -51,6 +51,7 @@ class Dataset(Resource):
 
         super().__init__(path, session, group_id=group_id)
 
+        # Supports creating from a list of js, e.g., get_datasets endpoint
         if raw:
             self._load_from_raw(raw)
 
