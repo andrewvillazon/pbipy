@@ -38,7 +38,7 @@ class Dataset(Resource):
     def __init__(
         self,
         id,
-        session=None,
+        session,
         group_id=None,
         raw=None,
     ) -> None:
