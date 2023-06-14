@@ -34,6 +34,23 @@ class PowerBI:
         dataset: str | Dataset,
         group: str = None,
     ) -> Dataset:
+        """
+        Return the specified dataset from MyWorkspace or the specified 
+        group.
+
+        Parameters
+        ----------
+        `dataset` : `str | Dataset`
+            Dataset Id of the dataset to retrieve.
+        `group` : `str`, optional
+            Group Id where the dataset resides., by default None
+
+        Returns
+        -------
+        `Dataset`
+            The specified dataset.
+        """
+
         if isinstance(dataset, Dataset):
             return dataset
 
