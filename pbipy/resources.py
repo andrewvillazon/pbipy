@@ -1,17 +1,18 @@
 from pbipy.utils import to_snake_case
+from pbipy import settings
 
 
 class Resource:
-    BASE_URL = "https://api.powerbi.com/v1.0/myorg/"
+    BASE_URL = settings.BASE_URL
 
     def __init__(self, path, session, **kwargs) -> None:
         self.path = path
         self.url = self.BASE_URL + self.path
         self.session = session
-        self.js = None
+        self.raw = None
 
         if "group_id" in kwargs:
-            # If None is not part of workspace, set to "me"
+            # If None, is not part of workspace, set to "me"
             # as per pbi urls: /groups/me/etc.
             if kwargs.get("group_id") is None:
                 group_id = "me"
@@ -20,10 +21,10 @@ class Resource:
 
             setattr(self, "group_id", group_id)
 
-    def load_from_js(self, js):
-        self.js = js
+    def _load_from_raw(self, raw):
+        self.raw = raw
 
-        for k, v in js.items():
+        for k, v in raw.items():
             attr = to_snake_case(k)
             setattr(self, attr, v)
 
@@ -31,16 +32,19 @@ class Resource:
 
     def load(self):
         response = self.session.get(self.url)
-        js = response.json()
+        raw = response.json()
 
-        self.load_from_js(js)
+        self._load_from_raw(raw)
 
 
 class Dataset(Resource):
-    def __init__(self, id, session, group_id=None) -> None:
+    def __init__(self, id, session=None, group_id=None, raw=None) -> None:
         if group_id:
             path = f"groups/{group_id}/datasets/{id}"
         else:
             path = f"datasets/{id}"
 
         super().__init__(path, session, group_id=group_id)
+
+        if raw:
+            self._load_from_raw(raw)

@@ -8,11 +8,14 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 """
 
 import requests
+from pbipy import settings
 
 from pbipy.resources import Dataset
 
 
 class PowerBI:
+    BASE_URL = settings.BASE_URL
+
     def __init__(
         self,
         bearer_token: str,
@@ -37,3 +40,46 @@ class PowerBI:
         dataset.load()
 
         return dataset
+
+    def get_datasets(
+        self,
+        group: str = None,
+    ) -> list[Dataset]:
+        """
+        Returns a list of datasets from MyWorkspace or the specified group.
+
+        Parameters
+        ----------
+        `group` : str, optional
+            Group Id where the datasets reside. If not supplied, then datasets 
+            will be retrieved from MyWorkspace.
+
+        Returns
+        -------
+        `list[Dataset]`
+            List of datasets for MyWorkspace or the specified group.
+        """
+
+        if group:
+            path = f"groups/{group}/datasets"
+        else:
+            path = "datasets"
+
+        resource = self.BASE_URL + path
+        response = self.session.get(resource)
+        js = response.json()
+
+        if js["value"] == []:
+            return []
+
+        datasets = [
+            Dataset(
+                dataset_js.get("id"),
+                self.session,
+                group_id=group,
+                raw=dataset_js,
+            )
+            for dataset_js in js["value"]
+        ]
+
+        return datasets
