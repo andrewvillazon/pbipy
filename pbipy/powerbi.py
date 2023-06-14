@@ -1,8 +1,9 @@
 """
 Module implements a wrapper around the Power BI Rest API.
 
-Users construct an instance of the PowerBI client and call its methods. These 
-methods closely follow the naiming laid out here:
+Users construct an instance of the PowerBI client and call its methods.
+
+Full API documentation can be found at:
 
 https://learn.microsoft.com/en-us/rest/api/power-bi/
 """
@@ -15,6 +16,28 @@ from pbipy.resources import Dataset
 
 
 class PowerBI:
+    """
+    User Interface into Power BI Rest Api.
+
+    Users interact with their Power BI service by constructing an instance
+    of this object and calling its methods.
+
+    Authentication with the Power BI service requires a `bearer_token` which
+    must be generated in advance before creating the `PowerBI` object.
+    How you the token is generated depends on the user's Azure and Power
+    BI configuration.
+
+    In general, `PowerBI()` methods (mostly) follow the operations described
+    here:
+
+    https://learn.microsoft.com/en-us/rest/api/power-bi/
+
+    Parameters
+    ----------
+    `bearer_token` : `str`
+        Bearer token used to authenticate with your Power BI service.
+    """
+
     BASE_URL = settings.BASE_URL
 
     def __init__(
@@ -35,7 +58,7 @@ class PowerBI:
         group: str = None,
     ) -> Dataset:
         """
-        Return the specified dataset from MyWorkspace or the specified 
+        Return the specified dataset from MyWorkspace or the specified
         group.
 
         Parameters
