@@ -82,7 +82,7 @@ Most methods support passing in an object id...
 ```python
 ```
 
-`pbipy` converts Rest API responses into regular Python objects (snake case included).
+`pbipy` converts Rest API responses into regular Python objects (snake case included 🐍).
 
 ```python
 ```
