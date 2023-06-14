@@ -38,7 +38,13 @@ class Resource:
 
 
 class Dataset(Resource):
-    def __init__(self, id, session=None, group_id=None, raw=None) -> None:
+    def __init__(
+        self,
+        id,
+        session=None,
+        group_id=None,
+        raw=None,
+    ) -> None:
         if group_id:
             path = f"groups/{group_id}/datasets/{id}"
         else:
