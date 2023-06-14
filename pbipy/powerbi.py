@@ -8,8 +8,9 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 """
 
 import requests
-from pbipy import settings
+from requests.exceptions import HTTPError
 
+from pbipy import settings
 from pbipy.resources import Dataset
 
 
@@ -51,7 +52,7 @@ class PowerBI:
         Parameters
         ----------
         `group` : str, optional
-            Group Id where the datasets reside. If not supplied, then datasets 
+            Group Id where the datasets reside. If not supplied, then datasets
             will be retrieved from MyWorkspace.
 
         Returns
@@ -83,3 +84,43 @@ class PowerBI:
         ]
 
         return datasets
+
+    def delete_dataset(
+        self,
+        dataset: str | Dataset,
+        group: str = None,
+    ) -> None:
+        """
+        Delete the specified dataset from MyWorkspace or the specified
+        group.
+
+        Parameters
+        ----------
+        `dataset` : `str | Dataset`
+            Dataset Id or `Dataset` object to delete.
+        `group` : `str`, optional
+            Group Id where the dataset resides., by default None
+
+        Raises
+        ------
+        `HTTPError`
+            If the api response status code is not equal to 200.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+
+        if group:
+            path = f"groups/{group}/datasets/{dataset_id}"
+        else:
+            path = f"datasets/{dataset_id}"
+
+        resource = self.BASE_URL + path
+        response = self.session.delete(resource)
+
+        if response.status_code != 200:
+            raise HTTPError(
+                f"Encountered error while trying to delete dataset. Response: {response.json()}"
+            )
