@@ -1,3 +1,4 @@
+import json
 from requests.exceptions import HTTPError
 
 from pbipy import settings
@@ -95,3 +96,32 @@ class Dataset(Resource):
             )
 
         return raw["value"]
+
+    def post_dataset_user(
+        self,
+        identifier: str,
+        principal_type: str,
+        dataset_user_access_right: str,
+    ) -> None:
+        if self.group_id:
+            path = f"groups/{self.group_id}/datasets/{self.id}/users"
+        else:
+            path = f"datasets/{self.id}/users"
+
+        resource = self.BASE_URL + path
+        payload = {
+            "identifier": identifier,
+            "principalType": principal_type,
+            "datasetUserAccessRight": dataset_user_access_right,
+        }
+
+        response = self.session.post(resource, json=payload)
+
+        if response.status_code != 200:
+            raise HTTPError(
+                f"""Encountered error while posting dataset user. 
+                
+                Response: 
+                
+                {json.dumps(response.json(), indent=True)})"""
+            )

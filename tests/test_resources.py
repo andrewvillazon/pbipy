@@ -1,7 +1,8 @@
 import pytest
-import responses
 import requests
+import responses
 from requests.exceptions import HTTPError
+from responses import matchers
 
 from pbipy.resources import Dataset
 
@@ -209,3 +210,59 @@ def test_get_refresh_history_raises_http_error():
 
     with pytest.raises(HTTPError):
         dataset.get_refresh_history()
+
+
+@responses.activate
+def test_post_dataset_user_call():
+    json_params = {
+        "datasetUserAccessRight": "Read",
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    dataset.post_dataset_user("john@contoso.com", "User", "Read")
+
+
+@responses.activate
+def test_post_dataset_raises_http_error():
+    json_params = {
+        "datasetUserAccessRight": "Read",
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        status=400,
+        json={
+            "error": {
+                "code": "InvalidRequest",
+                "message": "Parameter identifier is missing or invalid",
+            }
+        },
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    with pytest.raises(HTTPError):
+        dataset.post_dataset_user("john@contoso.com", "User", "Read")
