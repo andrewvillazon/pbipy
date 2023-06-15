@@ -47,6 +47,22 @@ class RequestsMixin:
                 {json.dumps(response.json(), indent=True)})"""
             )
 
+    def post(
+        self,
+        resource: str,
+        session: Session,
+        payload: dict,
+        success_codes: list[int] = [200, 201],
+    ) -> dict | None:
+        response = session.post(resource, json=payload)
+
+        if response.status_code not in success_codes:
+            raise HTTPError(
+                f"Encountered api error. Response: {json.dumps(response.json(), indent=True)})"
+            )
+
+        return response
+
     def get(
         self,
         resource: str,

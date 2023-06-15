@@ -2,10 +2,10 @@ import json
 from requests.exceptions import HTTPError
 
 from pbipy import settings
-from pbipy.utils import to_snake_case
+from pbipy.utils import RequestsMixin, to_snake_case
 
 
-class Resource:
+class Resource(RequestsMixin):
     BASE_URL = settings.BASE_URL
 
     def __init__(self, path, session, **kwargs) -> None:
@@ -116,13 +116,4 @@ class Dataset(Resource):
             "datasetUserAccessRight": dataset_user_access_right,
         }
 
-        response = self.session.post(resource, json=payload)
-
-        if response.status_code != 200:
-            raise HTTPError(
-                f"""Encountered error while posting dataset user. 
-                
-                Response: 
-                
-                {json.dumps(response.json(), indent=True)})"""
-            )
+        response = self.post(resource, self.session, payload)
