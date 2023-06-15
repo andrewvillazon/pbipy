@@ -106,15 +106,9 @@ class Dataset(Resource):
         resource = self.base_path + "/refreshes"
         params = {"$top": top}
 
-        response = self.session.get(resource, params=params)
-        raw = response.json()
+        raw = self.get_raw(resource, self.session, params)
 
-        if response.status_code != 200:
-            raise HTTPError(
-                f"Encountered error while getting refresh history. Response: {response.json()}"
-            )
-
-        return raw["value"]
+        return raw
 
     def post_dataset_user(
         self,

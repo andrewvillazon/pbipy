@@ -156,6 +156,7 @@ class RequestsMixin:
         self,
         resource: str,
         session: Session,
+        params: dict = None,
         **kwargs: dict,
     ) -> dict | list:
         """
@@ -182,7 +183,7 @@ class RequestsMixin:
         """
 
         try:
-            response = self.get(resource, session, **kwargs)
+            response = self.get(resource, session, params, **kwargs)
             raw = response.json()
 
             return self.parse_raw(raw)
