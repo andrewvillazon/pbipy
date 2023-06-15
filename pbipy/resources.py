@@ -15,12 +15,12 @@ class Resource(RequestsMixin):
         if "group_id" in kwargs:
             group_id = kwargs.get("group_id")
             setattr(self, "group_id", group_id)
-        
+
         if self.group_id:
             self.group_path = f"/groups/{self.group_id}"
         else:
             self.group_path = ""
-        
+
         self._base_path = f"{self.BASE_URL}{self.group_path}"
 
     def _load_from_raw(self, raw):
@@ -116,6 +116,21 @@ class Dataset(Resource):
         principal_type: str,
         dataset_user_access_right: str,
     ) -> None:
+        """
+        Grants the specified user's permissions to the specified dataset.
+
+        Parameters
+        ----------
+        `identifier` : `str`
+            For principal type `User`, provide the UPN. Otherwise provide
+            the object ID of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `dataset_user_access_right` : `str`
+            The access right to grant to the user for the dataset, e.g.,
+            "Read", "ReadExplore", "ReadReshare", or "ReadReshareExplore".
+        """
+
         resource = self.base_path + "/users"
         dataset_user_access = {
             "identifier": identifier,
