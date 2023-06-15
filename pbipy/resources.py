@@ -116,4 +116,4 @@ class Dataset(Resource):
             "datasetUserAccessRight": dataset_user_access_right,
         }
 
-        response = self.post(resource, self.session, payload)
+        self.post(resource, self.session, payload)
