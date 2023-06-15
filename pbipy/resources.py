@@ -110,10 +110,10 @@ class Dataset(Resource):
             path = f"datasets/{self.id}/users"
 
         resource = self.BASE_URL + path
-        payload = {
+        dataset_user_access = {
             "identifier": identifier,
             "principalType": principal_type,
             "datasetUserAccessRight": dataset_user_access_right,
         }
 
-        self.post(resource, self.session, payload)
+        self.post(resource, self.session, dataset_user_access)
