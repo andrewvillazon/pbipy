@@ -60,6 +60,22 @@ class Dataset(Resource):
         gateway_object_id: str,
         datasource_object_ids: list = None,
     ) -> None:
+        """
+        Binds the specified dataset from MyWorkspace or group to the specified 
+        gateway, optionally with a given set of data source IDs. If you 
+        don't supply a specific data source ID, the dataset will be bound 
+        to the first matching data source in the gateway.
+
+        Parameters
+        ----------
+        `gateway_object_id` : `str`
+            The gateway ID. When using a gateway cluster, the gateway ID 
+            refers to the primary (first) gateway in the cluster and is 
+            similar to the gateway cluster ID.
+        `datasource_object_ids` : `list`, optional
+            The unique identifiers for the data sources in the gateway.
+        """
+
         bind_to_gateway_request = {
             "gatewayObjectId": gateway_object_id,
             "datasourceObjectIds": datasource_object_ids,
@@ -76,7 +92,14 @@ class Dataset(Resource):
         self,
         refresh_id: str,
     ) -> None:
-        pass
+        resource = self.base_path + f"/refreshes/{refresh_id}"
+        self.delete(resource)
+
+    def discover_gateways(
+        self,
+    ) -> list:
+        resource = self.base_path + "/Default.DiscoverGateways"
+        return self.get_raw(resource, self.session)
 
     def get_refresh_history(
         self,
