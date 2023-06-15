@@ -103,9 +103,9 @@ class PowerBI(RequestsMixin):
         """
 
         if group:
-            path = f"groups/{group}/datasets"
+            path = f"/groups/{group}/datasets"
         else:
-            path = "datasets"
+            path = "/datasets"
 
         resource = self.BASE_URL + path
         raw = self.get_raw(resource, self.session)
@@ -150,9 +150,9 @@ class PowerBI(RequestsMixin):
             dataset_id = dataset
 
         if group:
-            path = f"groups/{group}/datasets/{dataset_id}"
+            path = f"/groups/{group}/datasets/{dataset_id}"
         else:
-            path = f"datasets/{dataset_id}"
+            path = f"/datasets/{dataset_id}"
 
         resource = self.BASE_URL + path
         

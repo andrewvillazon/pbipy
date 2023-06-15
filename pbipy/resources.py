@@ -8,15 +8,20 @@ from pbipy.utils import RequestsMixin, to_snake_case
 class Resource(RequestsMixin):
     BASE_URL = settings.BASE_URL
 
-    def __init__(self, path, session, **kwargs) -> None:
-        self.path = path
-        self.url = self.BASE_URL + self.path
+    def __init__(self, session, **kwargs) -> None:
         self.session = session
         self.raw = None
 
         if "group_id" in kwargs:
             group_id = kwargs.get("group_id")
             setattr(self, "group_id", group_id)
+        
+        if self.group_id:
+            self.group_path = f"/groups/{self.group_id}"
+        else:
+            self.group_path = ""
+        
+        self._base_path = f"{self.BASE_URL}{self.group_path}"
 
     def _load_from_raw(self, raw):
         self.raw = raw
@@ -28,7 +33,7 @@ class Resource(RequestsMixin):
         return self
 
     def load(self):
-        response = self.session.get(self.url)
+        response = self.session.get(self.base_path)
         raw = response.json()
 
         self._load_from_raw(raw)
@@ -44,16 +49,36 @@ class Dataset(Resource):
     ) -> None:
         self.id = id
 
-        if group_id:
-            path = f"groups/{group_id}/datasets/{id}"
-        else:
-            path = f"datasets/{id}"
+        super().__init__(session, group_id=group_id)
 
-        super().__init__(path, session, group_id=group_id)
+        self.base_path = f"{self._base_path}/datasets/{self.id}"
 
         # Supports creating from a list of js, e.g., get_datasets endpoint
         if raw:
             self._load_from_raw(raw)
+
+    def bind_to_gateway(
+        self,
+        gateway_object_id: str,
+        datasource_object_ids: list = None,
+    ) -> None:
+        bind_to_gateway_request = {
+            "gatewayObjectId": gateway_object_id,
+            "datasourceObjectIds": datasource_object_ids,
+        }
+
+        if bind_to_gateway_request["datasourceObjectIds"] is None:
+            bind_to_gateway_request.pop()
+
+        resource = self.base_path + "/Default.BindToGateway"
+        
+        self.post(resource, self.session, bind_to_gateway_request)
+
+    def cancel_refresh(
+        self,
+        refresh_id: str,
+    ) -> None:
+        pass
 
     def get_refresh_history(
         self,
@@ -80,12 +105,7 @@ class Dataset(Resource):
         """
         # TODO: implement Refresh object
 
-        if self.group_id:
-            path = f"groups/{self.group_id}/datasets/{self.id}/refreshes"
-        else:
-            path = f"datasets/{self.id}/refreshes"
-
-        resource = self.BASE_URL + path
+        resource = self.base_path + "/refreshes"
         params = {"$top": top}
 
         response = self.session.get(resource, params=params)
@@ -104,12 +124,7 @@ class Dataset(Resource):
         principal_type: str,
         dataset_user_access_right: str,
     ) -> None:
-        if self.group_id:
-            path = f"groups/{self.group_id}/datasets/{self.id}/users"
-        else:
-            path = f"datasets/{self.id}/users"
-
-        resource = self.BASE_URL + path
+        resource = self.base_path + "/users"
         dataset_user_access = {
             "identifier": identifier,
             "principalType": principal_type,
