@@ -322,3 +322,18 @@ def test_bind_to_gateway_without_data_source_object_ids():
     dataset.bind_to_gateway(
         gateway_object_id="1f69e798-5852-4fdd-ab01-33bb14b6e934"
     )
+
+
+@responses.activate
+def test_cancel_refresh():
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e"
+    )
+
+    dataset = Dataset(
+        id="f7fc6510-e151-42a3-850b-d0805a391db0",
+        session=requests.Session(),
+        group_id="fdb91b8f-0a9b-44c1-b6c0-0cb185c6ebfb",
+    )
+
+    dataset.cancel_refresh("87f31ef7-1e3a-4006-9b0b-191693e79e9e")
