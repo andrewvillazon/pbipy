@@ -267,5 +267,58 @@ def test_post_dataset_raises_http_error():
     with pytest.raises(HTTPError):
         dataset.post_dataset_user("john@contoso.com", "User", "Read")
 
+
 # TODO: Tests for request_mixin.delete()
 # TODO: Tests for request_mixin.get()
+
+
+@responses.activate
+def test_bind_to_gateway_with_data_source_object_ids():
+    json_params = {
+        "gatewayObjectId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        "datasourceObjectIds": [
+            "dc2f2dac-e5e2-4c37-af76-2a0bc10f16cb",
+            "3bfe5d33-ab7d-4d24-b0b5-e2bb8eb01cf5",
+        ],
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.BindToGateway",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    datasource_object_ids = [
+        "dc2f2dac-e5e2-4c37-af76-2a0bc10f16cb",
+        "3bfe5d33-ab7d-4d24-b0b5-e2bb8eb01cf5",
+    ]
+
+    dataset.bind_to_gateway(
+        gateway_object_id="1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        datasource_object_ids=datasource_object_ids,
+    )
+
+
+@responses.activate
+def test_bind_to_gateway_without_data_source_object_ids():
+    json_params = {
+        "gatewayObjectId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.BindToGateway",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.bind_to_gateway(
+        gateway_object_id="1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    )
