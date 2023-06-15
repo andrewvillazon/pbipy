@@ -89,6 +89,16 @@ class Dataset(Resource):
         self,
         refresh_id: str,
     ) -> None:
+        """
+        Cancels the specified refresh operation for the specified dataset 
+        from MyWorkspace or group.
+
+        Parameters
+        ----------
+        `refresh_id` : `str`
+            Refresh Id to cancel.
+        """
+
         resource = self.base_path + f"/refreshes/{refresh_id}"
         self.delete(resource, self.session)
 
