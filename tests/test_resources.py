@@ -266,3 +266,6 @@ def test_post_dataset_raises_http_error():
 
     with pytest.raises(HTTPError):
         dataset.post_dataset_user("john@contoso.com", "User", "Read")
+
+# TODO: Tests for request_mixin.delete()
+# TODO: Tests for request_mixin.get()
