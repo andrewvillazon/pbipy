@@ -1,6 +1,3 @@
-import json
-from requests.exceptions import HTTPError
-
 from pbipy import settings
 from pbipy.utils import RequestsMixin, to_snake_case
 
