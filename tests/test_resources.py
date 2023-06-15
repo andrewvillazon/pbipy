@@ -319,9 +319,7 @@ def test_bind_to_gateway_without_data_source_object_ids():
         session=requests.Session(),
     )
 
-    dataset.bind_to_gateway(
-        gateway_object_id="1f69e798-5852-4fdd-ab01-33bb14b6e934"
-    )
+    dataset.bind_to_gateway(gateway_object_id="1f69e798-5852-4fdd-ab01-33bb14b6e934")
 
 
 @responses.activate
@@ -337,3 +335,50 @@ def test_cancel_refresh():
     )
 
     dataset.cancel_refresh("87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+@responses.activate
+def test_discover_gateways():
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.DiscoverGateways",
+        body="""
+        {
+            "value": [
+                {
+                "id": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+                "name": "ContosoGateway",
+                "type": "Resource",
+                "publicKey": {
+                    "exponent": "AQAB",
+                    "modulus": "o6j2....cLk="
+                }
+                }
+            ]
+        }
+        """,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    gateways = dataset.discover_gateways()
+
+    assert isinstance(gateways, list)
+    assert all(isinstance(gateway,dict) for gateway in gateways)
+
+
+@responses.activate
+def test_discover_gateways_call():
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.DiscoverGateways",
+        body='{"value": []}',
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+    dataset.discover_gateways()
