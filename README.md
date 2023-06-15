@@ -114,6 +114,11 @@ And if you need to access the raw json representation, this is supported to.
 ```python
 ```
 
+### Execute a DAX query
+
+```python
+```
+
 ## Power BI Rest API Operations
 
 `pbipy` methods are roughly organized around the Operations of the Power BI Rest API:
