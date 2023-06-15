@@ -21,6 +21,29 @@ def test_to_camel_case():
     assert (utils.to_camel_case("principal_type")) == "principalType"
 
 
+def test_remove_no_values():
+    test_d = {
+        "queries": [
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+        ],
+        "serializerSettings": {"includeNulls": None},
+        "impersonatedUserName": "someuser@mycompany.com",
+    }
+
+    expected_d = {
+        "queries": [
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+        ],
+        "impersonatedUserName": "someuser@mycompany.com",
+    }
+
+    assert utils.remove_no_values(test_d) == expected_d
+
+
 @pytest.fixture
 def request_mixin():
     return utils.RequestsMixin()
