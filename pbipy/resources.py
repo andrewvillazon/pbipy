@@ -105,6 +105,20 @@ class Dataset(Resource):
     def discover_gateways(
         self,
     ) -> list:
+        """
+        Returns a list of gateways that the specified dataset from My workspace 
+        can be bound to.
+        
+        This API call is only relevant to datasets that have at least one 
+        on-premises connection. For datasets with cloud-only connections, 
+        this API call returns an empty list.
+
+        Returns
+        -------
+        `list`
+            List of PowerBI Gateways that can be bound to.
+        """
+        
         resource = self.base_path + "/Default.DiscoverGateways"
         return self.get_raw(resource, self.session)
 
