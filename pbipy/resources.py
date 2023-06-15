@@ -33,9 +33,7 @@ class Resource(RequestsMixin):
         return self
 
     def load(self):
-        response = self.session.get(self.base_path)
-        raw = response.json()
-
+        raw = self.get_raw(self.base_path, self.session)
         self._load_from_raw(raw)
 
 
@@ -71,7 +69,7 @@ class Dataset(Resource):
             bind_to_gateway_request.pop()
 
         resource = self.base_path + "/Default.BindToGateway"
-        
+
         self.post(resource, self.session, bind_to_gateway_request)
 
     def cancel_refresh(
