@@ -13,9 +13,10 @@ from requests.exceptions import HTTPError
 
 from pbipy import settings
 from pbipy.resources import Dataset
+from pbipy.utils import RequestsMixin
 
 
-class PowerBI:
+class PowerBI(RequestsMixin):
     """
     User Interface into Power BI Rest Api.
 
@@ -107,11 +108,7 @@ class PowerBI:
             path = "datasets"
 
         resource = self.BASE_URL + path
-        response = self.session.get(resource)
-        js = response.json()
-
-        if js["value"] == []:
-            return []
+        raw = self.get_raw(resource, self.session)
 
         datasets = [
             Dataset(
@@ -120,7 +117,7 @@ class PowerBI:
                 group_id=group,
                 raw=dataset_js,
             )
-            for dataset_js in js["value"]
+            for dataset_js in raw
         ]
 
         return datasets
@@ -158,9 +155,6 @@ class PowerBI:
             path = f"datasets/{dataset_id}"
 
         resource = self.BASE_URL + path
-        response = self.session.delete(resource)
+        
+        self.delete(resource, self.session)
 
-        if response.status_code != 200:
-            raise HTTPError(
-                f"Encountered error while trying to delete dataset. Response: {response.json()}"
-            )
