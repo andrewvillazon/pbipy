@@ -66,7 +66,7 @@ class Dataset(Resource):
         }
 
         if bind_to_gateway_request["datasourceObjectIds"] is None:
-            bind_to_gateway_request.pop()
+            bind_to_gateway_request.pop("datasourceObjectIds")
 
         resource = self.base_path + "/Default.BindToGateway"
 
