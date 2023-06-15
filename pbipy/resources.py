@@ -90,7 +90,7 @@ class Dataset(Resource):
         refresh_id: str,
     ) -> None:
         resource = self.base_path + f"/refreshes/{refresh_id}"
-        self.delete(resource)
+        self.delete(resource, self.session)
 
     def discover_gateways(
         self,
