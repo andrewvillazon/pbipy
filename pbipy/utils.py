@@ -38,6 +38,25 @@ class RequestsMixin:
         session: Session,
         success_codes: list[int] = [200, 201],
     ) -> None:
+        """
+        Make a delete request to an api endpoint.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource.
+        `session` : `Session`
+            Requests Session object used to make the request.
+        `success_codes` : `list[int]`, optional
+            HTTP response status codes that indicate a successful request. 
+            Status codes not equal to these will raise an `HTTPError`.
+
+        Raises
+        ------
+        `HTTPError`
+            If the response status code was not found in `success_codes`.
+        """        
+        
         response = session.delete(resource)
 
         if response.status_code not in success_codes:
@@ -53,7 +72,33 @@ class RequestsMixin:
         session: Session,
         payload: dict,
         success_codes: list[int] = [200, 201],
-    ) -> dict | None:
+    ) -> Response:
+        """
+        Post data to an api endpoint.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource to post to.
+        `session` : `Session`
+            Requests Session object used to make the request.
+        `payload` : `dict`
+            Data to post to the resource.
+        `success_codes` : `list[int]`, optional
+            HTTP response status codes that indicate a successful request. 
+            Status codes not equal to these will raise an `HTTPError`.
+
+        Returns
+        -------
+        `Response`
+            Response generated from the post request.
+
+        Raises
+        ------
+        `HTTPError`
+            If the response status code was not found in `success_codes`.
+        """
+
         response = session.post(resource, json=payload)
 
         if response.status_code not in success_codes:
@@ -70,6 +115,32 @@ class RequestsMixin:
         params: dict = None,
         success_codes: list[int] = [200, 201],
     ) -> Response:
+        """
+        Get a resource from an api endpoint.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource.
+        `session` : `Session`
+            Requests Session object used to make the request.
+        `params` : `dict`, optional
+            Request parameters.
+        `success_codes` : `list[int]`, optional
+            HTTP response status codes that indicate a successful request. 
+            Status codes not equal to these will raise an `HTTPError`.
+
+        Returns
+        -------
+        `Response`
+            requests Response object.
+
+        Raises
+        ------
+        `HTTPError`
+            If the response status code was not found in `success_codes`.
+        """        
+        
         response = session.get(resource, params=params)
 
         if response.status_code not in success_codes:
@@ -87,6 +158,29 @@ class RequestsMixin:
         session: Session,
         **kwargs: dict,
     ) -> dict | list:
+        """
+        Request an api resource, parse the response json, and return the
+        parsed json.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the api resource.
+        `session` : `Session`
+            Requests Session object used to make the request.
+
+        Returns
+        -------
+        `dict | list`
+            Returns either the dict representation of the resource, or list
+            of resources.
+
+        Raises
+        ------
+        `Exception`
+            Error encountered during the request process.
+        """
+
         try:
             response = self.get(resource, session, **kwargs)
             raw = response.json()
