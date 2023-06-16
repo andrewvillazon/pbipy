@@ -433,7 +433,14 @@ class Dataset(Resource):
         self,
         target_storage_mode: str,
     ) -> None:
-        
+        """
+        Update the properties of the dataset.
+
+        Parameters
+        ----------
+        `target_storage_mode` : `str`
+            The dataset storage mode, .e.g, "PremiumFiles", or "Abf".
+        """
         update_dataset_request = {
             "targetStorageMode": target_storage_mode
         }
