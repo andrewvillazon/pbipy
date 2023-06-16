@@ -51,6 +51,36 @@ class Dataset(Resource):
         # Supports creating from a list of js, e.g., get_datasets endpoint
         if raw:
             self._load_from_raw(raw)
+    
+    def add_dataset_user(
+        self,
+        identifier: str,
+        principal_type: str,
+        dataset_user_access_right: str,
+    ) -> None:
+        """
+        Grants the specified user's permissions to the specified dataset.
+
+        Parameters
+        ----------
+        `identifier` : `str`
+            For principal type `User`, provide the UPN. Otherwise provide
+            the object ID of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `dataset_user_access_right` : `str`
+            The access right to grant to the user for the dataset, e.g.,
+            "Read", "ReadExplore", "ReadReshare", or "ReadReshareExplore".
+        """
+
+        resource = self.base_path + "/users"
+        dataset_user_access = {
+            "identifier": identifier,
+            "principalType": principal_type,
+            "datasetUserAccessRight": dataset_user_access_right,
+        }
+
+        self.post(resource, self.session, dataset_user_access)
 
     def bind_to_gateway(
         self,
@@ -223,36 +253,6 @@ class Dataset(Resource):
         raw = self.get_raw(resource, self.session, params)
 
         return raw
-
-    def post_dataset_user(
-        self,
-        identifier: str,
-        principal_type: str,
-        dataset_user_access_right: str,
-    ) -> None:
-        """
-        Grants the specified user's permissions to the specified dataset.
-
-        Parameters
-        ----------
-        `identifier` : `str`
-            For principal type `User`, provide the UPN. Otherwise provide
-            the object ID of the principal.
-        `principal_type` : `str`
-            The principal type, e.g., "App", "Group", "None", or "User".
-        `dataset_user_access_right` : `str`
-            The access right to grant to the user for the dataset, e.g.,
-            "Read", "ReadExplore", "ReadReshare", or "ReadReshareExplore".
-        """
-
-        resource = self.base_path + "/users"
-        dataset_user_access = {
-            "identifier": identifier,
-            "principalType": principal_type,
-            "datasetUserAccessRight": dataset_user_access_right,
-        }
-
-        self.post(resource, self.session, dataset_user_access)
 
     def users(
         self,
