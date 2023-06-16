@@ -410,6 +410,17 @@ class Dataset(Resource):
     def take_over(
         self,
     ) -> None:
+        """
+        Transfer ownership of the dataset to the current authorized user.
+
+        Raises
+        ------
+        `TypeError`
+            If the dataset does not have a group_id. In other words, can't
+            take over dataset in MyWorkspace, the authorized user already
+            owns these.
+        """
+
         if not self.group_id:
             raise TypeError(
                 "Dataset does not have a group_id. Taking over a dataset can only be performed on a Dataset in a Group."
