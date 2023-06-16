@@ -51,7 +51,7 @@ class Dataset(Resource):
         # Supports creating from a list of js, e.g., get_datasets endpoint
         if raw:
             self._load_from_raw(raw)
-    
+
     def add_dataset_user(
         self,
         identifier: str,
@@ -131,6 +131,21 @@ class Dataset(Resource):
 
         resource = self.base_path + f"/refreshes/{refresh_id}"
         self.delete(resource, self.session)
+
+    def datasources(
+        self,
+    ) -> list[dict]:
+        """
+        Returns a list of datasources for the dataset.
+
+        Returns
+        -------
+        `list[dict]`
+            List of PowerBI datasources for the dataset.
+        """
+
+        resource = self.base_path + "/datasources"
+        return self.get_raw(resource, self.session)
 
     def discover_gateways(
         self,

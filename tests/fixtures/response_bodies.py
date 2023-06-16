@@ -100,3 +100,38 @@ def get_dataset_users():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_datasources():
+    return """
+    {
+      "value": [
+        {
+          "datasourceType": "AzureBlobs",
+          "datasourceId": "e0315274-90b6-4fc0-abf2-2d60d448cb04",
+          "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+          "connectionDetails": {
+            "account": "myAccount",
+            "domain": "blob.core.windows.net"
+          }
+        },
+        {
+          "datasourceType": "File",
+          "connectionDetails": {
+            "path": "c:\\\\users\\\\username\\\\documents\\\\orders1.xlsx"
+          },
+          "datasourceId": "33cc5222-3fb9-44f7-b19d-ffbff18aaaf5",
+          "gatewayId": "0a2dafe6-0e93-4120-8d2c-fae123c111b1"
+        },
+        {
+          "datasourceType": "Exchange",
+          "datasourceId": "4d126fc8-1568-46aa-ba16-ccf19b18f012",
+          "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+          "connectionDetails": {
+            "emailAddress": "john@contoso.com"
+          }
+        }
+      ]
+    }
+    """

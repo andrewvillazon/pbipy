@@ -525,3 +525,38 @@ def test_users_result(get_dataset_users):
 
     assert isinstance(users, list)
     assert len(users) == 3
+
+
+@responses.activate
+def test_datasources_call(get_datasources):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.datasources()
+
+
+@responses.activate
+def test_datasources_result(get_datasources):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    datasources = dataset.datasources()
+
+    assert isinstance(datasources, list)
+    assert len(datasources) == 3
