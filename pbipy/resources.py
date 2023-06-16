@@ -56,7 +56,7 @@ class Dataset(Resource):
         self,
         identifier: str,
         principal_type: str,
-        dataset_user_access_right: str,
+        access_right: str,
     ) -> None:
         """
         Grants the specified user's permissions to the specified dataset.
@@ -68,16 +68,17 @@ class Dataset(Resource):
             the object ID of the principal.
         `principal_type` : `str`
             The principal type, e.g., "App", "Group", "None", or "User".
-        `dataset_user_access_right` : `str`
-            The access right to grant to the user for the dataset, e.g.,
-            "Read", "ReadExplore", "ReadReshare", or "ReadReshareExplore".
+        `access_right` : `str`
+            The Dataset User Access Right to grant to the user for the
+            dataset, e.g.,"Read", "ReadExplore", "ReadReshare", or
+            "ReadReshareExplore".
         """
 
         resource = self.base_path + "/users"
         dataset_user_access = {
             "identifier": identifier,
             "principalType": principal_type,
-            "datasetUserAccessRight": dataset_user_access_right,
+            "datasetUserAccessRight": access_right,
         }
 
         self.post(resource, self.session, dataset_user_access)
