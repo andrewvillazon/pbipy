@@ -233,7 +233,7 @@ def test_post_dataset_user_call():
         session=requests.Session(),
     )
 
-    dataset.add_dataset_user("john@contoso.com", "User", "Read")
+    dataset.add_user("john@contoso.com", "User", "Read")
 
 
 @responses.activate
@@ -265,7 +265,7 @@ def test_post_dataset_raises_http_error():
     )
 
     with pytest.raises(HTTPError):
-        dataset.add_dataset_user("john@contoso.com", "User", "Read")
+        dataset.add_user("john@contoso.com", "User", "Read")
 
 
 # TODO: Tests for request_mixin.delete()

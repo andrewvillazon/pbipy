@@ -52,7 +52,7 @@ class Dataset(Resource):
         if raw:
             self._load_from_raw(raw)
 
-    def add_dataset_user(
+    def add_user(
         self,
         identifier: str,
         principal_type: str,
