@@ -256,3 +256,48 @@ def test_request_mixin_put_raises(request_mixin, session):
 
     with pytest.raises(HTTPError):
         request_mixin.put(resource, session, payload)
+
+
+@responses.activate
+def test_request_mixin_patch(request_mixin, session):
+    json_params = {
+        "targetStorageMode": "PremiumFiles",
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    payload = {
+        "targetStorageMode": "PremiumFiles",
+    }
+
+    request_mixin.patch(resource, session, payload)
+
+
+@responses.activate
+def test_request_mixin_patch_raises(request_mixin, session):
+    json_params = {
+        "targetStorageMode": "PremiumFiles",
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body="{}",
+        status=400,
+    )
+
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    payload = {
+        "targetStorageMode": "PremiumFiles",
+    }
+
+    with pytest.raises(HTTPError):
+        request_mixin.patch(resource, session, payload)

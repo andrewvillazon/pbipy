@@ -96,6 +96,48 @@ class RequestsMixin:
                 {json.dumps(response.json(), indent=True)})"""
             )
 
+    def patch(
+        self,
+        resource: str,
+        session: Session,
+        payload: dict = None,
+        success_codes: list[int] = [200, 201],
+    ) -> Response:
+        """
+        Patch a resource.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource to patch.
+        `session` : `Session`
+            Requests Session object used to make the request.
+        `payload` : `dict`
+            Data to patch on the resource.
+        `success_codes` : `list[int]`, optional
+            HTTP response status codes that indicate a successful request.
+            Status codes not equal to these will raise an `HTTPError`.
+
+        Returns
+        -------
+        `Response`
+            Response generated from the patch request.
+
+        Raises
+        ------
+        `HTTPError`
+            If the response status code was not found in `success_codes`.
+        """
+
+        response = session.patch(resource, json=payload)
+
+        if response.status_code not in success_codes:
+            raise HTTPError(
+                f"Encountered api error. Response: {json.dumps(response.json(), indent=True)})"
+            )
+
+        return response
+
     def post(
         self,
         resource: str,
