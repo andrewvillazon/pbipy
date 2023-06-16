@@ -100,7 +100,7 @@ class RequestsMixin:
         self,
         resource: str,
         session: Session,
-        payload: dict,
+        payload: dict = None,
         success_codes: list[int] = [200, 201],
     ) -> Response:
         """

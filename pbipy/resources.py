@@ -271,18 +271,18 @@ class Dataset(Resource):
         Parameters
         ----------
         `notify_option` : `str`
-            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure", 
+            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
             or "NoNotification".
         `apply_refresh_policy` : bool, optional
             Determine if the policy is applied or not.
         `commit_mode` : `str`, optional
-            Determines if objects will be committed in batches or only when 
+            Determines if objects will be committed in batches or only when
             complete, e.g., "PartialBatch", or "Transactional".
         `effective_date` : `str`, optional
-            If an incremental refresh policy is applied, the `effective_date` 
+            If an incremental refresh policy is applied, the `effective_date`
             parameter overrides the current date.
         `max_parallelism` : `int`, optional
-            The maximum number of threads on which to run parallel processing 
+            The maximum number of threads on which to run parallel processing
             commands.
         `objects` : `list[dict]`, optional
             A list of objects to be processed, e.g.,
@@ -299,13 +299,13 @@ class Dataset(Resource):
         `retry_count` : `int`, optional
             Number of times the operation will retry before failing.
         `type` : `str`, optional
-           The type of processing to perform, e.g., "Automatic", "Calculate", 
+           The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
-        
+
         Notes
         -----
-        See here for request options in greater detail: 
-        
+        See here for request options in greater detail:
+
         https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/refresh-dataset#definitions
         """
 
@@ -406,6 +406,17 @@ class Dataset(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def take_over(
+        self,
+    ) -> None:
+        if not self.group_id:
+            raise TypeError(
+                "Dataset does not have a group_id. Taking over a dataset can only be performed on a Dataset in a Group."
+            )
+        
+        resource = self.base_path + "/Default.TakeOver"
+        self.post(resource, self.session)
 
     def update_user(
         self,
