@@ -869,3 +869,125 @@ def test_update_call():
     )
 
     dataset.update(target_storage_mode="PremiumFiles")
+
+
+@responses.activate
+def test_update_datasources_single():
+    json_params = {
+        "updateDetails": [
+            {
+                "datasourceSelector": {
+                    "datasourceType": "Sql",
+                    "connectionDetails": {
+                        "server": "My-Sql-Server",
+                        "database": "My-Sql-Database",
+                    },
+                },
+                "connectionDetails": {
+                    "server": "New-Sql-Server",
+                    "database": "New-Sql-Database",
+                },
+            },
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateDatasources",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    update_details = {
+        "datasourceSelector": {
+            "datasourceType": "Sql",
+            "connectionDetails": {
+                "server": "My-Sql-Server",
+                "database": "My-Sql-Database",
+            },
+        },
+        "connectionDetails": {
+            "server": "New-Sql-Server",
+            "database": "New-Sql-Database",
+        },
+    }
+
+    dataset.update_datasources(update_details=update_details)
+
+
+@responses.activate
+def test_update_datasources_multi():
+    json_params = {
+        "updateDetails": [
+            {
+                "datasourceSelector": {
+                    "datasourceType": "Sql",
+                    "connectionDetails": {
+                        "server": "My-Sql-Server",
+                        "database": "My-Sql-Database",
+                    },
+                },
+                "connectionDetails": {
+                    "server": "New-Sql-Server",
+                    "database": "New-Sql-Database",
+                },
+            },
+            {
+                "datasourceSelector": {
+                    "datasourceType": "OData",
+                    "connectionDetails": {
+                        "url": "http://services.odata.org/V4/Northwind/Northwind.svc"
+                    },
+                },
+                "connectionDetails": {
+                    "url": "http://services.odata.org/V4/Odata/Northwind.svc"
+                },
+            },
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateDatasources",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    update_details = [
+        {
+            "datasourceSelector": {
+                "datasourceType": "Sql",
+                "connectionDetails": {
+                    "server": "My-Sql-Server",
+                    "database": "My-Sql-Database",
+                },
+            },
+            "connectionDetails": {
+                "server": "New-Sql-Server",
+                "database": "New-Sql-Database",
+            },
+        },
+        {
+            "datasourceSelector": {
+                "datasourceType": "OData",
+                "connectionDetails": {
+                    "url": "http://services.odata.org/V4/Northwind/Northwind.svc"
+                },
+            },
+            "connectionDetails": {
+                "url": "http://services.odata.org/V4/Odata/Northwind.svc"
+            },
+        },
+    ]
+
+    dataset.update_datasources(update_details=update_details)

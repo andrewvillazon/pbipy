@@ -441,11 +441,38 @@ class Dataset(Resource):
         `target_storage_mode` : `str`
             The dataset storage mode, .e.g, "PremiumFiles", or "Abf".
         """
-        update_dataset_request = {
-            "targetStorageMode": target_storage_mode
-        }
+        update_dataset_request = {"targetStorageMode": target_storage_mode}
 
         self.patch(self.base_path, self.session, update_dataset_request)
+
+    def update_datasources(
+        self,
+        update_details: dict | list[dict],
+    ) -> None:
+        """
+        Update the data sources of the dataset.
+
+        Parameters
+        ----------
+        `update_details` : `dict | list[dict]`
+            A dict, or list of dicts, representing the updates.
+
+        Notes
+        -----
+        See here for how to construct the update details:
+
+        https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-datasources#examples
+        """
+
+        if isinstance(update_details, dict):
+            update_details_prepared = [update_details]
+        else:
+            update_details_prepared = update_details
+
+        update_request = {"updateDetails": update_details_prepared}
+
+        resource = self.base_path + "/Default.UpdateDatasources"
+        self.post(resource, self.session, update_request)
 
     def update_user(
         self,
