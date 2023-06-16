@@ -381,7 +381,7 @@ class Dataset(Resource):
 
     def refresh_schedule(
         self,
-        direct_query=False,
+        direct_query:bool=False,
     ) -> dict:
         """
         Return the Refresh Schedule or Direct Query Refresh Schedule for
