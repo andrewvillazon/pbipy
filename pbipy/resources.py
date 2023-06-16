@@ -237,6 +237,21 @@ class Dataset(Resource):
 
         return raw
 
+    def parameters(
+        self,
+    ) -> list[dict]:
+        """
+        Return a list of parameters for the dataset.
+
+        Returns
+        -------
+        `list[dict]`
+            Parameter list.
+        """
+
+        resource = self.base_path + "/parameters"
+        return self.get_raw(resource, self.session)
+
     def refresh_history(
         self,
         top: int = None,

@@ -626,3 +626,39 @@ def test_refresh_schedule_direct_query_result(get_direct_query_refresh_schedule)
     refresh_schedule = dataset.refresh_schedule(direct_query=True)
 
     assert isinstance(refresh_schedule, dict)
+
+
+@responses.activate
+def test_parameters_call(get_parameters):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters"
+        ,body=get_parameters
+        ,content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.parameters()
+
+
+@responses.activate
+def test_parameters_result(get_parameters):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters"
+        ,body=get_parameters
+        ,content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    parameters = dataset.parameters()
+
+    assert isinstance(parameters, list)
+    assert all(isinstance(parameter, dict) for parameter in parameters)
+    assert len(parameters) == 6
