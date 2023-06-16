@@ -78,15 +78,15 @@ class RequestsMixin:
         `session` : `Session`
             Requests Session object used to make the request.
         `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request. 
+            HTTP response status codes that indicate a successful request.
             Status codes not equal to these will raise an `HTTPError`.
 
         Raises
         ------
         `HTTPError`
             If the response status code was not found in `success_codes`.
-        """        
-        
+        """
+
         response = session.delete(resource)
 
         if response.status_code not in success_codes:
@@ -115,7 +115,7 @@ class RequestsMixin:
         `payload` : `dict`
             Data to post to the resource.
         `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request. 
+            HTTP response status codes that indicate a successful request.
             Status codes not equal to these will raise an `HTTPError`.
 
         Returns
@@ -138,6 +138,45 @@ class RequestsMixin:
 
         return response
 
+    def post_raw(
+        self,
+        resource: str,
+        session: Session,
+        payload: dict,
+        **kwargs: dict,
+    ) -> dict:
+        """
+        Make a post request and return any resulting json.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource to post to.
+        `session` : `Session`
+            Requests Session to use to make the request.
+        `payload` : `dict`
+            Request data.
+
+        Returns
+        -------
+        `dict`
+            Request json. `response.json()`
+
+        Raises
+        ------
+        `Exception`
+            If encountered error with the request.
+        """
+
+        try:
+            response = self.post(resource, session, payload, **kwargs)
+            raw = response.json()
+            
+            return raw
+        
+        except Exception as e:
+            raise e
+
     def get(
         self,
         resource: str,
@@ -157,7 +196,7 @@ class RequestsMixin:
         `params` : `dict`, optional
             Request parameters.
         `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request. 
+            HTTP response status codes that indicate a successful request.
             Status codes not equal to these will raise an `HTTPError`.
 
         Returns
@@ -169,8 +208,8 @@ class RequestsMixin:
         ------
         `HTTPError`
             If the response status code was not found in `success_codes`.
-        """        
-        
+        """
+
         response = session.get(resource, params=params)
 
         if response.status_code not in success_codes:
