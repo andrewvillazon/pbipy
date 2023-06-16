@@ -45,3 +45,33 @@ def get_datasets():
       ]
     }
     """
+
+
+@pytest.fixture
+def execute_queries():
+    return """
+    {
+      "results": [
+        {
+          "tables": [
+            {
+              "rows": [
+                {
+                  "MyTable[Year]": 2010,
+                  "MyTable[Quarter]": "Q1"
+                },
+                {
+                  "MyTable[Year]": 2010,
+                  "MyTable[Quarter]": "Q2"
+                },
+                {
+                  "MyTable[Year]": 2011,
+                  "MyTable[Quarter]": "Q1"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+}
+    """

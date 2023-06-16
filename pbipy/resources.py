@@ -1,5 +1,5 @@
 from pbipy import settings
-from pbipy.utils import RequestsMixin, to_snake_case
+from pbipy.utils import RequestsMixin, remove_no_values, to_snake_case
 
 
 class Resource(RequestsMixin):
@@ -58,16 +58,16 @@ class Dataset(Resource):
         datasource_object_ids: list = None,
     ) -> None:
         """
-        Binds the specified dataset from MyWorkspace or group to the specified 
-        gateway, optionally with a given set of data source IDs. If you 
-        don't supply a specific data source ID, the dataset will be bound 
+        Binds the specified dataset from MyWorkspace or group to the specified
+        gateway, optionally with a given set of data source IDs. If you
+        don't supply a specific data source ID, the dataset will be bound
         to the first matching data source in the gateway.
 
         Parameters
         ----------
         `gateway_object_id` : `str`
-            The gateway ID. When using a gateway cluster, the gateway ID 
-            refers to the primary (first) gateway in the cluster and is 
+            The gateway ID. When using a gateway cluster, the gateway ID
+            refers to the primary (first) gateway in the cluster and is
             similar to the gateway cluster ID.
         `datasource_object_ids` : `list`, optional
             The unique identifiers for the data sources in the gateway.
@@ -90,7 +90,7 @@ class Dataset(Resource):
         refresh_id: str,
     ) -> None:
         """
-        Cancels the specified refresh operation for the specified dataset 
+        Cancels the specified refresh operation for the specified dataset
         from MyWorkspace or group.
 
         Parameters
@@ -106,11 +106,11 @@ class Dataset(Resource):
         self,
     ) -> list:
         """
-        Returns a list of gateways that the specified dataset from My workspace 
+        Returns a list of gateways that the specified dataset from My workspace
         can be bound to.
-        
-        This API call is only relevant to datasets that have at least one 
-        on-premises connection. For datasets with cloud-only connections, 
+
+        This API call is only relevant to datasets that have at least one
+        on-premises connection. For datasets with cloud-only connections,
         this API call returns an empty list.
 
         Returns
@@ -118,9 +118,79 @@ class Dataset(Resource):
         `list`
             List of PowerBI Gateways that can be bound to.
         """
-        
+
         resource = self.base_path + "/Default.DiscoverGateways"
         return self.get_raw(resource, self.session)
+
+    def execute_queries(
+        self,
+        queries: str | list[str],
+        impersonated_user_name: str = None,
+        include_nulls: bool = None,
+    ) -> dict:
+        """
+        Executes Data Analysis Expressions (DAX) queries against the provided 
+        dataset.
+
+        DAX query errors will result in:
+
+            A response error, such as DAX query failure.
+            A failure HTTP status code (400).
+
+        A query that requests more than one table, or more than the allowed 
+        number of table rows, will result in:
+
+            Limited data being returned.
+            A response error, such as More than one result table in a query
+            or More than {allowed number} rows in a query result.
+            
+            A successful HTTP status code (200).
+
+        Columns that are fully qualified in the query will be returned with 
+        a fully qualified name, for example, MyTable[MyColumn]. Columns 
+        that are renamed or created in the query will be returned within 
+        square bracket, for example, `[MyNewColumn]`.
+
+        Parameters
+        ----------
+        `queries` : `str | list[str]`
+            Query or list of queries to execute against the dataset.
+        `impersonated_user_name` : `str`, optional
+            The UPN of a user to be impersonated. If the model is not RLS 
+            enabled, this will be ignored.
+        `include_nulls` : `bool`, optional
+            Whether null (blank) values should be included in the result 
+            set. If unspecified, the default value is `false`.
+
+        Returns
+        -------
+        `dict`
+            Dict containing the results of the execution.
+        """
+
+        if isinstance(queries, str):
+            qs = [{"query": queries}]
+        else:
+            qs = [{"query": query} for query in queries]
+
+        dataset_execute_queries_request = {
+            "queries": qs,
+            "serializerSettings": {
+                "includeNulls": include_nulls,
+            },
+            "impersonatedUserName": impersonated_user_name,
+        }
+        prepared_request = remove_no_values(dataset_execute_queries_request)
+
+        resource = self.base_path + "/executeQueries"
+
+        raw = self.post_raw(
+            resource,
+            self.session,
+            payload=prepared_request,
+        )
+
+        return raw
 
     def get_refresh_history(
         self,

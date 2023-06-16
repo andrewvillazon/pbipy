@@ -336,6 +336,7 @@ def test_cancel_refresh():
 
     dataset.cancel_refresh("87f31ef7-1e3a-4006-9b0b-191693e79e9e")
 
+
 @responses.activate
 def test_discover_gateways():
     responses.get(
@@ -366,7 +367,7 @@ def test_discover_gateways():
     gateways = dataset.discover_gateways()
 
     assert isinstance(gateways, list)
-    assert all(isinstance(gateway,dict) for gateway in gateways)
+    assert all(isinstance(gateway, dict) for gateway in gateways)
 
 
 @responses.activate
@@ -382,3 +383,108 @@ def test_discover_gateways_call():
         session=requests.Session(),
     )
     dataset.discover_gateways()
+
+
+@responses.activate
+def test_execute_queries_call(execute_queries):
+    json_params = {
+        "queries": [
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+        ],
+        "impersonatedUserName": "someuser@mycompany.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=execute_queries,
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    query = "EVALUATE VALUES(MyTable)"
+
+    dataset.execute_queries(
+        query,
+        impersonated_user_name="someuser@mycompany.com",
+    )
+
+
+@responses.activate
+def test_execute_queries_call_multi_query(execute_queries):
+    json_params = {
+        "queries": [
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+        ],
+        "impersonatedUserName": "someuser@mycompany.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=execute_queries,
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    queries = [
+        "EVALUATE VALUES(MyTable)",
+        "EVALUATE VALUES(MyTable)",
+    ]
+
+    dataset.execute_queries(
+        queries,
+        impersonated_user_name="someuser@mycompany.com",
+    )
+
+
+@responses.activate
+def test_execute_queries_call_result(execute_queries):
+    json_params = {
+        "queries": [
+            {
+                "query": "EVALUATE VALUES(MyTable)",
+            },
+        ],
+        "impersonatedUserName": "someuser@mycompany.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/executeQueries",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=execute_queries,
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    queries = "EVALUATE VALUES(MyTable)"
+
+    result = dataset.execute_queries(
+        queries,
+        impersonated_user_name="someuser@mycompany.com",
+    )
+
+    assert isinstance(result, dict)
+    assert "results" in result
