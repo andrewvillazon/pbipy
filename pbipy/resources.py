@@ -192,7 +192,7 @@ class Dataset(Resource):
 
         return raw
 
-    def get_refresh_history(
+    def refresh_history(
         self,
         top: int = None,
     ) -> list[dict]:

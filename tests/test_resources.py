@@ -171,7 +171,7 @@ def test_get_refresh_history():
         session=requests.Session(),
     )
 
-    refresh_history = dataset.get_refresh_history(top=2)
+    refresh_history = dataset.refresh_history(top=2)
 
     assert isinstance(refresh_history, list)
     assert all(isinstance(refresh, dict) for refresh in refresh_history)
@@ -191,7 +191,7 @@ def test_get_refresh_history_calls_correct_url():
         session=requests.Session(),
     )
 
-    dataset.get_refresh_history(top=2)
+    dataset.refresh_history(top=2)
 
 
 @responses.activate
@@ -209,7 +209,7 @@ def test_get_refresh_history_raises_http_error():
     )
 
     with pytest.raises(HTTPError):
-        dataset.get_refresh_history()
+        dataset.refresh_history()
 
 
 @responses.activate
