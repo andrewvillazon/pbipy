@@ -53,7 +53,9 @@ def request_mixin():
 def session():
     return requests.Session()
 
+
 # TODO: Add test for post_raw()
+
 
 @responses.activate
 def test_request_mixin_post(request_mixin, session):
