@@ -129,7 +129,7 @@ class Dataset(Resource):
         include_nulls: bool = None,
     ) -> dict:
         """
-        Executes Data Analysis Expressions (DAX) queries against the provided 
+        Executes Data Analysis Expressions (DAX) queries against the provided
         dataset.
 
         DAX query errors will result in:
@@ -137,18 +137,18 @@ class Dataset(Resource):
             A response error, such as DAX query failure.
             A failure HTTP status code (400).
 
-        A query that requests more than one table, or more than the allowed 
+        A query that requests more than one table, or more than the allowed
         number of table rows, will result in:
 
             Limited data being returned.
             A response error, such as More than one result table in a query
             or More than {allowed number} rows in a query result.
-            
+
             A successful HTTP status code (200).
 
-        Columns that are fully qualified in the query will be returned with 
-        a fully qualified name, for example, MyTable[MyColumn]. Columns 
-        that are renamed or created in the query will be returned within 
+        Columns that are fully qualified in the query will be returned with
+        a fully qualified name, for example, MyTable[MyColumn]. Columns
+        that are renamed or created in the query will be returned within
         square bracket, for example, `[MyNewColumn]`.
 
         Parameters
@@ -156,10 +156,10 @@ class Dataset(Resource):
         `queries` : `str | list[str]`
             Query or list of queries to execute against the dataset.
         `impersonated_user_name` : `str`, optional
-            The UPN of a user to be impersonated. If the model is not RLS 
+            The UPN of a user to be impersonated. If the model is not RLS
             enabled, this will be ignored.
         `include_nulls` : `bool`, optional
-            Whether null (blank) values should be included in the result 
+            Whether null (blank) values should be included in the result
             set. If unspecified, the default value is `false`.
 
         Returns
@@ -253,3 +253,19 @@ class Dataset(Resource):
         }
 
         self.post(resource, self.session, dataset_user_access)
+
+    def users(
+        self,
+    ) -> list[dict]:
+        """
+        Returns a list of principals that have access to the dataset.
+
+        Returns
+        -------
+        `list[dict]`
+            List of principals, e.g., Users, Groups, with access to the
+            dataset.
+        """
+
+        resource = self.base_path + "/users"
+        return self.get_raw(resource, self.session)

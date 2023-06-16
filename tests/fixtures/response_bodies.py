@@ -75,3 +75,28 @@ def execute_queries():
       ]
 }
     """
+
+
+@pytest.fixture
+def get_dataset_users():
+    return """
+    {
+      "value": [
+        {
+          "identifier": "john@contoso.com",
+          "principalType": "User",
+          "datasetUserAccessRight": "Read"
+        },
+        {
+          "identifier": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+          "principalType": "Group",
+          "datasetUserAccessRight": "ReadReshare"
+        },
+        {
+          "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "principalType": "App",
+          "datasetUserAccessRight": "ReadWriteReshareExplore"
+        }
+      ]
+    }
+    """

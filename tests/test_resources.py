@@ -488,3 +488,40 @@ def test_execute_queries_call_result(execute_queries):
 
     assert isinstance(result, dict)
     assert "results" in result
+
+
+@responses.activate
+def test_users_call(get_dataset_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        body=get_dataset_users,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    dataset.users()
+
+
+@responses.activate
+def test_users_result(get_dataset_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        body=get_dataset_users,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    users = dataset.users()
+
+    assert isinstance(users, list)
+    assert len(users) == 3
