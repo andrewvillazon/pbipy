@@ -183,7 +183,7 @@ class RequestsMixin:
         session: Session,
         payload: dict,
         success_codes: list[int] = [200, 201],
-    ) -> None:
+    ) -> Response:
         """
         Make a put request to an api endpoint.
 

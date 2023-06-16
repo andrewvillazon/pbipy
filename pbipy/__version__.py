@@ -1,7 +1,7 @@
 __title__ = "pbipy"
 __description__ = "A Power BI Rest API wrapper for Python."
 __url__ = "https://github.com/andrewvillazon/pbipy"
-__version__ = "2.0.2-alpha"
+__version__ = "2.0.3-alpha"
 __author__ = "Andrew Villazon"
 __author_email__ = "andrew.villazon@gmail.com"
 __license__ = "Apache 2.0"
