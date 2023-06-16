@@ -1041,6 +1041,7 @@ def test_update_refresh_schedule():
         local_time_zone_id="UTC",
     )
 
+
 @responses.activate
 def test_update_refresh_schedule_direct_query():
     json_params = {
@@ -1093,3 +1094,75 @@ def test_update_refresh_schedule_raises():
     )
     with pytest.raises(ValueError):
         dataset.update_refresh_schedule()
+
+
+@responses.activate
+def test_update_parameters_single():
+    json_params = {
+        "updateDetails": [
+            {
+                "name": "DatabaseName",
+                "newValue": "NewDB",
+            },
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    update_details = {
+        "name": "DatabaseName",
+        "newValue": "NewDB",
+    }
+
+    dataset.update_parameters(update_details)
+
+
+@responses.activate
+def test_update_parameters_multiple():
+    json_params = {
+        "updateDetails": [
+            {
+                "name": "DatabaseName",
+                "newValue": "NewDB",
+            },
+            {
+                "name": "MaxId",
+                "newValue": "5678",
+            },
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.UpdateParameters",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    update_details = [
+        {
+            "name": "DatabaseName",
+            "newValue": "NewDB",
+        },
+        {
+            "name": "MaxId",
+            "newValue": "5678",
+        },
+    ]
+
+    dataset.update_parameters(update_details)

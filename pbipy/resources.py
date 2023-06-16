@@ -474,6 +474,45 @@ class Dataset(Resource):
         resource = self.base_path + "/Default.UpdateDatasources"
         self.post(resource, self.session, update_request)
 
+    def update_parameters(
+        self,
+        update_details: dict | list[dict],
+    ) -> None:
+        """
+        Updates the parameters values for the dataset.
+
+        Parameters
+        ----------
+        update_details : `dict | list[dict]`
+            Dict, or list of dicts, of the parameters to update.
+
+            Parameter updates take the form:
+
+            ```
+            {
+                "name": "parameter_name",
+                "newValue": "new_value"
+            }
+            ```
+        Notes
+        -----
+        See more here:
+
+        https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-parameters#example
+        """
+
+        if isinstance(update_details, dict):
+            update_details_prepared = [update_details]
+        else:
+            update_details_prepared = update_details
+
+        request_body = {
+            "updateDetails": update_details_prepared,
+        }
+
+        resource = self.base_path + "/Default.UpdateParameters"
+        self.post(resource, self.session, request_body)
+
     def update_refresh_schedule(
         self,
         notify_option: str = None,
@@ -486,9 +525,9 @@ class Dataset(Resource):
     ) -> None:
         """
         Update the Refresh Schedule or Direct Query Refresh Schedule of the
-        dataset. 
-        
-        Providing `direct_query=True` targets the Direct Query 
+        dataset.
+
+        Providing `direct_query=True` targets the Direct Query
         Refresh Schedule.
 
         Parameters
@@ -500,13 +539,13 @@ class Dataset(Resource):
             Target the Direct Query Refresh Schedule (if there is one) of the
             dataset.
         `days` : list[str], optional
-            The full name of days on which to execute the refresh,e.g, "Monday", 
+            The full name of days on which to execute the refresh,e.g, "Monday",
             "Tuesday", "Wednesday", etc.
         `enabled` : bool, optional
             Whether the refresh is enabled.
         `frequency` : int, optional
-            Applies to Direct Query Refresh Schedule only. The interval in minutes 
-            between successive refreshes. Supported values are 15, 30, 60, 120, 
+            Applies to Direct Query Refresh Schedule only. The interval in minutes
+            between successive refreshes. Supported values are 15, 30, 60, 120,
             and 180.
 
             If `frequency` is supplied and `direct_query` is `false`, then `frequency`
@@ -514,7 +553,7 @@ class Dataset(Resource):
         `local_time_zone_id` : `str`, optional
             _The ID of the time zone to use, e.g, "UTC".
         `times` : list[str], optional
-            The times of day to execute the refresh expressed as hh:mm, e.g., 
+            The times of day to execute the refresh expressed as hh:mm, e.g.,
             "07:00", "16:00", etc.
 
         Raises
@@ -538,20 +577,21 @@ class Dataset(Resource):
 
         if not direct_query:
             refresh_schedule_request.pop("frequency", None)
-        
+
         request_body = remove_no_values(refresh_schedule_request)
 
         if request_body in [None, {}]:
-            raise ValueError("No options were provided to update. Please specify an option to update.")
-        
+            raise ValueError(
+                "No options were provided to update. Please specify an option to update."
+            )
+
         # Check which refresh schedule we're updating
         if direct_query:
             resource = self.base_path + "/directQueryRefreshSchedule"
         else:
             resource = self.base_path + "/refreshSchedule"
-        
-        self.patch(resource, self.session, request_body)
 
+        self.patch(resource, self.session, request_body)
 
     def update_user(
         self,
