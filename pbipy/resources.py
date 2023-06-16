@@ -258,7 +258,7 @@ class Dataset(Resource):
         refresh_id: str,
     ) -> dict:
         """
-        Returns execution details of an enhanced refresh operation for 
+        Returns execution details of an enhanced refresh operation for
         the dataset.
 
         Parameters
@@ -334,6 +334,37 @@ class Dataset(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def update_user(
+        self,
+        identifier: str,
+        principal_type: str,
+        access_right: str,
+    ) -> None:
+        """
+        Updates the existing permissions for a user of the dataset to the
+        specified permissions.
+
+        Parameters
+        ----------
+        `identifier` : `str`
+            For principal type User, provide the UPN. Otherwise provide
+            the object ID of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `access_right` : `str`
+            The Dataset User Access Right to grant to the user, e.g.,"Read",
+            "ReadExplore", "ReadReshare", or "ReadReshareExplore".
+        """
+
+        resource = self.base_path + "/users"
+        dataset_user_access = {
+            "identifier": identifier,
+            "principalType": principal_type,
+            "datasetUserAccessRight": access_right,
+        }
+
+        self.put(resource, self.session, dataset_user_access)
 
     def users(
         self,

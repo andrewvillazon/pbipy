@@ -697,3 +697,59 @@ def test_refresh_details_result(get_refresh_execution_details):
 
     assert isinstance(refresh_detail, dict)
     assert len(refresh_detail["objects"]) == 18
+
+
+@responses.activate
+def test_update_user_call():
+    json_params = {
+        "datasetUserAccessRight": "Read",
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+    }
+
+    responses.put(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    dataset.update_user("john@contoso.com", "User", "Read")
+
+
+@responses.activate
+def test_update_user_raises_http_error():
+    json_params = {
+        "datasetUserAccessRight": "Read",
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+    }
+
+    responses.put(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        status=400,
+        json={
+            "error": {
+                "code": "InvalidRequest",
+                "message": "Parameter identifier is missing or invalid",
+            }
+        },
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    with pytest.raises(HTTPError):
+        dataset.update_user("john@contoso.com", "User", "Read")
