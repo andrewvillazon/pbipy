@@ -171,11 +171,55 @@ class RequestsMixin:
         try:
             response = self.post(resource, session, payload, **kwargs)
             raw = response.json()
-            
+
             return raw
-        
+
         except Exception as e:
             raise e
+
+    def put(
+        self,
+        resource: str,
+        session: Session,
+        payload: dict,
+        success_codes: list[int] = [200, 201],
+    ) -> None:
+        """
+        Make a put request to an api endpoint.
+
+        Parameters
+        ----------
+        `resource` : `str`
+            URL of the resource.
+        `session` : `Session`
+            Requests Session object used to make the request.
+        `payload` : `dict`
+            Payload data to include with the put request.
+        `success_codes` : `list[int]`, optional
+            HTTP response status codes that indicate a successful request.
+            Status codes not equal to these will raise an `HTTPError`.
+
+        Returns
+        -------
+        `Response`
+            requests Response object.
+
+        Raises
+        ------
+        `HTTPError`
+            If the response status code was not found in `success_codes`.
+        """
+
+        response = session.put(resource, json=payload)
+
+        if response.status_code not in success_codes:
+            raise HTTPError(
+                f"""Encountered api error. Response: 
+                
+                {json.dumps(response.json(), indent=True)})"""
+            )
+
+        return response
 
     def get(
         self,

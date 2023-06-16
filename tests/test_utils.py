@@ -207,3 +207,52 @@ def test_request_mixin_get_raw_raises(
 
     with pytest.raises(HTTPError):
         request_mixin.get_raw(resource, session)
+
+
+@responses.activate
+def test_request_mixin_put(request_mixin, session):
+    json_params = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read",
+    }
+
+    responses.put(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users"
+    payload = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read",
+    }
+
+    request_mixin.put(resource, session, payload)
+
+
+@responses.activate
+def test_request_mixin_put_raises(request_mixin, session):
+    json_params = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read",
+    }
+
+    responses.put(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        match=[matchers.json_params_matcher(json_params)],
+        body="{}",
+        status=400,
+    )
+
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users"
+    payload = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "datasetUserAccessRight": "Read",
+    }
+
+    with pytest.raises(HTTPError):
+        request_mixin.put(resource, session, payload)
