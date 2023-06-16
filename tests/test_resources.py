@@ -991,3 +991,105 @@ def test_update_datasources_multi():
     ]
 
     dataset.update_datasources(update_details=update_details)
+
+
+@responses.activate
+def test_update_refresh_schedule():
+    json_params = {
+        "value": {
+            "days": [
+                "Sunday",
+                "Tuesday",
+                "Friday",
+                "Saturday",
+            ],
+            "times": [
+                "07:00",
+                "11:30",
+                "16:00",
+                "23:30",
+            ],
+            "localTimeZoneId": "UTC",
+        }
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshSchedule",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.update_refresh_schedule(
+        days=[
+            "Sunday",
+            "Tuesday",
+            "Friday",
+            "Saturday",
+        ],
+        times=[
+            "07:00",
+            "11:30",
+            "16:00",
+            "23:30",
+        ],
+        local_time_zone_id="UTC",
+    )
+
+@responses.activate
+def test_update_refresh_schedule_direct_query():
+    json_params = {
+        "value": {
+            "days": [
+                "Sunday",
+                "Tuesday",
+                "Friday",
+                "Saturday",
+            ],
+            "frequency": 15,
+            "localTimeZoneId": "UTC",
+        }
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.update_refresh_schedule(
+        direct_query=True,
+        days=[
+            "Sunday",
+            "Tuesday",
+            "Friday",
+            "Saturday",
+        ],
+        frequency=15,
+        local_time_zone_id="UTC",
+    )
+
+
+@responses.activate
+def test_update_refresh_schedule_raises():
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+    with pytest.raises(ValueError):
+        dataset.update_refresh_schedule()

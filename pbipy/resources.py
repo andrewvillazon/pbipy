@@ -381,7 +381,7 @@ class Dataset(Resource):
 
     def refresh_schedule(
         self,
-        direct_query:bool=False,
+        direct_query: bool = False,
     ) -> dict:
         """
         Return the Refresh Schedule or Direct Query Refresh Schedule for
@@ -473,6 +473,85 @@ class Dataset(Resource):
 
         resource = self.base_path + "/Default.UpdateDatasources"
         self.post(resource, self.session, update_request)
+
+    def update_refresh_schedule(
+        self,
+        notify_option: str = None,
+        direct_query: bool = False,
+        days: list[str] = None,
+        enabled: bool = None,
+        frequency: int = None,
+        local_time_zone_id: str = None,
+        times: list[str] = None,
+    ) -> None:
+        """
+        Update the Refresh Schedule or Direct Query Refresh Schedule of the
+        dataset. 
+        
+        Providing `direct_query=True` targets the Direct Query 
+        Refresh Schedule.
+
+        Parameters
+        ----------
+        `notify_option` : `str`
+            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
+            or "NoNotification".
+        `direct_query` : bool, optional
+            Target the Direct Query Refresh Schedule (if there is one) of the
+            dataset.
+        `days` : list[str], optional
+            The full name of days on which to execute the refresh,e.g, "Monday", 
+            "Tuesday", "Wednesday", etc.
+        `enabled` : bool, optional
+            Whether the refresh is enabled.
+        `frequency` : int, optional
+            Applies to Direct Query Refresh Schedule only. The interval in minutes 
+            between successive refreshes. Supported values are 15, 30, 60, 120, 
+            and 180.
+
+            If `frequency` is supplied and `direct_query` is `false`, then `frequency`
+            will be ignored.
+        `local_time_zone_id` : `str`, optional
+            _The ID of the time zone to use, e.g, "UTC".
+        `times` : list[str], optional
+            The times of day to execute the refresh expressed as hh:mm, e.g., 
+            "07:00", "16:00", etc.
+
+        Raises
+        ------
+        `ValueError`
+            If no values are provided for the request.
+        """
+
+        # Prepare the request details
+        refresh_schedule_request = {
+            "value": {
+                "notifyOption": notify_option,
+                "days": days,
+                "enabled": enabled,
+                "localTimeZoneId": local_time_zone_id,
+                "times": times,
+                # direct query option
+                "frequency": frequency,
+            }
+        }
+
+        if not direct_query:
+            refresh_schedule_request.pop("frequency", None)
+        
+        request_body = remove_no_values(refresh_schedule_request)
+
+        if request_body in [None, {}]:
+            raise ValueError("No options were provided to update. Please specify an option to update.")
+        
+        # Check which refresh schedule we're updating
+        if direct_query:
+            resource = self.base_path + "/directQueryRefreshSchedule"
+        else:
+            resource = self.base_path + "/refreshSchedule"
+        
+        self.patch(resource, self.session, request_body)
+
 
     def update_user(
         self,
