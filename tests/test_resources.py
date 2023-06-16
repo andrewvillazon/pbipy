@@ -590,10 +590,11 @@ def test_refresh_schedule_result(get_refresh_schedule):
         id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         session=requests.Session(),
     )
-    
+
     refresh_schedule = dataset.refresh_schedule()
 
     assert isinstance(refresh_schedule, dict)
+
 
 @responses.activate
 def test_refresh_schedule_direct_query_call(get_direct_query_refresh_schedule):
@@ -609,6 +610,7 @@ def test_refresh_schedule_direct_query_call(get_direct_query_refresh_schedule):
     )
 
     dataset.refresh_schedule(direct_query=True)
+
 
 @responses.activate
 def test_refresh_schedule_direct_query_result(get_direct_query_refresh_schedule):
@@ -631,9 +633,9 @@ def test_refresh_schedule_direct_query_result(get_direct_query_refresh_schedule)
 @responses.activate
 def test_parameters_call(get_parameters):
     responses.get(
-        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters"
-        ,body=get_parameters
-        ,content_type="application/json",
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters",
+        body=get_parameters,
+        content_type="application/json",
     )
 
     dataset = Dataset(
@@ -647,9 +649,9 @@ def test_parameters_call(get_parameters):
 @responses.activate
 def test_parameters_result(get_parameters):
     responses.get(
-        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters"
-        ,body=get_parameters
-        ,content_type="application/json",
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/parameters",
+        body=get_parameters,
+        content_type="application/json",
     )
 
     dataset = Dataset(
@@ -753,3 +755,67 @@ def test_update_user_raises_http_error():
 
     with pytest.raises(HTTPError):
         dataset.update_user("john@contoso.com", "User", "Read")
+
+
+@responses.activate
+def test_refresh_call_simple():
+    json_parms = {
+        "notifyOption": "MailOnFailure",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        match=[
+            matchers.json_params_matcher(json_parms),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.refresh(notify_option="MailOnFailure")
+
+
+@responses.activate
+def test_refresh_call_complex():
+    json_parms = {
+        "notifyOption": "MailOnFailure",
+        "retryCount": 3,
+        "type": "full",
+        "commitMode": "transactional",
+        "objects": [
+            {
+                "table": "Customer",
+                "partition": "Robert",
+            },
+        ],
+        "applyRefreshPolicy": False,
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        match=[
+            matchers.json_params_matcher(json_parms),
+        ],
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.refresh(
+        notify_option="MailOnFailure",
+        retry_count=3,
+        type="full",
+        commit_mode="transactional",
+        apply_refresh_policy=False,
+        objects=[
+            {
+                "table": "Customer",
+                "partition": "Robert",
+            },
+        ],
+    )

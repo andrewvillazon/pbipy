@@ -253,6 +253,78 @@ class Dataset(Resource):
         resource = self.base_path + "/parameters"
         return self.get_raw(resource, self.session)
 
+    def refresh(
+        self,
+        notify_option: str,
+        apply_refresh_policy: bool = None,
+        commit_mode: str = None,
+        effective_date: str = None,
+        max_parallelism: int = None,
+        objects: list[dict] = None,
+        retry_count: int = None,
+        type: str = None,
+    ) -> None:
+        """
+        Trigger a refresh of the dataset. An enhanced refresh is triggered
+        only if a request option other than `notify_option` is set.
+
+        Parameters
+        ----------
+        `notify_option` : `str`
+            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure", 
+            or "NoNotification".
+        `apply_refresh_policy` : bool, optional
+            Determine if the policy is applied or not.
+        `commit_mode` : `str`, optional
+            Determines if objects will be committed in batches or only when 
+            complete, e.g., "PartialBatch", or "Transactional".
+        `effective_date` : `str`, optional
+            If an incremental refresh policy is applied, the `effective_date` 
+            parameter overrides the current date.
+        `max_parallelism` : `int`, optional
+            The maximum number of threads on which to run parallel processing 
+            commands.
+        `objects` : `list[dict]`, optional
+            A list of objects to be processed, e.g.,
+
+            ```
+            [
+                {
+                "table": "Customer",
+                "partition": "Robert"
+                }
+            ]
+            ```
+
+        `retry_count` : `int`, optional
+            Number of times the operation will retry before failing.
+        `type` : `str`, optional
+           The type of processing to perform, e.g., "Automatic", "Calculate", 
+           "ClearValues", "DataOnly", "Defragment", or "Full".
+        
+        Notes
+        -----
+        See here for request options in greater detail: 
+        
+        https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/refresh-dataset#definitions
+        """
+
+        refresh_request = {
+            "applyRefreshPolicy": apply_refresh_policy,
+            "commitMode": commit_mode,
+            "effectiveDate": effective_date,
+            "maxParallelism": max_parallelism,
+            "notifyOption": notify_option,
+            "objects": objects,
+            "retryCount": retry_count,
+            "type": type,
+        }
+
+        prepared_request = remove_no_values(refresh_request)
+        resource = self.base_path + "/refreshes"
+
+        self.post(resource, self.session, prepared_request)
+
     def refresh_details(
         self,
         refresh_id: str,
