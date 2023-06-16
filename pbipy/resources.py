@@ -269,6 +269,34 @@ class Dataset(Resource):
 
         return raw
 
+    def refresh_schedule(
+        self,
+        direct_query=False,
+    ) -> dict:
+        """
+        Return the Refresh Schedule or Direct Query Refresh Schedule for
+        the dataset.
+
+        Parameters
+        ----------
+        `direct_query` : `bool`, optional
+            Return the Direct Query Refresh Schedule instead of the Refresh Schedule.
+
+        Returns
+        -------
+        `dict`
+            Refresh schedule or Direct Query Refresh Schedule.
+        """
+
+        if direct_query:
+            resource = self.base_path + "/directQueryRefreshSchedule"
+        else:
+            resource = self.base_path + "/refreshSchedule"
+
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
     def users(
         self,
     ) -> list[dict]:

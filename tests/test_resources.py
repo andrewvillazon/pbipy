@@ -560,3 +560,69 @@ def test_datasources_result(get_datasources):
 
     assert isinstance(datasources, list)
     assert len(datasources) == 3
+
+
+@responses.activate
+def test_refresh_schedule_call(get_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshSchedule",
+        body=get_refresh_schedule,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.refresh_schedule()
+
+
+@responses.activate
+def test_refresh_schedule_result(get_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshSchedule",
+        body=get_refresh_schedule,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+    
+    refresh_schedule = dataset.refresh_schedule()
+
+    assert isinstance(refresh_schedule, dict)
+
+@responses.activate
+def test_refresh_schedule_direct_query_call(get_direct_query_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        body=get_direct_query_refresh_schedule,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    dataset.refresh_schedule(direct_query=True)
+
+@responses.activate
+def test_refresh_schedule_direct_query_result(get_direct_query_refresh_schedule):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/directQueryRefreshSchedule",
+        body=get_direct_query_refresh_schedule,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    refresh_schedule = dataset.refresh_schedule(direct_query=True)
+
+    assert isinstance(refresh_schedule, dict)
