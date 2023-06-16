@@ -425,9 +425,20 @@ class Dataset(Resource):
             raise TypeError(
                 "Dataset does not have a group_id. Taking over a dataset can only be performed on a Dataset in a Group."
             )
-        
+
         resource = self.base_path + "/Default.TakeOver"
         self.post(resource, self.session)
+
+    def update(
+        self,
+        target_storage_mode: str,
+    ) -> None:
+        
+        update_dataset_request = {
+            "targetStorageMode": target_storage_mode
+        }
+
+        self.patch(self.base_path, self.session, update_dataset_request)
 
     def update_user(
         self,
