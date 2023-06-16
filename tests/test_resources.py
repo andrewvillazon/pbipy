@@ -662,3 +662,38 @@ def test_parameters_result(get_parameters):
     assert isinstance(parameters, list)
     assert all(isinstance(parameter, dict) for parameter in parameters)
     assert len(parameters) == 6
+
+
+@responses.activate
+def test_refresh_details_call(get_refresh_execution_details):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="f7fc6510-e151-42a3-850b-d0805a391db0",
+        session=requests.Session(),
+    )
+
+    dataset.refresh_details("87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+
+@responses.activate
+def test_refresh_details_result(get_refresh_execution_details):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/datasets/f7fc6510-e151-42a3-850b-d0805a391db0/refreshes/87f31ef7-1e3a-4006-9b0b-191693e79e9e",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="f7fc6510-e151-42a3-850b-d0805a391db0",
+        session=requests.Session(),
+    )
+
+    refresh_detail = dataset.refresh_details("87f31ef7-1e3a-4006-9b0b-191693e79e9e")
+
+    assert isinstance(refresh_detail, dict)
+    assert len(refresh_detail["objects"]) == 18

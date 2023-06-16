@@ -252,6 +252,28 @@ class Dataset(Resource):
         resource = self.base_path + "/parameters"
         return self.get_raw(resource, self.session)
 
+    def refresh_details(
+        self,
+        refresh_id: str,
+    ) -> dict:
+        """
+        Returns execution details of an enhanced refresh operation for 
+        the dataset.
+
+        Parameters
+        ----------
+        `refresh_id` : `str`
+            Refresh Id to get the execution details for.
+
+        Returns
+        -------
+        `dict`
+            Refresh execution details.
+        """
+
+        resource = self.base_path + f"/refreshes/{refresh_id}"
+        return self.get_raw(resource, self.session)
+
     def refresh_history(
         self,
         top: int = None,
