@@ -53,7 +53,7 @@ class PowerBI(RequestsMixin):
 
         self.session.headers.update({"Authorization": f"Bearer {self.bearer_token}"})
 
-    def get_dataset(
+    def dataset(
         self,
         dataset: str | Dataset,
         group: str = None,

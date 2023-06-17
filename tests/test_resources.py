@@ -15,7 +15,7 @@ def test_get_dataset_calls_correct_get_dataset_url(powerbi, get_dataset):
         content_type="application/json",
     )
 
-    powerbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    powerbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 
 
 @responses.activate
@@ -26,7 +26,7 @@ def test_get_dataset_calls_correct_get_dataset_in_group_url(powerbi, get_dataset
         content_type="application/json",
     )
 
-    powerbi.get_dataset(
+    powerbi.dataset(
         "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
     )
@@ -40,7 +40,7 @@ def test_get_dataset_properties_are_set(powerbi, get_dataset):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    dataset = powerbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 
     assert dataset.id == "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
     assert dataset.name == "SalesMarketing"
@@ -58,7 +58,7 @@ def test_get_dataset_group_property_is_set(powerbi, get_dataset):
         content_type="application/json",
     )
 
-    dataset = powerbi.get_dataset(
+    dataset = powerbi.dataset(
         "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
     )
