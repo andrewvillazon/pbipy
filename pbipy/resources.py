@@ -20,6 +20,29 @@ class Resource(RequestsMixin):
 
         self._base_path = f"{self.BASE_URL}{self.group_path}"
 
+    def __repr__(
+        self,
+    ) -> str:
+        """
+        Provide a readable representation of the class. Looks to the class'
+        `self._REPR` to determine what to show.
+
+        Returns
+        -------
+        `str`
+            Formatted, readable representation of the class.
+        """
+
+        name = self.__class__.__name__
+
+        attrs = []
+        for attr in self._REPR:
+            if attr in self.__dict__.keys():
+                attr_str = "{}={!r}".format(attr, self.__dict__.get(attr))
+                attrs.append(attr_str)
+
+        return f"<{name} {', '.join(attrs)}>"
+
     def _load_from_raw(self, raw):
         self.raw = raw
 
@@ -35,6 +58,14 @@ class Resource(RequestsMixin):
 
 
 class Dataset(Resource):
+    _REPR = [
+        "id",
+        "name",
+        "group_id",
+        "configured_by",
+        "created_date",
+    ]
+
     def __init__(
         self,
         id,
