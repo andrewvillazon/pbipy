@@ -83,7 +83,7 @@ class PowerBI(RequestsMixin):
 
         return dataset
 
-    def get_datasets(
+    def datasets(
         self,
         group: str = None,
     ) -> list[Dataset]:

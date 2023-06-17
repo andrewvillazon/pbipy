@@ -74,7 +74,7 @@ def test_get_datasets_calls_correct_get_datasets_url(powerbi, get_datasets):
         content_type="application/json",
     )
 
-    powerbi.get_datasets()
+    powerbi.datasets()
 
 
 @responses.activate
@@ -85,7 +85,7 @@ def test_get_datasets_calls_correct_get_datasets_in_group_url(powerbi, get_datas
         content_type="application/json",
     )
 
-    powerbi.get_datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    powerbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
 
 
 @responses.activate
@@ -96,7 +96,7 @@ def test_get_datasets_sets_group_property(powerbi, get_datasets):
         content_type="application/json",
     )
 
-    datasets = powerbi.get_datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    datasets = powerbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
 
     assert all(hasattr(dataset, "group_id") for dataset in datasets)
     assert all(
@@ -113,7 +113,7 @@ def test_get_datasets_sets_js_property(powerbi, get_datasets):
         content_type="application/json",
     )
 
-    datasets = powerbi.get_datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    datasets = powerbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
 
     assert all(hasattr(dataset, "raw") for dataset in datasets)
 
