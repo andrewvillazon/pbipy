@@ -829,6 +829,22 @@ class Group(Resource):
         skip: int = None,
         top: int = None,
     ) -> list[dict]:
+        """
+        Returns a list of users that have access to the workspace.
+
+        Parameters
+        ----------
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns onl the first n results.
+
+        Returns
+        -------
+        `list[dict]`
+            List of users that have access to the workspace.
+        """
+
         params = {
             "$skip": skip,
             "$top": top,
