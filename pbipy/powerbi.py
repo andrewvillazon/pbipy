@@ -12,8 +12,8 @@ import requests
 from requests.exceptions import HTTPError
 
 from pbipy import settings
-from pbipy.resources import Dataset
-from pbipy.utils import RequestsMixin
+from pbipy.resources import Dataset, Group
+from pbipy.utils import RequestsMixin, remove_no_values
 
 
 class PowerBI(RequestsMixin):
@@ -52,7 +52,8 @@ class PowerBI(RequestsMixin):
             self.session = requests.Session()
 
         self.session.headers.update({"Authorization": f"Bearer {self.bearer_token}"})
-
+    
+    # TODO: Add support for passing in a group obj
     def dataset(
         self,
         dataset: str | Dataset,
@@ -155,6 +156,55 @@ class PowerBI(RequestsMixin):
             path = f"/datasets/{dataset_id}"
 
         resource = self.BASE_URL + path
-        
+
         self.delete(resource, self.session)
 
+    # TODO: Create group() to grab single group. Should call below with filter: id eq '<id>'.
+
+    def groups(
+        self,
+        filter: str = None,
+        skip: int = None,
+        top: int = None,
+    ) -> list[Group]:
+        """
+        Returns a list of workspaces the user has access to.
+
+        Parameters
+        ----------
+        `filter` : `str`, optional
+            Filters the results, based on a boolean condition, e.g.,
+            `contains(name, 'marketing')`, `name eq 'contoso'`
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns only the first n results.
+
+        Returns
+        -------
+        `list[Group]`
+            List of `Group` objects the user has access to, and/or
+            that matched the specified filters.
+        """
+
+        params = {
+            "$filter": filter,
+            "$skip": skip,
+            "$top": top,
+        }
+
+        preparred_params = remove_no_values(params)
+
+        path = self.BASE_URL + "/groups"
+        raw = self.get_raw(path, self.session, params=preparred_params)
+
+        groups = [
+            Group(
+                group_js.get("id"),
+                self.session,
+                raw=group_js,
+            )
+            for group_js in raw
+        ]
+
+        return groups

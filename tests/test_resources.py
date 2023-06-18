@@ -1178,8 +1178,43 @@ def test_group_creation_from_raw():
 
     group = Group(raw.get("id"), session=requests.Session(), raw=raw)
 
-
     assert group.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert group.is_read_only == False
     assert group.is_on_dedicated_capacity == False
     assert group.name == "sample group"
+
+
+@responses.activate
+def test_groups_call(powerbi, get_groups):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups",
+        body=get_groups,
+        content_type="application/json",
+    )
+
+    powerbi.groups()
+
+
+@responses.activate
+def test_groups_call_with_params(powerbi, get_groups):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups?$filter=contains(name,'marketing')%20or%20name%20eq%20'contoso'",
+        body=get_groups,
+        content_type="application/json",
+    )
+
+    powerbi.groups(filter="contains(name,'marketing') or name eq 'contoso'")
+
+
+@responses.activate
+def test_groups_result(powerbi, get_groups):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups",
+        body=get_groups,
+        content_type="application/json",
+    )
+
+    groups = powerbi.groups()
+
+    assert isinstance(groups, list)
+    assert all(isinstance(group, Group) for group in groups)

@@ -136,6 +136,7 @@ def get_datasources():
     }
     """
 
+
 @pytest.fixture
 def get_refresh_schedule():
     return """
@@ -157,6 +158,7 @@ def get_refresh_schedule():
     }
     """
 
+
 @pytest.fixture
 def get_direct_query_refresh_schedule():
     return """
@@ -167,6 +169,7 @@ def get_direct_query_refresh_schedule():
       "localTimeZoneId": "UTC"
     }
     """
+
 
 @pytest.fixture
 def get_parameters():
@@ -212,6 +215,7 @@ def get_parameters():
       ]
     }
     """
+
 
 @pytest.fixture
 def get_refresh_execution_details():
@@ -314,6 +318,35 @@ def get_refresh_execution_details():
         {
           "table": "FactInternetSales",
           "status": "Completed"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def get_groups():
+    return """
+    {
+      "value": [
+        {
+          "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "sample group"
+        },
+        {
+          "id": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "marketing group"
+        },
+        {
+          "id": "a2f89923-421a-464e-bf4c-25eab39bb09f",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "contoso",
+          "dataflowStorageId": "d692ae06-708c-485e-9987-06ff0fbdbb1f"
         }
       ]
     }
