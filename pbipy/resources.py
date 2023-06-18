@@ -687,5 +687,61 @@ class Group(Resource):
     ) -> None:
         super().__init__(id, session, **kwargs)
 
+        self.base_path = f"{self.BASE_URL}/groups/{self.id}"
+
         if raw:
             self._load_from_raw(raw)
+
+    def add_user(
+        self,
+        identifier: str,
+        principal_type: str,
+        access_right: str,
+        display_name: str = None,
+        email_address: str = None,
+        graph_id: str = None,
+        profile: dict = None,
+        user_type: str = None,
+    ) -> None:
+        """
+        Grants the specified user the specified permissions to the workspace.
+
+        Parameters
+        ----------
+        `identifier` : `str`
+            Identifier of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `access_right` : `str`
+            The access right (permission level) that a user has on the
+            workspace, e.g., "Admin", "Contributor", "Member", "None",
+            or "Viewer".
+        `display_name` : `str`, optional
+            Display name of the principal.
+        `email_address` : `str`, optional
+            Email address of the user.
+        `graph_id` : `str`, optional
+            Identifier of the principal in Microsoft Graph. Only available
+            for admin APIs.
+        `profile` : `dict`, optional
+            A Power BI service principal profile. Only relevant for Power
+            BI Embedded multi-tenancy solution.
+        `user_type` : `str`, optional
+            Type of the user.
+        """
+
+        payload = {
+            "identifier": identifier,
+            "groupUserAccessRight": access_right,
+            "principalType": principal_type,
+            "displayName": display_name,
+            "emailAddress": email_address,
+            "graphId": graph_id,
+            "profile": profile,
+            "userType": user_type,
+        }
+
+        prepared_payload = remove_no_values(payload)
+        resource = self.base_path + "/users"
+
+        self.post(resource, self.session, prepared_payload)

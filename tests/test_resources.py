@@ -1241,3 +1241,32 @@ def test_group_raises(powerbi):
 
     with pytest.raises(ValueError):
         powerbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+
+
+@responses.activate
+def test_group_add_user_call():
+    json_params = {
+        "identifier": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        "groupUserAccessRight": "Admin",
+        "principalType": "App",
+        "emailAddress": "john@contoso.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    group.add_user(
+        identifier="1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        principal_type="App",
+        access_right="Admin",
+        email_address="john@contoso.com",
+    )
