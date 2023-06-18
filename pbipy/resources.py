@@ -5,20 +5,10 @@ from pbipy.utils import RequestsMixin, remove_no_values, to_snake_case
 class Resource(RequestsMixin):
     BASE_URL = settings.BASE_URL
 
-    def __init__(self, session, **kwargs) -> None:
+    def __init__(self, id, session, **kwargs) -> None:
+        self.id = id
         self.session = session
         self.raw = None
-
-        if "group_id" in kwargs:
-            group_id = kwargs.get("group_id")
-            setattr(self, "group_id", group_id)
-
-        if self.group_id:
-            self.group_path = f"/groups/{self.group_id}"
-        else:
-            self.group_path = ""
-
-        self._base_path = f"{self.BASE_URL}{self.group_path}"
 
     def __repr__(
         self,
@@ -73,11 +63,19 @@ class Dataset(Resource):
         group_id=None,
         raw=None,
     ) -> None:
-        self.id = id
+        super().__init__(id, session)
 
-        super().__init__(session, group_id=group_id)
+        if group_id:
+            self.group_id = group_id
+        else:
+            self.group_id = None
+        
+        if self.group_id:
+            self.resource_path = f"/groups/{self.group_id}/datasets/{self.id}"
+        else:
+            self.resource_path = f"/datasets/{self.id}"
 
-        self.base_path = f"{self._base_path}/datasets/{self.id}"
+        self.base_path = f"{self.BASE_URL}{self.resource_path}"
 
         # Supports creating from a list of js, e.g., get_datasets endpoint
         if raw:
