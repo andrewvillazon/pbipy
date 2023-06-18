@@ -351,3 +351,22 @@ def get_groups():
       ]
     }
     """
+
+
+# Modified version of get_groups(). API doesn't actually have a
+# get_group endpoint.
+@pytest.fixture
+def get_group():
+    return """
+    {
+      "value": [
+        {
+          "id": "a2f89923-421a-464e-bf4c-25eab39bb09f",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "contoso",
+          "dataflowStorageId": "d692ae06-708c-485e-9987-06ff0fbdbb1f"
+        }
+      ]
+    }
+    """

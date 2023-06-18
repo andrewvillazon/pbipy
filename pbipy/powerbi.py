@@ -52,7 +52,7 @@ class PowerBI(RequestsMixin):
             self.session = requests.Session()
 
         self.session.headers.update({"Authorization": f"Bearer {self.bearer_token}"})
-    
+
     # TODO: Add support for passing in a group obj
     def dataset(
         self,
@@ -159,7 +159,40 @@ class PowerBI(RequestsMixin):
 
         self.delete(resource, self.session)
 
-    # TODO: Create group() to grab single group. Should call below with filter: id eq '<id>'.
+    def group(
+        self,
+        group_id: str,
+    ) -> Group:
+        """
+        Return the specified group.
+
+        Convenience function that is the equivalent of 
+        `group(filter="id eq 'group_id'")`.
+
+        Parameters
+        ----------
+        `group_id` : `str`
+            Group Id of the group to retrieve.
+
+        Returns
+        -------
+        `Group`
+            The specified group.
+
+        Raises
+        ------
+        `ValueError`
+            If the Group was not found by the api.
+        """
+
+        id_filter = f"id eq '{group_id}'"
+
+        groups = self.groups(filter=id_filter)
+        
+        if groups == []:
+            raise ValueError(f"Group Id: {id_filter}, was not found by the API.")
+        
+        return groups[0]
 
     def groups(
         self,

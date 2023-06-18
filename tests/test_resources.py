@@ -1218,3 +1218,26 @@ def test_groups_result(powerbi, get_groups):
 
     assert isinstance(groups, list)
     assert all(isinstance(group, Group) for group in groups)
+
+
+@responses.activate
+def test_group(powerbi, get_group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups?$filter=id%20eq%20'a2f89923-421a-464e-bf4c-25eab39bb09f'",
+        body=get_group,
+        content_type="application/json",
+    )
+
+    powerbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+
+
+@responses.activate
+def test_group_raises(powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups?$filter=id%20eq%20'a2f89923-421a-464e-bf4c-25eab39bb09f'",
+        body="{value:[]}",
+        content_type="application/json",
+    )
+
+    with pytest.raises(ValueError):
+        powerbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
