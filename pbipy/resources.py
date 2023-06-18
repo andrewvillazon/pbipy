@@ -1,3 +1,5 @@
+from requests import Session
+
 from pbipy import settings
 from pbipy.utils import RequestsMixin, remove_no_values, to_snake_case
 
@@ -5,7 +7,12 @@ from pbipy.utils import RequestsMixin, remove_no_values, to_snake_case
 class Resource(RequestsMixin):
     BASE_URL = settings.BASE_URL
 
-    def __init__(self, id, session, **kwargs) -> None:
+    def __init__(
+        self,
+        id: str,
+        session: Session,
+        **kwargs,
+    ) -> None:
         self.id = id
         self.session = session
         self.raw = None
@@ -58,8 +65,8 @@ class Dataset(Resource):
 
     def __init__(
         self,
-        id,
-        session,
+        id: str,
+        session: Session,
         group_id=None,
         raw=None,
     ) -> None:
@@ -69,7 +76,7 @@ class Dataset(Resource):
             self.group_id = group_id
         else:
             self.group_id = None
-        
+
         if self.group_id:
             self.resource_path = f"/groups/{self.group_id}/datasets/{self.id}"
         else:
