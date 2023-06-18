@@ -213,7 +213,7 @@ Pull requests are the best way to make a contribution to the code:
 2. If you've added code that should be tested, add tests.
 3. Add docstrings.
 4. Ensure the test suite passes.
-5. Format your code (`pbipy` uses [black](https://github.com/psf/black).
+5. Format your code (`pbipy` uses [black](https://github.com/psf/black)).
 6. Issue that pull request!
 
 ### Reporting a bug
