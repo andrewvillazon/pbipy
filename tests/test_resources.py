@@ -1270,3 +1270,17 @@ def test_group_add_user_call():
         access_right="Admin",
         email_address="john@contoso.com",
     )
+
+
+@responses.activate
+def test_group_remove_user_call():
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users/john@contoso.com",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    group.remove_user("john@contoso.com")

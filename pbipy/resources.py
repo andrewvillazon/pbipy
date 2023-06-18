@@ -745,3 +745,27 @@ class Group(Resource):
         resource = self.base_path + "/users"
 
         self.post(resource, self.session, prepared_payload)
+
+    def remove_user(
+        self,
+        user: str,
+        profile: str = None,
+    ) -> None:
+        """
+        Deletes the specified user permissions from the specified workspace.
+
+        Parameters
+        ----------
+        `user` : `str`
+            The email address of the user or object ID of the service principal 
+            to delete.
+        `profile` : `str`, optional
+            The service principal profile ID to delete.
+        """
+
+        if profile:
+            resource = self.base_path + f"/users/{user}?profileId={profile}"
+        else:
+            resource = self.base_path + f"/users/{user}"
+        
+        self.delete(resource, self.session)
