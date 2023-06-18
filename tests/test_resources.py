@@ -4,7 +4,7 @@ import responses
 from requests.exceptions import HTTPError
 from responses import matchers
 
-from pbipy.resources import Dataset
+from pbipy.resources import Dataset, Group
 
 
 @responses.activate
@@ -1166,3 +1166,20 @@ def test_update_parameters_multiple():
     ]
 
     dataset.update_parameters(update_details)
+
+
+def test_group_creation_from_raw():
+    raw = {
+        "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        "isReadOnly": False,
+        "isOnDedicatedCapacity": False,
+        "name": "sample group",
+    }
+
+    group = Group(raw.get("id"), session=requests.Session(), raw=raw)
+
+
+    assert group.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert group.is_read_only == False
+    assert group.is_on_dedicated_capacity == False
+    assert group.name == "sample group"

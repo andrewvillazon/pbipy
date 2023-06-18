@@ -675,3 +675,17 @@ class Dataset(Resource):
 
         resource = self.base_path + "/users"
         return self.get_raw(resource, self.session)
+
+
+class Group(Resource):
+    def __init__(
+        self,
+        id: str,
+        session: Session,
+        raw=None,
+        **kwargs,
+    ) -> None:
+        super().__init__(id, session, **kwargs)
+
+        if raw:
+            self._load_from_raw(raw)
