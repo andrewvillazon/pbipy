@@ -823,3 +823,20 @@ class Group(Resource):
         resource = self.base_path + "/users"
 
         self.put(resource, self.session, prepared_payload)
+
+    def users(
+        self,
+        skip: int = None,
+        top: int = None,
+    ) -> list[dict]:
+        params = {
+            "$skip": skip,
+            "$top": top,
+        }
+
+        prepared_params = remove_no_values(params)
+        resource = self.base_path + "/users"
+
+        raw = self.get_raw(resource, self.session, params=prepared_params)
+
+        return raw

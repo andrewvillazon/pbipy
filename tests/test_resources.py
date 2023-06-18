@@ -1313,3 +1313,54 @@ def test_group_update_user_call():
         access_right="Admin",
         email_address="john@contoso.com",
     )
+
+
+@responses.activate
+def test_group_users_call(get_group_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users",
+        body=get_group_users,
+        content_type="application/json",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    group.users()
+
+
+@responses.activate
+def test_group_users_call_params(get_group_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users?$top=3&$skip=1",
+        body=get_group_users,
+        content_type="application/json",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    group.users(top=3, skip=1)
+
+
+@responses.activate
+def test_group_users_result(get_group_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users",
+        body=get_group_users,
+        content_type="application/json",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    users = group.users()
+
+    assert isinstance(users, list)
+    assert all(isinstance(user, dict) for user in users)

@@ -370,3 +370,33 @@ def get_group():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_group_users():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "groupUserAccessRight": "Admin",
+          "identifier": "john@contoso.com",
+          "principalType": "User"
+        },
+        {
+          "displayName": "Adam Wood",
+          "emailAddress": "Adam@contoso.com",
+          "groupUserAccessRight": "Member",
+          "identifier": "Adam@contoso.com",
+          "principalType": "User"
+        },
+        {
+          "displayName": "ContosoTestApp",
+          "groupUserAccessRight": "Admin",
+          "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "principalType": "App"
+        }
+      ]
+    }
+    """
