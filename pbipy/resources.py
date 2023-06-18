@@ -757,7 +757,7 @@ class Group(Resource):
         Parameters
         ----------
         `user` : `str`
-            The email address of the user or object ID of the service principal 
+            The email address of the user or object ID of the service principal
             to delete.
         `profile` : `str`, optional
             The service principal profile ID to delete.
@@ -767,5 +767,59 @@ class Group(Resource):
             resource = self.base_path + f"/users/{user}?profileId={profile}"
         else:
             resource = self.base_path + f"/users/{user}"
-        
+
         self.delete(resource, self.session)
+
+    def update_user(
+        self,
+        identifier: str,
+        principal_type: str,
+        access_right: str,
+        display_name: str = None,
+        email_address: str = None,
+        graph_id: str = None,
+        profile: dict = None,
+        user_type: str = None,
+    ) -> None:
+        """
+        Updates the specified user permissions on the workspace.
+
+        Parameters
+        ----------
+        `identifier` : `str`
+            Identifier of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `access_right` : `str`
+            The access right (permission level) that a user has on the
+            workspace, e.g., "Admin", "Contributor", "Member", "None",
+            or "Viewer".
+        `display_name` : `str`, optional
+            Display name of the principal.
+        `email_address` : `str`, optional
+            Email address of the user.
+        `graph_id` : `str`, optional
+            Identifier of the principal in Microsoft Graph. Only available
+            for admin APIs.
+        `profile` : `dict`, optional
+            A Power BI service principal profile. Only relevant for Power
+            BI Embedded multi-tenancy solution.
+        `user_type` : `str`, optional
+            Type of the user.
+        """
+
+        payload = {
+            "identifier": identifier,
+            "groupUserAccessRight": access_right,
+            "principalType": principal_type,
+            "displayName": display_name,
+            "emailAddress": email_address,
+            "graphId": graph_id,
+            "profile": profile,
+            "userType": user_type,
+        }
+
+        prepared_payload = remove_no_values(payload)
+        resource = self.base_path + "/users"
+
+        self.put(resource, self.session, prepared_payload)

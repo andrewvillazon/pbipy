@@ -1284,3 +1284,32 @@ def test_group_remove_user_call():
     )
 
     group.remove_user("john@contoso.com")
+
+
+@responses.activate
+def test_group_update_user_call():
+    json_params = {
+        "identifier": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        "groupUserAccessRight": "Admin",
+        "principalType": "App",
+        "emailAddress": "john@contoso.com",
+    }
+
+    responses.put(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    group.update_user(
+        identifier="1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        principal_type="App",
+        access_right="Admin",
+        email_address="john@contoso.com",
+    )
