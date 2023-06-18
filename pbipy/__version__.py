@@ -1,5 +1,5 @@
 __title__ = "pbipy"
-__description__ = "A Power BI Rest API wrapper for Python."
+__description__ = "A Python Library for interacting with the Power BI Rest API."
 __url__ = "https://github.com/andrewvillazon/pbipy"
 __version__ = "2.0.3-alpha"
 __author__ = "Andrew Villazon"
