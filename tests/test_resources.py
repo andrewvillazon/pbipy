@@ -1421,3 +1421,26 @@ def test_create_group_result(powerbi, create_group):
     assert group.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert not group.is_on_dedicated_capacity
     assert group.name == "sample group"
+
+
+@responses.activate
+def test_delete_group_call(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
+
+    powerbi.delete_group("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+
+@responses.activate
+def test_delete_group_call_with_group_object(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    powerbi.delete_group(group)

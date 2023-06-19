@@ -275,3 +275,25 @@ class PowerBI(RequestsMixin):
         group_raw = raw[0]
 
         return Group(group_raw.get("id"), self.session, raw=group_raw)
+
+    def delete_group(
+        self,
+        group: str | Group,
+    ) -> None:
+        """
+        Delete the specified workgroup.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to delete.
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = self.BASE_URL + f"/groups/{group_id}"
+
+        self.delete(resource, self.session)
