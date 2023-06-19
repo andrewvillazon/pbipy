@@ -400,3 +400,19 @@ def get_group_users():
       ]
     }
     """
+
+
+@pytest.fixture
+def create_group():
+    return """
+    {
+      "value": [
+        {
+          "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "sample group"
+        }
+      ]
+    }
+    """

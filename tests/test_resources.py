@@ -1364,3 +1364,60 @@ def test_group_users_result(get_group_users):
 
     assert isinstance(users, list)
     assert all(isinstance(user, dict) for user in users)
+
+
+@responses.activate
+def test_create_group_call(powerbi, create_group):
+    json_params = {"name": "sample workspace"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=create_group,
+        content_type="application/json",
+    )
+
+    powerbi.create_group("sample workspace")
+
+
+@responses.activate
+def test_create_group_call_with_workspacev2(powerbi, create_group):
+    json_params = {"name": "sample workspace"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups?workspaceV2=True",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=create_group,
+        content_type="application/json",
+    )
+
+    powerbi.create_group("sample workspace", workspace_v2=True)
+
+
+@responses.activate
+def test_create_group_result(powerbi, create_group):
+    json_params = {"name": "sample workspace"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        body=create_group,
+        content_type="application/json",
+    )
+
+    group = powerbi.create_group("sample workspace")
+
+    assert isinstance(group, Group)
+    assert hasattr(group, "id")
+    assert hasattr(group, "name")
+    assert hasattr(group, "is_on_dedicated_capacity")
+
+    assert group.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert not group.is_on_dedicated_capacity
+    assert group.name == "sample group"

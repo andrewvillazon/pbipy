@@ -166,7 +166,7 @@ class PowerBI(RequestsMixin):
         """
         Return the specified group.
 
-        Convenience function that is the equivalent of 
+        Convenience function that is the equivalent of
         `group(filter="id eq 'group_id'")`.
 
         Parameters
@@ -188,10 +188,10 @@ class PowerBI(RequestsMixin):
         id_filter = f"id eq '{group_id}'"
 
         groups = self.groups(filter=id_filter)
-        
+
         if groups == []:
             raise ValueError(f"Group Id: {id_filter}, was not found by the API.")
-        
+
         return groups[0]
 
     def groups(
@@ -241,3 +241,37 @@ class PowerBI(RequestsMixin):
         ]
 
         return groups
+
+    def create_group(
+        self,
+        name: str,
+        workspace_v2: bool = None,
+    ) -> Group:
+        """
+        Create a new workspace.
+
+        Parameters
+        ----------
+        `name` : `str`
+            The name for the new workspace.
+        `workspace_v2` : `bool`, optional
+            (Preview feature) Whether to create a workspace. The only supported value is `true`.
+
+        Returns
+        -------
+        `Group`
+            The newly created workspace (group).
+        """
+
+        payload = {"name": name}
+
+        if workspace_v2 is not None:
+            resource = self.BASE_URL + f"/groups?workspaceV2={workspace_v2}"
+        else:
+            resource = self.BASE_URL + "/groups"
+
+        raw = self.post_raw(resource, self.session, payload)
+        # Endpoint returns as list with one element.
+        group_raw = raw[0]
+
+        return Group(group_raw.get("id"), self.session, raw=group_raw)

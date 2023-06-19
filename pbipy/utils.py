@@ -214,7 +214,7 @@ class RequestsMixin:
             response = self.post(resource, session, payload, **kwargs)
             raw = response.json()
 
-            return raw
+            return self.parse_raw(raw)
 
         except Exception as e:
             raise e
