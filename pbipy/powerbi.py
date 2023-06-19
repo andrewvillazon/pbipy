@@ -12,7 +12,8 @@ import requests
 from requests.exceptions import HTTPError
 
 from pbipy import settings
-from pbipy.resources import Dataset, Group, Report
+from pbipy.datasets import Dataset
+from pbipy.resources import Group, Report
 from pbipy.utils import RequestsMixin, remove_no_values
 
 

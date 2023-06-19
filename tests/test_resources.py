@@ -3,8 +3,9 @@ import requests
 import responses
 from requests.exceptions import HTTPError
 from responses import matchers
+from pbipy.datasets import Dataset
 
-from pbipy.resources import Dataset, Group, Report
+from pbipy.resources import Group, Report
 
 
 @responses.activate
