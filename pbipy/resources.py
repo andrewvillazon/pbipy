@@ -687,7 +687,7 @@ class Group(Resource):
         self,
         id: str,
         session: Session,
-        raw=None,
+        raw: dict = None,
         **kwargs,
     ) -> None:
         super().__init__(id, session, **kwargs)
