@@ -1,10 +1,13 @@
 import pytest
 import requests
-from requests.exceptions import HTTPError
 import responses
+from requests.exceptions import HTTPError
 from responses import matchers
 
 from pbipy import utils
+
+# TODO: Tests for request_mixin.delete()
+# TODO: Tests for request_mixin.get()
 
 
 def test_to_snake_case():
