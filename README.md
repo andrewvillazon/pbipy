@@ -90,6 +90,20 @@ print(hasattr(sales, "configured_by"))
 # True
 ```
 
+Most methods take in an object id...
+
+```python
+dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", group="a2f89923-421a-464e-bf4c-25eab39bb09f")
+```
+
+... or just pass in the object itself.
+
+```python
+group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+
+dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", group=group)
+```
+
 If you need to access the raw json representation, this is supported to.
 
 ```python
@@ -119,7 +133,7 @@ print(sales)
 # <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', name='SalesMarketing', ...>
 ```
 
-#### Get a list of Datasets in a Group (aka Workspace)
+#### Get a list of Datasets in a Workspace (Group)
 
 ```python
 datasets = pbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
@@ -178,6 +192,44 @@ print(dxq_result)
 # }
 ```
 
+### Workspaces (Groups) *
+
+*\* In the Power BI Rest API, workspaces are referred to as "groups".*
+
+#### List Workspaces
+
+```python
+groups = pbi.groups()
+
+for group in groups:
+    print(group)
+
+# <Group id='a2f89923-421a-464e-bf4c-25eab39bb09f', name='contoso'>
+# <Group id='3d9b93c6-7b6d-4801-a491-1738910904fd', name='marketing'>
+```
+
+#### Create a Workspace
+
+```python
+group = pbi.create_group("contoso")
+print(group)
+
+# <Group id='a2f89923-421a-464e-bf4c-25eab39bb09f', name='contoso'>
+```
+
+#### Users and their access
+
+```python
+group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+users = group.users()
+
+for user in users:
+    print(user)
+
+# {"identifier": "john@contoso.com", "groupUserAccessRight": "Admin", ... }
+# {"identifier": "Adam@contoso.com", "groupUserAccessRight": "Member", ... }
+```
+
 ## Power BI Rest API Operations
 
 `pbipy` methods wrap around the Operations described in the Power BI Rest API Reference:
@@ -192,8 +244,8 @@ print(dxq_result)
 | PowerBI Component   	| Progress 	| Notes 	|
 |---------------------	|----------	|-------	|
 | Datasets            	| Done     	|       	|
-| Groups (Workspaces) 	| Doing    	|       	|
-| Reports             	| Next     	|       	|
+| Groups (Workspaces) 	| Done    	|       	|
+| Reports             	| Doing     |       	|
 | Apps                	| Todo     	|       	|
 | Dataflows           	| Todo     	|       	|
 | Dashboards          	| Todo     	|       	|
