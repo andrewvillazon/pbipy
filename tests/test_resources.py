@@ -6,7 +6,7 @@ from responses import matchers
 from pbipy.groups import Group
 from pbipy.datasets import Dataset
 
-from pbipy.resources import Report
+from pbipy.reports import Report
 
 
 @responses.activate
