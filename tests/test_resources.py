@@ -1283,7 +1283,7 @@ def test_group_remove_user_call():
         session=requests.Session(),
     )
 
-    group.remove_user("john@contoso.com")
+    group.delete_user("john@contoso.com")
 
 
 @responses.activate

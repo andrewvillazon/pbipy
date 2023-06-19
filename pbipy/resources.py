@@ -746,7 +746,7 @@ class Group(Resource):
 
         self.post(resource, self.session, prepared_payload)
 
-    def remove_user(
+    def delete_user(
         self,
         user: str,
         profile: str = None,
