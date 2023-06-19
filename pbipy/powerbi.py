@@ -12,7 +12,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from pbipy import settings
-from pbipy.resources import Dataset, Group
+from pbipy.resources import Dataset, Group, Report
 from pbipy.utils import RequestsMixin, remove_no_values
 
 
@@ -297,3 +297,37 @@ class PowerBI(RequestsMixin):
         resource = self.BASE_URL + f"/groups/{group_id}"
 
         self.delete(resource, self.session)
+
+    def report(
+        self,
+        report: str | Report,
+        group: str | Group = None,
+    ) -> Report:
+        """
+        Return the specified report from MyWorkspace or the specified group.
+
+        Parameters
+        ----------
+        report : `str | Report`
+            Report Id to retrieve.
+        group : `str | Group`, optional
+            Group Id or `Group` object where the report resides.
+
+        Returns
+        -------
+        `Report`
+            The specified `Report` object.
+        """
+        
+        if isinstance(report, Report):
+            return report
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        report = Report(report, self.session, group_id=group_id)
+        report.load()
+
+        return report

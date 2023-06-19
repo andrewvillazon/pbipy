@@ -4,7 +4,7 @@ import responses
 from requests.exceptions import HTTPError
 from responses import matchers
 
-from pbipy.resources import Dataset, Group
+from pbipy.resources import Dataset, Group, Report
 
 
 @responses.activate
@@ -1444,3 +1444,61 @@ def test_delete_group_call_with_group_object(powerbi):
     )
 
     powerbi.delete_group(group)
+
+
+def test_report_creation_from_raw():
+    raw = {
+        "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "id": "5b218778-e7a5-4d73-8187-f10824047715",
+        "name": "SalesMarketing",
+        "webUrl": "https://app.powerbi.com/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/5b218778-e7a5-4d73-8187-f10824047715",
+        "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715&groupId=f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    }
+
+    report = Report(raw.get("id"), session=requests.Session(), raw=raw)
+
+    assert report.id == "5b218778-e7a5-4d73-8187-f10824047715"
+    assert report.name == "SalesMarketing"
+
+
+@responses.activate
+def test_report_call(powerbi, get_report):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/5b218778-e7a5-4d73-8187-f10824047715",
+        body=get_report,
+        content_type="application/json",
+    )
+
+    powerbi.report("5b218778-e7a5-4d73-8187-f10824047715")
+
+
+@responses.activate
+def test_report_call_with_group(powerbi, get_report):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/5b218778-e7a5-4d73-8187-f10824047715",
+        body=get_report,
+        content_type="application/json",
+    )
+
+    powerbi.report(
+        report="5b218778-e7a5-4d73-8187-f10824047715",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+
+@responses.activate
+def test_report_call_result(powerbi, get_report):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/5b218778-e7a5-4d73-8187-f10824047715",
+        body=get_report,
+        content_type="application/json",
+    )
+
+    report = powerbi.report(
+        report="5b218778-e7a5-4d73-8187-f10824047715",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert hasattr(report, "group_id")
+    assert report.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert report.name == "SalesMarketing"

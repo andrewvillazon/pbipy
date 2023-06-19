@@ -416,3 +416,16 @@ def create_group():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_report():
+    return """
+    {
+      "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+      "id": "5b218778-e7a5-4d73-8187-f10824047715",
+      "name": "SalesMarketing",
+      "webUrl": "https://app.powerbi.com//reports/5b218778-e7a5-4d73-8187-f10824047715",
+      "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715"
+    }
+    """
