@@ -678,6 +678,11 @@ class Dataset(Resource):
 
 
 class Group(Resource):
+    _REPR = [
+        "id",
+        "name",
+    ]
+
     def __init__(
         self,
         id: str,
