@@ -68,3 +68,21 @@ class Report(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def pages(
+        self,
+    ) -> list[dict]:
+        """
+        Returns a list of pages within the report.
+
+        Returns
+        -------
+        `list[dict]`
+            List of report pages.
+        """
+
+        resource = self.base_path + "/pages"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+    

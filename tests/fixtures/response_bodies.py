@@ -459,3 +459,23 @@ def get_page():
       "order": "0"
     }
     """
+
+
+@pytest.fixture
+def get_pages():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "Regional Sales Analysis",
+          "name": "ReportSection",
+          "order": "0"
+        },
+        {
+          "displayName": "Geographic Analysis",
+          "name": "ReportSection1",
+          "order": "1"
+        }
+      ]
+    }
+    """
