@@ -54,3 +54,22 @@ def test_datasources(report_with_group, get_datasources_in_group):
     assert all(isinstance(datasource, dict) for datasource in datasources)
     assert len(datasources) == 1
     assert datasources[0]["datasourceId"] == "f8c56590-43cb-43bf-8daa-233ba2520f55"
+
+
+@responses.activate
+def test_page(get_page):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/pages/ReportSection",
+        body=get_page,
+        content_type="application/json",
+    )
+
+    report = Report(
+        id="879445d6-3a9e-4a74-b5ae-7c0ddabf0f11",
+        session=requests.Session(),
+    )
+
+    page = report.page("ReportSection")
+
+    assert isinstance(page, dict)
+    assert page["displayName"] == "Regional Sales Analysis"

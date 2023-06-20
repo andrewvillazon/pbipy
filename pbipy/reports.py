@@ -45,3 +45,26 @@ class Report(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def page(
+        self,
+        name: str,
+    ) -> dict:
+        """
+        Returns the specified page from the report.
+
+        Parameters
+        ----------
+        `name` : `str`
+            Name of the page to return.
+
+        Returns
+        -------
+        `dict`
+            The specified page.
+        """
+
+        resource = self.base_path + f"/pages/{name}"
+        raw = self.get_raw(resource, self.session)
+
+        return raw

@@ -448,3 +448,14 @@ def get_datasources_in_group():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_page():
+    return """
+    {
+      "displayName": "Regional Sales Analysis",
+      "name": "ReportSection",
+      "order": "0"
+    }
+    """
