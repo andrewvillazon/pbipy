@@ -127,3 +127,79 @@ def test_take_over_call(report_with_group):
 def test_take_over_raises_type_error(report):
     with pytest.raises(TypeError):
         report.take_over()
+
+
+@responses.activate
+def test_update_datasources_call_single(report):
+    json_params = [
+        {
+            "datasourceName": "SqlDatasource",
+            "connectionDetails": {
+                "server": "New-Sql-Server",
+                "database": "New-Sql-Database",
+            },
+        },
+    ]
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/Default.UpdateDatasources",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    details = {
+        "datasourceName": "SqlDatasource",
+        "connectionDetails": {
+            "server": "New-Sql-Server",
+            "database": "New-Sql-Database",
+        },
+    }
+
+    report.update_datasources(details)
+
+
+@responses.activate
+def test_update_datasources_call_multiple(report):
+    json_params = [
+        {
+            "datasourceName": "SqlDatasource",
+            "connectionDetails": {
+                "server": "New-Sql-Server",
+                "database": "New-Sql-Database",
+            },
+        },
+        {
+            "datasourceName": "SqlAzureDatasource",
+            "connectionDetails": {
+                "server": "New-SqlAzure-Server.windows.net",
+                "database": "New-SqlAzure-Database",
+            },
+        },
+    ]
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/Default.UpdateDatasources",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    details = [
+        {
+            "datasourceName": "SqlDatasource",
+            "connectionDetails": {
+                "server": "New-Sql-Server",
+                "database": "New-Sql-Database",
+            },
+        },
+        {
+            "datasourceName": "SqlAzureDatasource",
+            "connectionDetails": {
+                "server": "New-SqlAzure-Server.windows.net",
+                "database": "New-SqlAzure-Database",
+            },
+        },
+    ]
+
+    report.update_datasources(details)

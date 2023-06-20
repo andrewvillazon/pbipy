@@ -120,18 +120,18 @@ class Report(Resource):
         resource = self.base_path + "/Rebind"
 
         self.post(resource, self.session, payload)
-    
+
     def take_over(
         self,
     ) -> None:
         """
-        Transfers ownership of the data sources for the report to the current 
+        Transfers ownership of the data sources for the report to the current
         authorized user.
 
         Raises
         ------
         `TypeError`
-            If the Report does not have a Workspace (Group), i.e., the 
+            If the Report does not have a Workspace (Group), i.e., the
             Report resides in current authorized user's Workspace.
         """
 
@@ -142,3 +142,16 @@ class Report(Resource):
 
         resource = self.base_path + "/Default.TakeOver"
         self.post(resource, self.session)
+
+    def update_datasources(
+        self,
+        details: dict | list[dict],
+    ) -> None:
+        if isinstance(details, dict):
+            payload = [details]
+        else:
+            payload = details
+        
+        resource = self.base_path + "/Default.UpdateDatasources"
+
+        self.post(resource, self.session, payload)
