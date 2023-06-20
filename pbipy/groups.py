@@ -38,6 +38,7 @@ class Group(Resource):
     ) -> None:
         """
         Grants the specified user the specified permissions to the workspace.
+        
         Parameters
         ----------
         `identifier` : `str`
@@ -60,6 +61,7 @@ class Group(Resource):
             BI Embedded multi-tenancy solution.
         `user_type` : `str`, optional
             Type of the user.
+        
         """
 
         payload = {
@@ -85,6 +87,7 @@ class Group(Resource):
     ) -> None:
         """
         Deletes the specified user permissions from the specified workspace.
+        
         Parameters
         ----------
         `user` : `str`
@@ -92,6 +95,7 @@ class Group(Resource):
             to delete.
         `profile` : `str`, optional
             The service principal profile ID to delete.
+        
         """
 
         if profile:
@@ -114,6 +118,7 @@ class Group(Resource):
     ) -> None:
         """
         Updates the specified user permissions on the workspace.
+        
         Parameters
         ----------
         `identifier` : `str`
@@ -136,6 +141,7 @@ class Group(Resource):
             BI Embedded multi-tenancy solution.
         `user_type` : `str`, optional
             Type of the user.
+        
         """
 
         payload = {
@@ -161,6 +167,7 @@ class Group(Resource):
     ) -> list[dict]:
         """
         Returns a list of users that have access to the workspace.
+        
         Parameters
         ----------
         `skip` : `int`, optional
@@ -171,6 +178,7 @@ class Group(Resource):
         -------
         `list[dict]`
             List of users that have access to the workspace.
+        
         """
 
         params = {

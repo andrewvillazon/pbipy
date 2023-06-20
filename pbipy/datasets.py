@@ -47,6 +47,7 @@ class Dataset(Resource):
     ) -> None:
         """
         Grants the specified user's permissions to the specified dataset.
+        
         Parameters
         ----------
         `identifier` : `str`
@@ -58,6 +59,7 @@ class Dataset(Resource):
             The Dataset User Access Right to grant to the user for the
             dataset, e.g.,"Read", "ReadExplore", "ReadReshare", or
             "ReadReshareExplore".
+        
         """
 
         resource = self.base_path + "/users"
@@ -79,6 +81,7 @@ class Dataset(Resource):
         gateway, optionally with a given set of data source IDs. If you
         don't supply a specific data source ID, the dataset will be bound
         to the first matching data source in the gateway.
+        
         Parameters
         ----------
         `gateway_object_id` : `str`
@@ -87,6 +90,7 @@ class Dataset(Resource):
             similar to the gateway cluster ID.
         `datasource_object_ids` : `list`, optional
             The unique identifiers for the data sources in the gateway.
+        
         """
 
         bind_to_gateway_request = {
@@ -108,10 +112,12 @@ class Dataset(Resource):
         """
         Cancels the specified refresh operation for the specified dataset
         from MyWorkspace or group.
+        
         Parameters
         ----------
         `refresh_id` : `str`
             Refresh Id to cancel.
+        
         """
 
         resource = self.base_path + f"/refreshes/{refresh_id}"
@@ -122,10 +128,12 @@ class Dataset(Resource):
     ) -> list[dict]:
         """
         Returns a list of datasources for the dataset.
+        
         Returns
         -------
         `list[dict]`
             List of PowerBI datasources for the dataset.
+        
         """
 
         resource = self.base_path + "/datasources"
@@ -135,15 +143,17 @@ class Dataset(Resource):
         self,
     ) -> list:
         """
-        Returns a list of gateways that the specified dataset from My workspace
-        can be bound to.
+        Returns a list of gateways that the dataset can be bound to.
+        
         This API call is only relevant to datasets that have at least one
         on-premises connection. For datasets with cloud-only connections,
         this API call returns an empty list.
+        
         Returns
         -------
         `list`
             List of PowerBI Gateways that can be bound to.
+        
         """
 
         resource = self.base_path + "/Default.DiscoverGateways"
@@ -158,19 +168,23 @@ class Dataset(Resource):
         """
         Executes Data Analysis Expressions (DAX) queries against the provided
         dataset.
+        
         DAX query errors will result in:
             A response error, such as DAX query failure.
             A failure HTTP status code (400).
+        
         A query that requests more than one table, or more than the allowed
         number of table rows, will result in:
             Limited data being returned.
             A response error, such as More than one result table in a query
             or More than {allowed number} rows in a query result.
             A successful HTTP status code (200).
+        
         Columns that are fully qualified in the query will be returned with
         a fully qualified name, for example, MyTable[MyColumn]. Columns
         that are renamed or created in the query will be returned within
         square bracket, for example, `[MyNewColumn]`.
+        
         Parameters
         ----------
         `queries` : `str | list[str]`
@@ -181,10 +195,12 @@ class Dataset(Resource):
         `include_nulls` : `bool`, optional
             Whether null (blank) values should be included in the result
             set. If unspecified, the default value is `false`.
+        
         Returns
         -------
         `dict`
             Dict containing the results of the execution.
+        
         """
 
         if isinstance(queries, str):
@@ -216,10 +232,12 @@ class Dataset(Resource):
     ) -> list[dict]:
         """
         Return a list of parameters for the dataset.
+        
         Returns
         -------
         `list[dict]`
             Parameter list.
+        
         """
 
         resource = self.base_path + "/parameters"
@@ -239,6 +257,7 @@ class Dataset(Resource):
         """
         Trigger a refresh of the dataset. An enhanced refresh is triggered
         only if a request option other than `notify_option` is set.
+        
         Parameters
         ----------
         `notify_option` : `str`
@@ -270,10 +289,12 @@ class Dataset(Resource):
         `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
+        
         Notes
         -----
         See here for request options in greater detail:
         https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/refresh-dataset#definitions
+        
         """
 
         refresh_request = {
@@ -299,14 +320,17 @@ class Dataset(Resource):
         """
         Returns execution details of an enhanced refresh operation for
         the dataset.
+        
         Parameters
         ----------
         `refresh_id` : `str`
             Refresh Id to get the execution details for.
+        
         Returns
         -------
         `dict`
             Refresh execution details.
+        
         """
 
         resource = self.base_path + f"/refreshes/{refresh_id}"
@@ -318,19 +342,23 @@ class Dataset(Resource):
     ) -> list[dict]:
         """
         Returns the refresh history for the dataset.
+        
         Parameters
         ----------
         `top` : `int`, optional
             The requested number of entries in the refresh history. If
             not provided, the default is the last available 500 entries.
+        
         Returns
         -------
         `list[dict]`
             List of refresh history entries.
+        
         Raises
         ------
         `HTTPError`
             If the api response status code is not equal to 200.
+        
         """
         # TODO: implement Refresh object
 
@@ -348,14 +376,17 @@ class Dataset(Resource):
         """
         Return the Refresh Schedule or Direct Query Refresh Schedule for
         the dataset.
+        
         Parameters
         ----------
         `direct_query` : `bool`, optional
             Return the Direct Query Refresh Schedule instead of the Refresh Schedule.
+        
         Returns
         -------
         `dict`
             Refresh schedule or Direct Query Refresh Schedule.
+        
         """
 
         if direct_query:
@@ -372,12 +403,14 @@ class Dataset(Resource):
     ) -> None:
         """
         Transfer ownership of the dataset to the current authorized user.
+        
         Raises
         ------
         `TypeError`
             If the dataset does not have a group_id. In other words, can't
             take over dataset in MyWorkspace, the authorized user already
             owns these.
+        
         """
 
         if not self.group_id:
@@ -394,10 +427,12 @@ class Dataset(Resource):
     ) -> None:
         """
         Update the properties of the dataset.
+        
         Parameters
         ----------
         `target_storage_mode` : `str`
             The dataset storage mode, .e.g, "PremiumFiles", or "Abf".
+        
         """
         update_dataset_request = {"targetStorageMode": target_storage_mode}
 
@@ -409,14 +444,17 @@ class Dataset(Resource):
     ) -> None:
         """
         Update the data sources of the dataset.
+        
         Parameters
         ----------
         `update_details` : `dict | list[dict]`
             A dict, or list of dicts, representing the updates.
+        
         Notes
         -----
         See here for how to construct the update details:
         https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-datasources#examples
+        
         """
 
         if isinstance(update_details, dict):
@@ -435,6 +473,7 @@ class Dataset(Resource):
     ) -> None:
         """
         Updates the parameters values for the dataset.
+        
         Parameters
         ----------
         update_details : `dict | list[dict]`
@@ -446,10 +485,12 @@ class Dataset(Resource):
                 "newValue": "new_value"
             }
             ```
+        
         Notes
         -----
         See more here:
         https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/update-parameters#example
+        
         """
 
         if isinstance(update_details, dict):
@@ -477,8 +518,10 @@ class Dataset(Resource):
         """
         Update the Refresh Schedule or Direct Query Refresh Schedule of the
         dataset.
+        
         Providing `direct_query=True` targets the Direct Query
         Refresh Schedule.
+        
         Parameters
         ----------
         `notify_option` : `str`
@@ -503,10 +546,12 @@ class Dataset(Resource):
         `times` : list[str], optional
             The times of day to execute the refresh expressed as hh:mm, e.g.,
             "07:00", "16:00", etc.
+        
         Raises
         ------
         `ValueError`
             If no values are provided for the request.
+        
         """
 
         # Prepare the request details
@@ -549,6 +594,7 @@ class Dataset(Resource):
         """
         Updates the existing permissions for a user of the dataset to the
         specified permissions.
+        
         Parameters
         ----------
         `identifier` : `str`
@@ -559,6 +605,7 @@ class Dataset(Resource):
         `access_right` : `str`
             The Dataset User Access Right to grant to the user, e.g.,"Read",
             "ReadExplore", "ReadReshare", or "ReadReshareExplore".
+        
         """
 
         resource = self.base_path + "/users"
@@ -575,11 +622,13 @@ class Dataset(Resource):
     ) -> list[dict]:
         """
         Returns a list of principals that have access to the dataset.
+        
         Returns
         -------
         `list[dict]`
             List of principals, e.g., Users, Groups, with access to the
             dataset.
+        
         """
 
         resource = self.base_path + "/users"
