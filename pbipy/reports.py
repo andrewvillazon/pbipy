@@ -40,6 +40,7 @@ class Report(Resource):
         -------
         `list[dict]`
             List of Datasources for the report.
+        
         """
 
         resource = self.base_path + "/datasources"
@@ -63,6 +64,7 @@ class Report(Resource):
         -------
         `dict`
             The specified page.
+        
         """
 
         resource = self.base_path + f"/pages/{name}"
@@ -80,6 +82,7 @@ class Report(Resource):
         -------
         `list[dict]`
             List of report pages.
+        
         """
 
         resource = self.base_path + "/pages"
@@ -107,6 +110,7 @@ class Report(Resource):
             The new dataset for the rebound report. If the dataset resides
             in a different workspace than the report, a shared dataset will
             be created in the report's workspace.
+        
         """
 
         if isinstance(dataset, Dataset):
@@ -133,6 +137,7 @@ class Report(Resource):
         `TypeError`
             If the Report does not have a Workspace (Group), i.e., the
             Report resides in current authorized user's Workspace.
+        
         """
 
         if not self.group_id:
@@ -163,6 +168,7 @@ class Report(Resource):
         See below for the update details schema.
 
         https://learn.microsoft.com/en-us/rest/api/power-bi/reports/update-datasources#examples
+        
         """
 
         if isinstance(details, dict):
