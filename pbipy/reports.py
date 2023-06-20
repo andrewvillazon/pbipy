@@ -1,3 +1,4 @@
+from pbipy.datasets import Dataset
 from pbipy.resources import Resource
 
 
@@ -85,4 +86,37 @@ class Report(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
-    
+
+    def rebind(
+        self,
+        dataset: str | Dataset,
+    ) -> None:
+        """
+        Rebinds the report to the specified dataset.
+
+        If the specified dataset resides in a different workspace than
+        the report, then a shared dataset will be created in the report's
+        workspace.
+
+        On rebind, reports with a live connection will lose that connection
+        and instead have a direct binding to the target dataset.
+
+        Parameters
+        ----------
+        `dataset` : `str | Dataset`
+            The new dataset for the rebound report. If the dataset resides
+            in a different workspace than the report, a shared dataset will
+            be created in the report's workspace.
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+
+        payload = {
+            "datasetId": dataset_id,
+        }
+        resource = self.base_path + "/Rebind"
+
+        self.post(resource, self.session, payload)

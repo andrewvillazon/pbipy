@@ -1,6 +1,7 @@
 import pytest
 import requests
 import responses
+from responses import matchers
 
 from pbipy.reports import Report
 
@@ -98,3 +99,17 @@ def test_pages(report, get_pages):
     assert isinstance(pages, list)
     assert all(isinstance(page, dict) for page in pages)
     assert len(pages) == 2
+
+
+@responses.activate
+def test_rebind_call(report):
+    json_params = {"datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/Rebind",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report.rebind("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
