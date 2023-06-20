@@ -113,3 +113,17 @@ def test_rebind_call(report):
     )
 
     report.rebind("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+
+@responses.activate
+def test_take_over_call(report_with_group):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Default.TakeOver"
+    )
+
+    report_with_group.take_over()
+
+
+def test_take_over_raises_type_error(report):
+    with pytest.raises(TypeError):
+        report.take_over()

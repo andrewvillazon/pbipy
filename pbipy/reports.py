@@ -120,3 +120,25 @@ class Report(Resource):
         resource = self.base_path + "/Rebind"
 
         self.post(resource, self.session, payload)
+    
+    def take_over(
+        self,
+    ) -> None:
+        """
+        Transfers ownership of the data sources for the report to the current 
+        authorized user.
+
+        Raises
+        ------
+        `TypeError`
+            If the Report does not have a Workspace (Group), i.e., the 
+            Report resides in current authorized user's Workspace.
+        """
+
+        if not self.group_id:
+            raise TypeError(
+                "Report does not have a group_id. Taking over a Report can only be performed on a Report in a Group."
+            )
+
+        resource = self.base_path + "/Default.TakeOver"
+        self.post(resource, self.session)
