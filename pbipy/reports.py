@@ -1,8 +1,7 @@
+from requests import Session
+
 from pbipy.datasets import Dataset
 from pbipy.resources import Resource
-
-
-from requests import Session
 
 
 class Report(Resource):
