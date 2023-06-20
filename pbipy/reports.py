@@ -28,3 +28,20 @@ class Report(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+    def datasources(
+        self,
+    ) -> list[dict]:
+        """
+        Return a list of Datasources for the report.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Datasources for the report.
+        """
+
+        resource = self.base_path + "/datasources"
+        raw = self.get_raw(resource, self.session)
+
+        return raw

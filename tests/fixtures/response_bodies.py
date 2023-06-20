@@ -429,3 +429,22 @@ def get_report():
       "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715"
     }
     """
+
+
+@pytest.fixture
+def get_datasources_in_group():
+    return """
+    {
+      "value": [
+        {
+          "datasourceType": "AnalysisServices",
+          "datasourceId": "f8c56590-43cb-43bf-8daa-233ba2520f55",
+          "gatewayId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+          "connectionDetails": {
+            "server": "My-As-Server",
+            "database": "My-As-Database"
+          }
+        }
+      ]
+    }
+    """
