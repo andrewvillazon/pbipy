@@ -147,11 +147,29 @@ class Report(Resource):
         self,
         details: dict | list[dict],
     ) -> None:
+        """
+        Updates the data sources of the report with supplied update details.
+
+        Both the original data source and the new data source must have the
+        exact same schema.
+
+        Parameters
+        ----------
+        `details` : `dict | list[dict]`
+            The update details for the data sources of the paginated report.
+
+        Notes
+        -----
+        See below for the update details schema.
+
+        https://learn.microsoft.com/en-us/rest/api/power-bi/reports/update-datasources#examples
+        """
+
         if isinstance(details, dict):
             payload = [details]
         else:
             payload = details
-        
+
         resource = self.base_path + "/Default.UpdateDatasources"
 
         self.post(resource, self.session, payload)
