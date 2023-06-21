@@ -253,6 +253,7 @@ def test_report_call_result(powerbi, get_report):
         group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
     )
 
+    assert isinstance(report, Report)
     assert hasattr(report, "group_id")
     assert report.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert report.name == "SalesMarketing"
