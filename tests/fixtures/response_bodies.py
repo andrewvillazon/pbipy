@@ -479,3 +479,27 @@ def get_pages():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_reports_in_group():
+    return """
+    {
+      "value": [
+        {
+          "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+          "id": "5b218778-e7a5-4d73-8187-f10824047715",
+          "name": "SalesMarketing",
+          "webUrl": "https://app.powerbi.com//reports/5b218778-e7a5-4d73-8187-f10824047715",
+          "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715"
+        },
+        {
+          "datasetId": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+          "id": "8e4d5880-81d6-4804-ab97-054665050799",
+          "name": "MarketingSales",
+          "webUrl": "https://app.powerbi.com//reports/8e4d5880-81d6-4804-ab97-054665050799",
+          "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=8e4d5880-81d6-4804-ab97-054665050799"
+        }
+      ]
+    }
+    """

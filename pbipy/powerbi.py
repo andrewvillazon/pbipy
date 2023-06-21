@@ -39,7 +39,7 @@ class PowerBI(RequestsMixin):
     ----------
     `bearer_token` : `str`
         Bearer token used to authenticate with your Power BI service.
-    
+
     """
 
     BASE_URL = settings.BASE_URL
@@ -77,7 +77,7 @@ class PowerBI(RequestsMixin):
         -------
         `Dataset`
             The specified dataset.
-        
+
         """
 
         if isinstance(dataset, Dataset):
@@ -105,7 +105,7 @@ class PowerBI(RequestsMixin):
         -------
         `list[Dataset]`
             List of datasets for MyWorkspace or the specified group.
-        
+
         """
 
         if group:
@@ -148,7 +148,7 @@ class PowerBI(RequestsMixin):
         ------
         `HTTPError`
             If the api response status code is not equal to 200.
-        
+
         """
 
         if isinstance(dataset, Dataset):
@@ -189,7 +189,7 @@ class PowerBI(RequestsMixin):
         ------
         `ValueError`
             If the Group was not found by the api.
-        
+
         """
 
         id_filter = f"id eq '{group_id}'"
@@ -225,7 +225,7 @@ class PowerBI(RequestsMixin):
         `list[Group]`
             List of `Group` objects the user has access to, and/or
             that matched the specified filters.
-        
+
         """
 
         params = {
@@ -269,7 +269,7 @@ class PowerBI(RequestsMixin):
         -------
         `Group`
             The newly created workspace (group).
-        
+
         """
 
         payload = {"name": name}
@@ -296,7 +296,7 @@ class PowerBI(RequestsMixin):
         ----------
         `group` : `str | Group`
             Group Id or `Group` object to delete.
-        
+
         """
 
         if isinstance(group, Group):
@@ -327,9 +327,9 @@ class PowerBI(RequestsMixin):
         -------
         `Report`
             The specified `Report` object.
-        
+
         """
-        
+
         if isinstance(report, Report):
             return report
 
@@ -342,3 +342,49 @@ class PowerBI(RequestsMixin):
         report.load()
 
         return report
+
+    def reports(
+        self,
+        group: str | Group = None,
+    ) -> list[dict]:
+        """
+        Return a list of reports for MyWorkspace or the specified
+        group (workspace).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the reports reside., by default None
+
+        Returns
+        -------
+        `list[dict]`
+            List of `Report` objects for MyWorkspace or the specified
+            group (workspace).
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/reports"
+        else:
+            path = "/reports"
+
+        resource = self.BASE_URL + path
+        raw = self.get_raw(resource, self.session)
+
+        reports = [
+            Report(
+                report_js.get("id"),
+                self.session,
+                group_id=group_id,
+                raw=report_js,
+            )
+            for report_js in raw
+        ]
+
+        return reports

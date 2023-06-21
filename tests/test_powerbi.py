@@ -4,6 +4,7 @@ import responses
 from requests.exceptions import HTTPError
 
 from pbipy.groups import Group
+from pbipy.reports import Report
 
 
 @responses.activate
@@ -259,3 +260,42 @@ def test_report_call_result(powerbi, get_report):
     assert report.name == "SalesMarketing"
 
 
+@responses.activate
+def test_reports_call(powerbi, get_reports_in_group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports",
+        body=get_reports_in_group,
+        content_type="application/json",
+    )
+
+    powerbi.reports(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+
+@responses.activate
+def test_reports_call_group_object(powerbi, get_reports_in_group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports",
+        body=get_reports_in_group,
+        content_type="application/json",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        requests.Session(),
+    )
+
+    powerbi.reports(group=group)
+
+
+@responses.activate
+def test_reports_result(powerbi, get_reports_in_group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports",
+        body=get_reports_in_group,
+        content_type="application/json",
+    )
+
+    reports = powerbi.reports(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert isinstance(reports, list)
+    assert all(isinstance(report, Report) for report in reports)
