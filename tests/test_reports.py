@@ -2,6 +2,7 @@ import pytest
 import requests
 import responses
 from responses import matchers
+from pbipy.groups import Group
 
 from pbipy.reports import Report
 
@@ -203,3 +204,148 @@ def test_update_datasources_call_multiple(report):
     ]
 
     report.update_datasources(details)
+
+
+@responses.activate
+def test_update_content_report_object(report):
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+            "sourceWorkspaceId": "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    source_report = Report(
+        id="8e4d5880-81d6-4804-ab97-054665050799",
+        group_id="2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        session=requests.Session(),
+    )
+
+    report.update_content(source_report)
+
+
+@responses.activate
+def test_update_content_report_no_group(report):
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    source_report = Report(
+        id="8e4d5880-81d6-4804-ab97-054665050799",
+        session=requests.Session(),
+    )
+
+    report.update_content(source_report)
+
+
+@responses.activate
+def test_update_content_report_str_group_object(report):
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+            "sourceWorkspaceId": "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    group = Group(
+        id="2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        session=requests.Session(),
+    )
+
+    report.update_content(
+        "8e4d5880-81d6-4804-ab97-054665050799",
+        group,
+    )
+
+
+@responses.activate
+def test_update_content_report_str_group_str(report):
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+            "sourceWorkspaceId": "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report.update_content(
+        "8e4d5880-81d6-4804-ab97-054665050799",
+        "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+    )
+
+
+@responses.activate
+def test_update_content_ignores_group(report):
+    # Report has no group, should ignore group id and not pass in as param.
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    source_report = Report(
+        id="8e4d5880-81d6-4804-ab97-054665050799",
+        session=requests.Session(),
+    )
+
+    report.update_content(source_report, "2f42a406-a075-4a15-bbf2-97ef958c94cb")
+
+
+@responses.activate
+def test_update_content_report_str_only_no_group(report):
+    json_params = {
+        "sourceReport": {
+            "sourceReportId": "8e4d5880-81d6-4804-ab97-054665050799",
+        },
+        "sourceType": "ExistingReport",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/UpdateReportContent",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report.update_content("8e4d5880-81d6-4804-ab97-054665050799")
