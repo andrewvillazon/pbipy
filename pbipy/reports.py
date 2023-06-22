@@ -39,7 +39,7 @@ class Report(Resource):
         target_dataset: str = None,
     ) -> None:
         """
-        Clones the report into the current user's workspace or the specified 
+        Clones the report into the current user's workspace or the specified
         workspace.
 
         If the dataset for a cloned report resides in two different workspaces
@@ -63,7 +63,7 @@ class Report(Resource):
             Dataset Id specifying the dataset to associate with the cloned
             report. If not provided, the new report will be associated with
             the same dataset as the source report.
-        
+
         """
 
         init_payload = {
