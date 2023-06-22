@@ -150,6 +150,7 @@ class PowerBI(RequestsMixin):
             If the api response status code is not equal to 200.
 
         """
+        # FIXME: Doesn't use the group from the Dataset.
 
         if isinstance(dataset, Dataset):
             dataset_id = dataset.id
@@ -388,3 +389,29 @@ class PowerBI(RequestsMixin):
         ]
 
         return reports
+
+    def delete_report(
+        self,
+        report: str | Report,
+        group: str | Group = None,
+    ) -> None:
+        if isinstance(report, Report):
+            report_id = report.id
+        else:
+            report_id = report
+        
+        # If we got report, use its group_id and ignore provided
+        if isinstance(report, Report):
+            group_id = report.group_id
+        else:
+            if isinstance(group, Group):
+                group_id = group.id
+            else:
+                group_id = group
+        
+        if group_id:
+            resource = self.BASE_URL + f"/groups/{group_id}/reports/{report_id}"
+        else:
+            resource = self.BASE_URL + f"/reports/{report_id}"
+        
+        self.delete(resource, self.session)

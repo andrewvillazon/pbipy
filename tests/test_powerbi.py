@@ -299,3 +299,64 @@ def test_reports_result(powerbi, get_reports_in_group):
 
     assert isinstance(reports, list)
     assert all(isinstance(report, Report) for report in reports)
+
+
+@responses.activate
+def test_delete_report_call_report_str_no_group(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/reports/5b218778-e7a5-4d73-8187-f10824047715",
+    )
+
+    powerbi.delete_report("5b218778-e7a5-4d73-8187-f10824047715")
+
+
+@responses.activate
+def test_delete_report_call_report_object_ignore_group(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/reports/5b218778-e7a5-4d73-8187-f10824047715",
+    )
+
+    report = Report(
+        id="5b218778-e7a5-4d73-8187-f10824047715",
+        session=requests.Session(),
+    )
+
+    powerbi.delete_report(
+        report,
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+
+@responses.activate
+def test_delete_report_call_report_str_group_object(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/5b218778-e7a5-4d73-8187-f10824047715",
+    )
+
+    group = Group(
+        "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        requests.Session(),
+    )
+
+    powerbi.delete_report(
+        "5b218778-e7a5-4d73-8187-f10824047715",
+        group=group,
+    )
+
+
+@responses.activate
+def test_delete_report_call_report_object_with_group_ignore_group_id(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/5b218778-e7a5-4d73-8187-f10824047715",
+    )
+
+    report = Report(
+        id="5b218778-e7a5-4d73-8187-f10824047715",
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    powerbi.delete_report(
+        report,
+        group="3d9b93c6-7b6d-4801-a491-1738910904fd",
+    )
