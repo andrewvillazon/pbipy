@@ -395,6 +395,26 @@ class PowerBI(RequestsMixin):
         report: str | Report,
         group: str | Group = None,
     ) -> None:
+        """
+        Delete the specified report. 
+        
+        If a `Report` type is provided as `report`, then it's `group_id` 
+        will be taken as the `group` value.
+
+        Parameters
+        ----------
+        `report` : `str | Report`
+            Report Id or `Report` object to delete.
+        `group` : `str | Group`, optional
+            The Group Id or `Group` object where the report resides. If
+            a `Report` object is provided then the `group_id` of that report
+            will override the provided group value.
+
+            If no group value is provided, it is assumed the report resides
+            in the current user's workspace.
+        
+        """
+
         if isinstance(report, Report):
             report_id = report.id
         else:
