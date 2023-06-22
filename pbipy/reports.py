@@ -38,6 +38,34 @@ class Report(Resource):
         target_group: str = None,
         target_dataset: str = None,
     ) -> None:
+        """
+        Clones the report into the current user's workspace or the specified 
+        workspace.
+
+        If the dataset for a cloned report resides in two different workspaces
+        or in the current user's workspace, then a shared dataset will be
+        created in the report's workspace.
+
+        When cloned, reports with a live connection will lose that connection
+        and instead have a direct binding to the target dataset.
+
+        Parameters
+        ----------
+        `name` : `str`
+            The cloned report name.
+        `target_group` : `str`, optional
+            Group Id specifying the group where the clone will reside.
+            An empty GUID (`00000000-0000-0000-0000-000000000000`) indicates
+            the current user's workspace. If this parameter isn't provided,
+            the new report will be cloned within the same workspace as the
+            source report.
+        `target_dataset` : `str`, optional
+            Dataset Id specifying the dataset to associate with the cloned
+            report. If not provided, the new report will be associated with
+            the same dataset as the source report.
+        
+        """
+
         init_payload = {
             "name": name,
             "targetModelId": target_dataset,
