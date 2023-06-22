@@ -32,6 +32,23 @@ class Report(Resource):
         if raw:
             self._load_from_raw(raw)
 
+    def clone(
+        self,
+        name: str,
+        target_group: str = None,
+        target_dataset: str = None,
+    ) -> None:
+        init_payload = {
+            "name": name,
+            "targetModelId": target_dataset,
+            "targetWorkspaceId": target_group,
+        }
+
+        payload = remove_no_values(init_payload)
+        resource = self.base_path + "/Clone"
+
+        self.post(resource, self.session, payload)
+
     def datasources(
         self,
     ) -> list[dict]:
@@ -157,9 +174,9 @@ class Report(Resource):
         source_type: str = "ExistingReport",
     ) -> None:
         """
-        Updates the content of the report with the content of a specified 
+        Updates the content of the report with the content of a specified
         source report.
-        
+
         If the caller provides a `Report` object as a `source_report`, then
         the `group_id` of the `source_report` is used in the update request
         and any `source_group` argument is ignored.
@@ -172,16 +189,16 @@ class Report(Resource):
             The Group Id or `Group` object where the `source_report` resides.
             If `source_report` is a `Report` object, this argument is ignored.
         `source_type` : `str`, optional
-            Type of source. API specification indicates the only valid 
+            Type of source. API specification indicates the only valid
             value is "ExistingReport".
-        
+
         """
 
         if isinstance(source_report, Report):
             report_id = source_report.id
         else:
             report_id = source_report
-        
+
         # If we got report, use its group_id and ignore provided
         if isinstance(source_report, Report):
             group_id = source_report.group_id

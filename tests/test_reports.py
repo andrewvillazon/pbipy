@@ -349,3 +349,61 @@ def test_update_content_report_str_only_no_group(report):
     )
 
     report.update_content("8e4d5880-81d6-4804-ab97-054665050799")
+
+
+@responses.activate
+def test_clone_report_call_with_group(report_with_group):
+    json_params = {
+        "name": "Attack of the clones",
+        "targetWorkspaceId": "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Clone",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report_with_group.clone(
+        "Attack of the clones",
+        target_group="2f42a406-a075-4a15-bbf2-97ef958c94cb",
+    )
+
+
+@responses.activate
+def test_clone_report_call_with_no_group(report_with_group):
+    json_params = {
+        "name": "Attack of the clones",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Clone",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report_with_group.clone("Attack of the clones")
+
+
+@responses.activate
+def test_clone_report_call_with_group_and_dataset(report_with_group):
+    json_params = {
+        "name": "Attack of the clones",
+        "targetModelId": "8e4d5880-81d6-4804-ab97-054665050799",
+        "targetWorkspaceId": "2f42a406-a075-4a15-bbf2-97ef958c94cb",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Clone",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    report_with_group.clone(
+        "Attack of the clones",
+        target_group="2f42a406-a075-4a15-bbf2-97ef958c94cb",
+        target_dataset="8e4d5880-81d6-4804-ab97-054665050799",
+    )
