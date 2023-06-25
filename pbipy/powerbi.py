@@ -226,7 +226,7 @@ class PowerBI(RequestsMixin):
         `list[Group]`
             List of `Group` objects the user has access to, and/or
             that matched the specified filters.
-
+        
         Notes
         -----
         See below for more details on filter syntax:
