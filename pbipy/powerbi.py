@@ -227,6 +227,11 @@ class PowerBI(RequestsMixin):
             List of `Group` objects the user has access to, and/or
             that matched the specified filters.
 
+        Notes
+        -----
+        See below for more details on filter syntax:
+        https://learn.microsoft.com/en-us/power-bi/collaborate-share/service-url-filters
+
         """
 
         params = {
