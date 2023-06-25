@@ -1,3 +1,4 @@
+from pathlib import Path
 import pytest
 import requests
 import responses
@@ -45,6 +46,45 @@ def test_remove_no_values():
     }
 
     assert utils.remove_no_values(test_d) == expected_d
+
+
+def test_file_path_from_components():
+    expected_path = Path("sample_report.pbix")
+
+    path = utils.file_path_from_components(
+        file_name="sample_report",
+        extension="pbix",
+    )
+
+    assert path == expected_path
+    assert isinstance(path, Path)
+
+
+def test_file_path_from_components_path_object():
+    expected_path = Path("C:\sample_dir\sample_report.pbix")
+
+    directory = Path("C:\sample_dir")
+    path = utils.file_path_from_components(
+        file_name="sample_report",
+        directory=directory,
+        extension="pbix",
+    )
+
+    assert path == expected_path
+    assert isinstance(path, Path)
+
+
+def test_file_path_from_components_str_directory():
+    expected_path = Path("C:\sample_dir\sample_report.pbix")
+
+    path = utils.file_path_from_components(
+        file_name="sample_report",
+        directory="C:\sample_dir",
+        extension="pbix",
+    )
+
+    assert path == expected_path
+    assert isinstance(path, Path)
 
 
 @pytest.fixture

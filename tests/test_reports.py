@@ -1,9 +1,13 @@
+from io import BytesIO
+from pathlib import Path
+from unittest.mock import Mock, mock_open, patch
+
 import pytest
 import requests
 import responses
 from responses import matchers
-from pbipy.groups import Group
 
+from pbipy.groups import Group
 from pbipy.reports import Report
 
 
@@ -407,3 +411,114 @@ def test_clone_report_call_with_group_and_dataset(report_with_group):
         target_group="2f42a406-a075-4a15-bbf2-97ef958c94cb",
         target_dataset="8e4d5880-81d6-4804-ab97-054665050799",
     )
+
+
+@responses.activate
+def test_download():
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download()
+
+    expected_path = Path("SalesMarketing.pbix")
+
+    m.assert_called_with(expected_path, "wb")
+
+
+@responses.activate
+def test_download_rename():
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download(file_name="NotSalesMarketing")
+
+    expected_path = Path("NotSalesMarketing.pbix")
+
+    m.assert_called_with(expected_path, "wb")
+
+
+@responses.activate
+def test_download_with_dir():
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download(save_to="C:\\temp")
+
+    expected_path = Path("C:\\temp\SalesMarketing.pbix")
+
+    m.assert_called_with(expected_path, "wb")
+
+
+@responses.activate
+def test_download_with_file():
+    response_file = BytesIO(b"file contents").read()
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
+        body=response_file,
+        content_type="application/zip"
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download()
+
+    m.assert_called_with(Path("SalesMarketing.pbix"), "wb")
+    m.return_value.write.assert_called_once_with(response_file)

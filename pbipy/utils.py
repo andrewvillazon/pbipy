@@ -1,6 +1,7 @@
 """Utility functions and classes used internally by pybi."""
 
 import json
+from pathlib import Path
 import re
 
 from requests import Response, Session
@@ -50,6 +51,40 @@ def remove_no_values(
             new_d[k] = v
 
     return new_d
+
+
+def file_path_from_components(
+    file_name: str,
+    extension: str,
+    directory: str | Path = None,
+):
+    """
+    Create a file path from file path components.
+
+    Parameters
+    ----------
+    `file_name` : `str`
+        Name of the file (without extension).
+    `extension` : `str`
+        The file extension.
+    `directory` : `str | Path`, optional
+        Directory of the file.
+
+    Returns
+    -------
+    `Path`
+        File path to the file.
+
+    """
+
+    if isinstance(directory, str):
+        f_dir = Path(directory)
+    elif directory is None:
+        f_dir = Path()  # cwd
+    else:
+        f_dir = directory
+
+    return f_dir / f"{file_name}.{extension}"
 
 
 class RequestsMixin:

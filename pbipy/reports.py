@@ -1,13 +1,19 @@
+from pathlib import Path
 from typing import TypeVar
 from requests import Session
 
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.resources import Resource
-from pbipy.utils import remove_no_values
+from pbipy.utils import file_path_from_components, remove_no_values
 
 
 class Report(Resource):
+    EXTENSIONS = {
+        "PowerBIReport": "pbix",
+        "PaginatedReport": "rdl",
+    }
+
     def __init__(
         self,
         id: str,
@@ -94,6 +100,45 @@ class Report(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def download(
+        self,
+        save_to: str | Path = None,
+        file_name: str = None,
+    ) -> None:
+        """
+        Download the report as `.pbix` or `.rdl` depending on the report
+        type.
+
+        Parameters
+        ----------
+        `save_to` : `str | Path`, optional
+            Folder/directory to save the report to. If not provided will
+            save to the current working directory.
+        `file_name` : `str`, optional
+            Name of the file. If not provided will use the name of the 
+            Report as the file name.
+        
+        """
+
+        if file_name is None:
+            f_name = self.name
+        else:
+            f_name = file_name
+
+        ext = self.EXTENSIONS.get(self.report_type)
+
+        file_path = file_path_from_components(
+            file_name=f_name,
+            extension=ext,
+            directory=save_to,
+        )
+
+        resource = self.base_path + "/Export"
+        response = self.get(resource, self.session)
+
+        with open(file_path, "wb") as out_file:
+            out_file.write(response.content)
 
     def page(
         self,
