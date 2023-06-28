@@ -143,6 +143,34 @@ class Report(Resource):
 
         with open(file_path, "wb") as out_file:
             out_file.write(response.content)
+    
+    def export_request(
+        self,
+        format: str,
+    ) -> dict:
+        """
+        Trigger an export job for the report.
+
+        Parameters
+        ----------
+        `format` : `str`
+            The format to export to, e.g., "pdf", "png", "pptx", "xlsx".
+
+        Returns
+        -------
+        `dict`
+            Details and current state of the export job.
+        
+        """
+
+        resource = self.base_path + "/ExportTo"
+        payload = {
+            "format": format.upper()
+        }
+
+        raw = self.post_raw(resource, self.session, payload)
+        
+        return raw
 
     def page(
         self,
@@ -243,34 +271,6 @@ class Report(Resource):
 
         resource = self.base_path + "/Default.TakeOver"
         self.post(resource, self.session)
-    
-    def trigger_export(
-        self,
-        format: str,
-    ) -> dict:
-        """
-        Trigger an export job for the report.
-
-        Parameters
-        ----------
-        `format` : `str`
-            The format to export to, e.g., "pdf", "png", "pptx", "xlsx".
-
-        Returns
-        -------
-        `dict`
-            Details and current state of the export job.
-        
-        """
-
-        resource = self.base_path + "/ExportTo"
-        payload = {
-            "format": format.upper()
-        }
-
-        raw = self.post_raw(resource, self.session, payload)
-        
-        return raw
 
     def update_content(
         self,

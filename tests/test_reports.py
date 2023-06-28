@@ -525,7 +525,7 @@ def test_download_with_file():
 
 
 @responses.activate
-def test_trigger_export_call(report, export_to_file):
+def test_export_request_call(report, export_to_file):
     responses.post(
         "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/ExportTo",
         match=[
@@ -537,11 +537,11 @@ def test_trigger_export_call(report, export_to_file):
         status=202,
     )
     
-    report.trigger_export("pdf")
+    report.export_request("pdf")
 
 
 @responses.activate
-def test_trigger_export_result(report, export_to_file):
+def test_export_request_result(report, export_to_file):
     responses.post(
         "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/ExportTo",
         match=[
@@ -553,7 +553,7 @@ def test_trigger_export_result(report, export_to_file):
         status=202,
     )
     
-    export_job = report.trigger_export("pdf")
+    export_job = report.export_request("pdf")
 
     assert isinstance(export_job, dict)
     assert export_job.get("percentComplete") == 70
