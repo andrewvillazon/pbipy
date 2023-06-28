@@ -1,6 +1,4 @@
 from pathlib import Path
-import time
-from typing import BinaryIO, TypeVar
 from requests import Session
 
 from pbipy.datasets import Dataset
