@@ -178,7 +178,7 @@ class RequestsMixin:
         resource: str,
         session: Session,
         payload: dict = None,
-        success_codes: list[int] = [200, 201],
+        success_codes: list[int] = [200, 201, 202],
     ) -> Response:
         """
         Post data to an api endpoint.
