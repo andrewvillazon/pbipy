@@ -143,7 +143,7 @@ class Report(Resource):
 
         with open(file_path, "wb") as out_file:
             out_file.write(response.content)
-    
+
     def export_request(
         self,
         format: str,
@@ -160,17 +160,56 @@ class Report(Resource):
         -------
         `dict`
             Details and current state of the export job.
-        
+
         """
 
         resource = self.base_path + "/ExportTo"
-        payload = {
-            "format": format.upper()
-        }
+        payload = {"format": format.upper()}
 
         raw = self.post_raw(resource, self.session, payload)
-        
+
         return raw
+
+    def export_status(
+        self,
+        id: str,
+        include_retry_after: bool = False,
+    ) -> dict | tuple[dict, int]:
+        """
+        Returns the current status of the provided export request.
+
+        Parameters
+        ----------
+        `id` : `str`
+            Id of the export request.
+        `include_retry_after` : `bool`, optional
+            If included, `export_status` will inspect the Response Header for 
+            a Retry-After value and return this. This value can be used to delay 
+            the next status request, instead of polling at a set interval.
+
+        Returns
+        -------
+        `dict | tuple[dict, int]`
+            Dict representing the export request and its current state. If `include_retry_after`
+            was set to `True`, then a tuple is returned that includes the
+            export request and `retry_after` value.
+        
+        """
+
+        resource = self.base_path + f"/exports/{id}"
+        response = self.get(resource, self.session)
+
+        raw = self.parse_raw(response.json())
+
+        if include_retry_after:
+            try:
+                retry_after = int(response.headers.get("Retry-After"))
+            except:
+                retry_after = None
+
+            return raw, retry_after
+        else:
+            return raw
 
     def page(
         self,

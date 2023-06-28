@@ -558,3 +558,51 @@ def test_export_request_result(report, export_to_file):
     assert isinstance(export_job, dict)
     assert export_job.get("percentComplete") == 70
     assert export_job.get("status") == "Running"
+
+
+@responses.activate
+def test_export_status_raw_only(report, get_export_to_file_status):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/exports/Mi9C5419i....PS4=",
+        body=get_export_to_file_status
+    )
+
+    status = report.export_status("Mi9C5419i....PS4=")
+
+    assert isinstance(status, dict)
+    assert status.get("id") == "Mi9C5419i....PS4="
+    assert status.get("status") == "Succeeded"
+    assert status.get("percentComplete") == 100
+
+
+@responses.activate
+def test_export_status_retry_after(report, get_export_to_file_status):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/exports/Mi9C5419i....PS4=",
+        body=get_export_to_file_status,
+        headers={"Retry-After": "5"}
+    )
+
+    status = report.export_status("Mi9C5419i....PS4=", include_retry_after=True)
+
+    export_status, retry_after = status
+
+    assert isinstance(status, tuple)
+    assert isinstance(export_status, dict)
+    assert isinstance(retry_after, int)
+
+
+@responses.activate
+def test_export_status_no_retry_after(report, get_export_to_file_status):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/exports/Mi9C5419i....PS4=",
+        body=get_export_to_file_status,
+    )
+
+    status = report.export_status("Mi9C5419i....PS4=", include_retry_after=True)
+
+    export_status, retry_after = status
+
+    assert isinstance(status, tuple)
+    assert isinstance(export_status, dict)
+    assert retry_after is None
