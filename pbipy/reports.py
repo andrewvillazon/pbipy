@@ -1,5 +1,6 @@
 from pathlib import Path
-from typing import TypeVar
+import time
+from typing import BinaryIO, TypeVar
 from requests import Session
 
 from pbipy.datasets import Dataset
@@ -12,6 +13,9 @@ class Report(Resource):
     EXTENSIONS = {
         "PowerBIReport": "pbix",
         "PaginatedReport": "rdl",
+        "PDF": "pdf",
+        "PNG": "png",
+        "PPTX": "pptx",
     }
 
     def __init__(
@@ -116,9 +120,9 @@ class Report(Resource):
             Folder/directory to save the report to. If not provided will
             save to the current working directory.
         `file_name` : `str`, optional
-            Name of the file. If not provided will use the name of the 
+            Name of the file. If not provided will use the name of the
             Report as the file name.
-        
+
         """
 
         if file_name is None:
@@ -239,6 +243,34 @@ class Report(Resource):
 
         resource = self.base_path + "/Default.TakeOver"
         self.post(resource, self.session)
+    
+    def trigger_export(
+        self,
+        format: str,
+    ) -> dict:
+        """
+        Trigger an export job for the report.
+
+        Parameters
+        ----------
+        `format` : `str`
+            The format to export to, e.g., "pdf", "png", "pptx", "xlsx".
+
+        Returns
+        -------
+        `dict`
+            Details and current state of the export job.
+        
+        """
+
+        resource = self.base_path + "/ExportTo"
+        payload = {
+            "format": format.upper()
+        }
+
+        raw = self.post_raw(resource, self.session, payload)
+        
+        return raw
 
     def update_content(
         self,

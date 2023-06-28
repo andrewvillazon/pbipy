@@ -503,3 +503,20 @@ def get_reports_in_group():
       ]
     }
     """
+
+@pytest.fixture
+def export_to_file():
+    return """
+    {
+      "id": "Mi9C5419i....PS4=",
+      "createdDateTime": "2021-12-08T10:26:09.3069086Z",
+      "lastActionDateTime": "2021-12-08T10:26:38.016851Z",
+      "reportId": "cad51cfa-e740-324f-acbb-8ca43c40a2d4",
+      "reportName": "Report name",
+      "status": "Running",
+      "percentComplete": 70,
+      "resourceLocation": "...Mi9C5419i....PS4=/file",
+      "resourceFileExtension": ".pptx",
+      "expirationTime": "2021-12-09T10:26:11.586756Z"
+    }
+    """
