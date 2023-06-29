@@ -83,8 +83,14 @@ def file_path_from_components(
         f_dir = Path()  # cwd
     else:
         f_dir = directory
+    
+    # Be a bit more flexible and accept .ext
+    if extension[0] == ".":
+        f_ext = extension[1:]
+    else:
+        f_ext = extension
 
-    return f_dir / f"{file_name}.{extension}"
+    return f_dir / f"{file_name}.{f_ext}"
 
 
 class RequestsMixin:

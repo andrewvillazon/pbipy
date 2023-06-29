@@ -87,6 +87,19 @@ def test_file_path_from_components_str_directory():
     assert isinstance(path, Path)
 
 
+def test_file_path_from_components_dot_ext():
+    expected_path = Path("C:\sample_dir\sample_report.pbix")
+
+    path = utils.file_path_from_components(
+        file_name="sample_report",
+        directory="C:\sample_dir",
+        extension=".pbix",
+    )
+
+    assert path == expected_path
+    assert isinstance(path, Path)
+
+
 @pytest.fixture
 def request_mixin():
     return utils.RequestsMixin()
