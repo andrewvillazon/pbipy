@@ -5,7 +5,9 @@
 
 `pbipy` is a Python Library for interacting with the Power BI Rest API. It aims to simplyify working with the Power BI Rest API and support programatic administration of Power BI in Python.
 
-*\* Quick note:* `pbipy` is currently in active development and not all API functionality is supported yet. See [development progress](#development-progress) below for what's been implemented and what's coming.
+`pbipy` supports operations for Reports, Datasets, and Groups (Workspaces), allowing users to perform actions on their PowerBI instance using Python.
+
+See [development progress](#development-progress) below for what's been implemented and what's coming.
 
 ## Installation
 
@@ -245,8 +247,8 @@ for user in users:
 |---------------------	|----------	|-------	|
 | Datasets            	| Done     	|       	|
 | Groups (Workspaces) 	| Done    	|       	|
-| Reports             	| Doing     |       	|
-| Apps                	| Todo     	|       	|
+| Reports             	| Done      |       	|
+| Apps                	| Doing   	|       	|
 | Dataflows           	| Todo     	|       	|
 | Dashboards          	| Todo     	|       	|
 | Everything else     	| Backlog  	|       	|
