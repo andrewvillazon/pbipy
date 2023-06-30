@@ -10,10 +10,18 @@ from pbipy.utils import file_path_from_components, remove_no_values
 
 
 class Report(Resource):
+    _REPR =[
+        "id",
+        "name",
+        "group_id",
+        "dataset_id",
+    ]
+
     REPORT_EXTENSIONS = {
         "PowerBIReport": "pbix",
         "PaginatedReport": "rdl",
     }
+    
 
     def __init__(
         self,
