@@ -1,4 +1,6 @@
+import mimetypes
 from pathlib import Path
+
 from requests import Session
 
 from pbipy.datasets import Dataset
@@ -8,12 +10,9 @@ from pbipy.utils import file_path_from_components, remove_no_values
 
 
 class Report(Resource):
-    EXTENSIONS = {
+    REPORT_EXTENSIONS = {
         "PowerBIReport": "pbix",
         "PaginatedReport": "rdl",
-        "PDF": "pdf",
-        "PNG": "png",
-        "PPTX": "pptx",
     }
 
     def __init__(
@@ -128,7 +127,7 @@ class Report(Resource):
         else:
             f_name = file_name
 
-        ext = self.EXTENSIONS.get(self.report_type)
+        ext = self.REPORT_EXTENSIONS.get(self.report_type)
 
         file_path = file_path_from_components(
             file_name=f_name,
@@ -138,6 +137,48 @@ class Report(Resource):
 
         resource = self.base_path + "/Export"
         response = self.get(resource, self.session)
+
+        with open(file_path, "wb") as out_file:
+            out_file.write(response.content)
+
+    def download_export(
+        self,
+        id,
+        save_to: str | Path = None,
+        file_name: str = None,
+    ) -> None:
+        """
+        Download the file for a Report's export request.
+
+        Parameters
+        ----------
+        `id` : `str`
+            The Export Request Id to retrieve the file for.
+        `save_to` : `str | Path`, optional
+            Folder/directory to save the exported file to. If not provided
+            will save to the current working directory.
+        `file_name` : `str`, optional
+            Name to give to the export file. If not provided, will use the 
+            name of the Report as the file name.
+        
+        """
+
+        resource = self.base_path + f"/exports/{id}/file"
+        response = self.get(resource, self.session)
+
+        if file_name is None:
+            f_name = self.name
+        else:
+            f_name = file_name
+
+        content_type = response.headers.get("content-type")
+        ext = mimetypes.guess_extension(content_type)
+
+        file_path = file_path_from_components(
+            f_name,
+            extension=ext,
+            directory=save_to,
+        )
 
         with open(file_path, "wb") as out_file:
             out_file.write(response.content)
@@ -181,8 +222,8 @@ class Report(Resource):
         `id` : `str`
             Id of the export request.
         `include_retry_after` : `bool`, optional
-            If included, `export_status` will inspect the Response Header for 
-            a Retry-After value and return this. This value can be used to delay 
+            If included, `export_status` will inspect the Response Header for
+            a Retry-After value and return this. This value can be used to delay
             the next status request, instead of polling at a set interval.
 
         Returns
@@ -191,7 +232,7 @@ class Report(Resource):
             Dict representing the export request and its current state. If `include_retry_after`
             was set to `True`, then a tuple is returned that includes the
             export request and `retry_after` value.
-        
+
         """
 
         resource = self.base_path + f"/exports/{id}"

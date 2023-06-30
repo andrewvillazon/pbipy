@@ -606,3 +606,63 @@ def test_export_status_no_retry_after(report, get_export_to_file_status):
     assert isinstance(status, tuple)
     assert isinstance(export_status, dict)
     assert retry_after is None
+
+
+@responses.activate
+def test_download_export():
+    response_file = BytesIO(b"file contents").read()
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/exports/Mi9C5419i....PS4=/file",
+        body=response_file,
+        content_type="application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download_export("Mi9C5419i....PS4=")
+
+    m.assert_called_with(Path("SalesMarketing.pptx"), "wb")
+    m.return_value.write.assert_called_once_with(response_file)
+
+
+@responses.activate
+def test_download_export_pdf():
+    response_file = BytesIO(b"file contents").read()
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/exports/Mi9C5419i....PS4=/file",
+        body=response_file,
+        content_type="application/pdf",
+    )
+
+    raw = {
+        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    m = mock_open()
+    with patch("builtins.open", m):
+        report.download_export("Mi9C5419i....PS4=", "C:\\temp")
+
+    m.assert_called_with(Path("C:\\temp\SalesMarketing.pdf"), "wb")
+    m.return_value.write.assert_called_once_with(response_file)
