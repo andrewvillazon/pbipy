@@ -73,7 +73,7 @@ class PowerBI(RequestsMixin):
         -------
         `App`
             The specified App.
-        
+
         """
 
         if isinstance(app, App):
@@ -83,6 +83,23 @@ class PowerBI(RequestsMixin):
         app.load()
 
         return app
+
+    def apps(
+        self,
+    ) -> list[App]:
+        resource = self.BASE_URL + "/apps"
+        raw = self.get_raw(resource, self.session)
+
+        apps = [
+            App(
+                app_js.get("id"),
+                self.session,
+                raw=app_js,
+            )
+            for app_js in raw
+        ]
+
+        return apps
 
     # TODO: Add support for passing in a group obj
     def dataset(

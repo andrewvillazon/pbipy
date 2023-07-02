@@ -368,10 +368,25 @@ def test_app(get_app, powerbi):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48",
         body=get_app,
-        content_type="application/json"
+        content_type="application/json",
     )
 
     app = powerbi.app("f089354e-8366-4e18-aea3-4cb4a3a50b48")
 
     assert isinstance(app, App)
     assert app.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+
+
+@responses.activate
+def test_apps(get_apps, powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps",
+        body=get_apps,
+        content_type="application/json",
+    )
+
+    apps = powerbi.apps()
+
+    assert isinstance(apps, list)
+    assert all(isinstance(app, App) for app in apps)
+    assert len(apps) == 2
