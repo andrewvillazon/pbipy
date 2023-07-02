@@ -12,6 +12,7 @@ import requests
 from requests.exceptions import HTTPError
 
 from pbipy import settings
+from pbipy.apps import App
 from pbipy.groups import Group
 from pbipy.datasets import Dataset
 from pbipy.reports import Report
@@ -55,6 +56,33 @@ class PowerBI(RequestsMixin):
             self.session = requests.Session()
 
         self.session.headers.update({"Authorization": f"Bearer {self.bearer_token}"})
+
+    def app(
+        self,
+        app: str,
+    ) -> App:
+        """
+        Return the specified installed app.
+
+        Parameters
+        ----------
+        `app` : `str`
+            App id of the App to retrieve.
+
+        Returns
+        -------
+        `App`
+            The specified App.
+        
+        """
+
+        if isinstance(app, App):
+            return app
+
+        app = App(app, self.session)
+        app.load()
+
+        return app
 
     # TODO: Add support for passing in a group obj
     def dataset(
@@ -226,7 +254,7 @@ class PowerBI(RequestsMixin):
         `list[Group]`
             List of `Group` objects the user has access to, and/or
             that matched the specified filters.
-        
+
         Notes
         -----
         See below for more details on filter syntax:
@@ -401,9 +429,9 @@ class PowerBI(RequestsMixin):
         group: str | Group = None,
     ) -> None:
         """
-        Delete the specified report. 
-        
-        If a `Report` type is provided as `report`, then it's `group_id` 
+        Delete the specified report.
+
+        If a `Report` type is provided as `report`, then it's `group_id`
         will be taken as the `group` value.
 
         Parameters
@@ -417,14 +445,14 @@ class PowerBI(RequestsMixin):
 
             If no group value is provided, it is assumed the report resides
             in the current user's workspace.
-        
+
         """
 
         if isinstance(report, Report):
             report_id = report.id
         else:
             report_id = report
-        
+
         # If we got report, use its group_id and ignore provided
         if isinstance(report, Report):
             group_id = report.group_id
@@ -433,10 +461,10 @@ class PowerBI(RequestsMixin):
                 group_id = group.id
             else:
                 group_id = group
-        
+
         if group_id:
             resource = self.BASE_URL + f"/groups/{group_id}/reports/{report_id}"
         else:
             resource = self.BASE_URL + f"/reports/{report_id}"
-        
+
         self.delete(resource, self.session)

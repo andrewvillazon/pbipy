@@ -538,3 +538,16 @@ def get_export_to_file_status():
       "expirationTime": "2021-12-09T10:26:11.586756Z"
     }
     """
+
+
+@pytest.fixture
+def get_app():
+    return """
+    {
+      "id": "f089354e-8366-4e18-aea3-4cb4a3a50b48",
+      "description": "The finance app",
+      "name": "Finance",
+      "publishedBy": "Bill",
+      "lastUpdate": "2019-01-13T09:46:53.094+02:00"
+    }
+    """

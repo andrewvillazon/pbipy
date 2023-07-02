@@ -2,6 +2,7 @@ import pytest
 import requests
 import responses
 from requests.exceptions import HTTPError
+from pbipy.apps import App
 
 from pbipy.groups import Group
 from pbipy.reports import Report
@@ -360,3 +361,17 @@ def test_delete_report_call_report_object_with_group_ignore_group_id(powerbi):
         report,
         group="3d9b93c6-7b6d-4801-a491-1738910904fd",
     )
+
+
+@responses.activate
+def test_app(get_app, powerbi):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        body=get_app,
+        content_type="application/json"
+    )
+
+    app = powerbi.app("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert isinstance(app, App)
+    assert app.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
