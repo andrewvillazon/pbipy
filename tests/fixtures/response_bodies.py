@@ -621,3 +621,20 @@ def app_get_dashboard():
       "isReadOnly": false
     }
     """
+
+
+@pytest.fixture
+def app_get_dashboards():
+    return """
+    {
+      "value": [
+        {
+          "appId": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "id": "03dac094-2ff8-47e8-b2b9-dedbbc4d22ac",
+          "displayName": "SalesMarketing",
+          "embedUrl": "https://app.powerbi.com/dashboardEmbed?dashboardId=335aee4b-7b38-48fd-9e2f-306c3fd67482&appId=3d9b93c6-7b6d-4801-a491-1738910904fd&config=eyJjbHVzdGVyVXJsIjoiaHR0cHM6Ly9XQUJJLVNPVVRILUNFTlRSQUwtVVMtcmVkaXJlY3QuYW5hbHlzaXMud2luZG93cy5uZXQifQ%3d%3d",
+          "isReadOnly": false
+        }
+      ]
+    }
+    """

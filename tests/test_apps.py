@@ -74,3 +74,18 @@ def test_dashboard(app_get_dashboard, app):
 
     assert isinstance(dashboard, Dashboard)
     assert dashboard.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
+
+
+@responses.activate
+def test_dashboards(app_get_dashboards, app):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards",
+        body=app_get_dashboards,
+        content_type="application/json",
+    )
+
+    dashboards = app.dashboards()
+
+    assert isinstance(dashboards, list)
+    assert all(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+    assert all(hasattr(dashboard, "app_id") for dashboard in dashboards)

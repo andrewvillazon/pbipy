@@ -56,6 +56,33 @@ class App(Resource):
 
         return dashboard
 
+    def dashboards(
+        self,
+    ) -> list[Dashboard]:
+        """
+        Returns a list of Dashboards from the App.
+
+        Returns
+        -------
+        `list[Dashboard]`
+            List of Dashboards associated with the App.
+
+        """
+
+        resource = self.base_path + "/dashboards"
+        raw = self.get_raw(resource, self.session)
+
+        dashboards = [
+            Dashboard(
+                id=dashboard_js.get("id"),
+                session=self.session,
+                raw=dashboard_js,
+            )
+            for dashboard_js in raw
+        ]
+
+        return dashboards
+
     def report(
         self,
         report: str,
