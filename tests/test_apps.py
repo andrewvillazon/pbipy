@@ -43,3 +43,19 @@ def test_report(app_get_report, app):
 
     assert isinstance(report, Report)
     assert report.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
+
+
+@responses.activate
+def test_reports(app_get_reports, app):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports",
+        body=app_get_reports,
+        content_type="application/json",
+    )
+
+    reports = app.reports()
+
+    assert isinstance(reports, list)
+    assert all(isinstance(report, Report) for report in reports)
+    assert len(reports) == 1
+    assert all(hasattr(report, "app_id") for report in reports)

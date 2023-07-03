@@ -40,11 +40,11 @@ class App(Resource):
         Returns
         -------
         `Report`
-            A Power BI report. The API returns a subset of the following 
-            list of report properties. The subset depends on the API called, 
-            caller permissions, and the availability of data in the Power 
+            A Power BI report. The API returns a subset of the following
+            list of report properties. The subset depends on the API called,
+            caller permissions, and the availability of data in the Power
             BI database.
-        
+
         """
 
         resource = self.base_path + f"/reports/{report}"
@@ -57,3 +57,30 @@ class App(Resource):
         )
 
         return report
+
+    def reports(
+        self,
+    ) -> list[Report]:
+        """
+        Returns a list of reports from the app.
+
+        Returns
+        -------
+        `list[Report]`
+            The collection of reports from the app.
+
+        """
+
+        resource = self.base_path + "/reports"
+        raw = self.get_raw(resource, self.session)
+
+        reports = [
+            Report(
+                report_js.get("id"),
+                self.session,
+                raw=report_js,
+            )
+            for report_js in raw
+        ]
+
+        return reports
