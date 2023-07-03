@@ -1,8 +1,8 @@
+from requests import Session
+
 from pbipy.dashboards import Dashboard, Tile
 from pbipy.reports import Report
 from pbipy.resources import Resource
-
-from requests import Session
 
 
 class App(Resource):
@@ -176,3 +176,38 @@ class App(Resource):
         )
 
         return tile
+
+    def tiles(
+        self,
+        dashboard: str,
+    ) -> list[Tile]:
+        """
+        Returns a list of `Tile` objects within the specified dashboard 
+        from the App.
+
+        Parameters
+        ----------
+        `dashboard` : `str`
+            Dashboard Id of the Dashboard that includes the tiles.
+
+        Returns
+        -------
+        `list[Tile]`
+            List of `Tile` objects from the specified dashboard and App.
+        
+        """
+
+        resource = self.base_path + f"/dashboards/{dashboard}/tiles"
+        raw = self.get_raw(resource, self.session)
+
+        tiles = [
+            Tile(
+                tile_js.get("id"),
+                dashboard_id=dashboard,
+                session=self.session,
+                raw=tile_js,
+            )
+            for tile_js in raw
+        ]
+
+        return tiles

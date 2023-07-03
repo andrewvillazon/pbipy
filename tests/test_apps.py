@@ -3,7 +3,7 @@ import requests
 import responses
 
 from pbipy.apps import App
-from pbipy.dashboards import Dashboard
+from pbipy.dashboards import Dashboard, Tile
 from pbipy.reports import Report
 
 
@@ -104,3 +104,17 @@ def test_tile(app, app_get_tile):
         dashboard="3d9b93c6-7b6d-4801-a491-1738910904fd",
     )
 
+
+@responses.activate
+def test_tiles(app, app_get_tiles):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards/3d9b93c6-7b6d-4801-a491-1738910904fd/tiles",
+        body=app_get_tiles,
+        content_type="application/json",
+    )
+
+    tiles = app.tiles(dashboard="3d9b93c6-7b6d-4801-a491-1738910904fd")
+
+    assert isinstance(tiles, list)
+    assert all(isinstance(tile, Tile) for tile in tiles)
+    assert len(tiles) == 1
