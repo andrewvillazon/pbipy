@@ -33,3 +33,37 @@ class Dashboard(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+
+class Tile(Resource):
+    _REPR = [
+        "id",
+        "title",
+        "report_id",
+        "dataset_id",
+    ]
+
+    def __init__(
+        self,
+        id: str,
+        dashboard_id: str,
+        session: Session,
+        group_id=None,
+        raw=None,
+    ) -> None:
+        super().__init__(id, session)
+
+        self.dashboard_id = dashboard_id
+
+        if group_id:
+            self.group_id = group_id
+        else:
+            self.group_id = None
+
+        if self.group_id:
+            self.resource_path = f"/groups/{self.group_id}/dashboards/{self.dashboard_id}/tiles/{self.id}"
+        else:
+            self.resource_path = f"/dashboards/{self.dashboard_id}/tiles/{self.id}"
+
+        if raw:
+            self._load_from_raw(raw)
