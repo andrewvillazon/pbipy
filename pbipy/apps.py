@@ -1,3 +1,4 @@
+from pbipy.dashboards import Dashboard
 from pbipy.reports import Report
 from pbipy.resources import Resource
 
@@ -24,6 +25,36 @@ class App(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+    def dashboard(
+        self,
+        dashboard: str,
+    ) -> Dashboard:
+        """
+        Return the specified Dashboard from the App.
+
+        Parameters
+        ----------
+        dashboard : `str`
+            Dashboard Id of the Dashboard to retrieve.
+
+        Returns
+        -------
+        `Dashboard`
+            The specified Dashboard.
+
+        """
+
+        resource = self.base_path + f"/dashboards/{dashboard}"
+        raw = self.get_raw(resource, self.session)
+
+        dashboard = Dashboard(
+            id=raw.get("id"),
+            session=self.session,
+            raw=raw,
+        )
+
+        return dashboard
 
     def report(
         self,

@@ -3,6 +3,7 @@ import requests
 import responses
 
 from pbipy.apps import App
+from pbipy.dashboards import Dashboard
 from pbipy.reports import Report
 
 
@@ -59,3 +60,17 @@ def test_reports(app_get_reports, app):
     assert all(isinstance(report, Report) for report in reports)
     assert len(reports) == 1
     assert all(hasattr(report, "app_id") for report in reports)
+
+
+@responses.activate
+def test_dashboard(app_get_dashboard, app):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards/03dac094-2ff8-47e8-b2b9-dedbbc4d22ac",
+        body=app_get_dashboard,
+        content_type="application/json",
+    )
+
+    dashboard = app.dashboard("03dac094-2ff8-47e8-b2b9-dedbbc4d22ac")
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.app_id == "3d9b93c6-7b6d-4801-a491-1738910904fd"
