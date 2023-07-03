@@ -1,4 +1,4 @@
-from pbipy.dashboards import Dashboard
+from pbipy.dashboards import Dashboard, Tile
 from pbipy.reports import Report
 from pbipy.resources import Resource
 
@@ -142,3 +142,20 @@ class App(Resource):
         ]
 
         return reports
+
+    def tile(
+        self,
+        tile: str,
+        dashboard: str,
+    ) -> Tile:
+        resource = self.base_path + f"/dashboards/{dashboard}/tiles/{tile}"
+        raw = self.get_raw(resource, self.session)
+
+        tile = Tile(
+            tile,
+            dashboard,
+            session=self.session,
+            raw=raw,
+        )
+
+        return tile

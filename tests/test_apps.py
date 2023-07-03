@@ -89,3 +89,18 @@ def test_dashboards(app_get_dashboards, app):
     assert isinstance(dashboards, list)
     assert all(isinstance(dashboard, Dashboard) for dashboard in dashboards)
     assert all(hasattr(dashboard, "app_id") for dashboard in dashboards)
+
+
+@responses.activate
+def test_tile(app, app_get_tile):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards/3d9b93c6-7b6d-4801-a491-1738910904fd/tiles/312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+        body=app_get_tile,
+        content_type="application/json",
+    )
+
+    tile = app.tile(
+        "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+        dashboard="3d9b93c6-7b6d-4801-a491-1738910904fd",
+    )
+
