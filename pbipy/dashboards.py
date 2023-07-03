@@ -39,6 +39,8 @@ class Tile(Resource):
     _REPR = [
         "id",
         "title",
+        "dashboard_id",
+        "group_id",
         "report_id",
         "dataset_id",
     ]
