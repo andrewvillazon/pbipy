@@ -148,6 +148,23 @@ class App(Resource):
         tile: str,
         dashboard: str,
     ) -> Tile:
+        """
+        Return the specified tile from the specified dashboard for the App.
+
+        Parameters
+        ----------
+        `tile` : `str`
+            Tile Id of the tile to retrieve.
+        `dashboard` : `str`
+            Dashboard Id of the dashboard to retrieve.
+
+        Returns
+        -------
+        `Tile`
+            The specified tile.
+
+        """
+
         resource = self.base_path + f"/dashboards/{dashboard}/tiles/{tile}"
         raw = self.get_raw(resource, self.session)
 
