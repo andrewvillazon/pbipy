@@ -5,7 +5,7 @@
 
 `pbipy` is a Python Library for interacting with the Power BI Rest API. It aims to simplyify working with the Power BI Rest API and support programatic administration of Power BI in Python.
 
-`pbipy` supports operations for Reports, Datasets, and Groups (Workspaces), allowing users to perform actions on their PowerBI instance using Python.
+`pbipy` supports operations for Apps, Datasets, Groups (Workspaces) and Reports, allowing users to perform actions on their PowerBI instance using Python.
 
 See [development progress](#development-progress) below for what's been implemented and what's coming.
 
@@ -41,7 +41,7 @@ This `README` doesn't cover Authentication in detail, however, these are some he
 
 The example below uses the `msal` library to to get a `bearer_token`.
 
-## Quickstart
+## Useage
 
 Start by creating the `PowerBI()` client. All interactions with the Power BI Rest API go through this object. 
 
@@ -69,8 +69,6 @@ bearer_token = acquire_bearer_token(
 # Create Client
 pbi = PowerBI(bearer_token)
 ```
-
-### Functionality
 
 To interact with the API, simply call the relevant method from the client.
 
@@ -122,11 +120,13 @@ print(sales.raw)
 # }
 ```
 
-## Examples
+## Example: Working with Datasets
 
-### Datasets
+Let's see how `pbipy` works by performing some operations on a Dataset.
 
-#### Get a dataset
+First, we need to load the Dataset from the API. To do this, we call the `dataset()` method from the `pbi` client we created above. 
+
+The Power BI Rest API will look for the Dataset in the current user's workspace if we don't provide a group argument.
 
 ```python
 sales = pbi.dataset(id="cfafbeb1-8037-4d0c-896e-a46fb27ff229")
@@ -135,19 +135,16 @@ print(sales)
 # <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', name='SalesMarketing', ...>
 ```
 
-#### Get a list of Datasets in a Workspace (Group)
+But we likely want to target a Dataset in a *Workspace*. To do this, we provide the `group_id` when we call the `dataset()` method.
 
 ```python
-datasets = pbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
-
-for dataset in datasets:
-    print(dataset)
-
-# <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', ...>
-# <Dataset id='f7fc6510-e151-42a3-850b-d0805a391db0', ...>
+sales = pbi.dataset(
+    "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+    group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+)
 ```
 
-#### Refresh History of a Dataset
+Now that we've got our target Dataset let's look at its Refresh History. We call the `refresh_history()` method on our Dataset. Easy.
 
 ```python
 dataset = pbi.dataset(
@@ -163,7 +160,7 @@ for entry in refresh_history:
 # {"refreshType":"ViaApi", "startTime":"2017-06-13T09:25:43.153Z", "status": "Completed" ...}
 ```
 
-#### Add user permissions to a Dataset
+How about adding some user permissions to our Dataset? That's easy too. Just call the `add_user()` method with the User's details and permissions.
 
 ```python
 sales_ds = pbi.dataset( "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
@@ -172,7 +169,7 @@ sales_ds = pbi.dataset( "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 sales_ds.add_user("john@contoso.com", "User", "Read")
 ```
 
-### Execute a DAX Query
+Lastly, if we're feeling adventurous, we can execute DAX against a Dataset and use the results in Python.
 
 ```python
 dataset = pbi.dataset( "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
@@ -194,11 +191,21 @@ print(dxq_result)
 # }
 ```
 
-### Workspaces (Groups) *
+## More examples
 
-*\* In the Power BI Rest API, workspaces are referred to as "groups".*
+### Datasets in a Workspace
 
-#### List Workspaces
+```python
+datasets = pbi.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+for dataset in datasets:
+    print(dataset)
+
+# <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', ...>
+# <Dataset id='f7fc6510-e151-42a3-850b-d0805a391db0', ...>
+```
+
+### List Workspaces
 
 ```python
 groups = pbi.groups()
@@ -210,7 +217,7 @@ for group in groups:
 # <Group id='3d9b93c6-7b6d-4801-a491-1738910904fd', name='marketing'>
 ```
 
-#### Create a Workspace
+### Create a Workspace
 
 ```python
 group = pbi.create_group("contoso")
@@ -219,7 +226,7 @@ print(group)
 # <Group id='a2f89923-421a-464e-bf4c-25eab39bb09f', name='contoso'>
 ```
 
-#### Users and their access
+### Users and their access
 
 ```python
 group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
@@ -241,15 +248,16 @@ for user in users:
 
 ## Development Progress
 
-`pbipy` is in the early stages of development so expect a few features to be missing. The aim is to cover off most of the core stuff like Datasets, Workspaces (Groups), Reports, Apps, etc., and the rest later on. Check back regularly to see what's been added or still in the pipeline.
+`pbipy` is in development so expect a few features to be missing. The aim is to cover off most of the core stuff like Datasets, Workspaces (Groups), Reports, Apps, etc., and the rest later on. Check back regularly to see what's been added or still in the pipeline.
 
 | PowerBI Component   	| Progress 	| Notes 	|
 |---------------------	|----------	|-------	|
 | Datasets            	| Done     	|       	|
 | Groups (Workspaces) 	| Done    	|       	|
 | Reports             	| Done      |       	|
-| Apps                	| Doing   	|       	|
-| Dataflows           	| Todo     	|       	|
+| Apps                	| Done   	|       	|
+| Dataflows           	| Doing    	|       	|
+| Admin Operations     	| Todo     	|       	|
 | Dashboards          	| Todo     	|       	|
 | Everything else     	| Backlog  	|       	|
 
