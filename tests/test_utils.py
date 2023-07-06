@@ -100,6 +100,12 @@ def test_file_path_from_components_dot_ext():
     assert isinstance(path, Path)
 
 
+def test_to_identifier():
+    assert utils.to_identifier("$type") == "type"
+    assert utils.to_identifier("pbi:mashup") == "pbi_mashup"
+    assert utils.to_identifier("ppdf:outputFileFormat") == "ppdf_outputFileFormat"
+
+
 @pytest.fixture
 def request_mixin():
     return utils.RequestsMixin()

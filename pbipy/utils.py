@@ -83,7 +83,7 @@ def file_path_from_components(
         f_dir = Path()  # cwd
     else:
         f_dir = directory
-    
+
     # Be a bit more flexible and accept .ext
     if extension[0] == ".":
         f_ext = extension[1:]
@@ -91,6 +91,34 @@ def file_path_from_components(
         f_ext = extension
 
     return f_dir / f"{file_name}.{f_ext}"
+
+
+def to_identifier(
+    s: str,
+) -> str:
+    """
+    Convert a string into a valid Python identifier, e.g., variable or
+    attribute name.
+
+    Parameters
+    ----------
+    `s` : `str`
+        String to convert.
+
+    Returns
+    -------
+    `str`
+        Converted string.
+
+    """
+
+    # Remove leading characters until letter or underscore
+    s = re.sub("^[^a-zA-Z_]+", "", s)
+
+    # Replace invalid characters
+    s = re.sub("[^0-9a-zA-Z_]", "_", s)
+
+    return s
 
 
 class RequestsMixin:
