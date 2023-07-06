@@ -1,7 +1,7 @@
 from requests import Session
 
 from pbipy import settings
-from pbipy.utils import RequestsMixin, to_snake_case
+from pbipy.utils import RequestsMixin, to_identifier, to_snake_case
 
 
 class Resource(RequestsMixin):
@@ -44,7 +44,8 @@ class Resource(RequestsMixin):
         self.raw = raw
 
         for k, v in raw.items():
-            attr = to_snake_case(k)
+            attr = to_identifier(k)
+            attr = to_snake_case(attr)
             setattr(self, attr, v)
 
         return self
