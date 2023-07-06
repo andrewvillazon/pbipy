@@ -672,3 +672,16 @@ def app_get_tiles():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dataflow():
+    return """
+    {
+      "objectId": "bd32e5c0-363f-430b-a03b-5535a4804b9b",
+      "name": "AdventureWorks",
+      "description": "Our Adventure Works",
+      "modelUrl": "https://MyDataflowStorageAccount.dfs.core.windows.net/powerbi/contoso/AdventureWorks/model.json",
+      "ppdf:outputFileFormat": "csv"
+    }
+  """

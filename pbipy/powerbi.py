@@ -13,6 +13,7 @@ from requests.exceptions import HTTPError
 
 from pbipy import settings
 from pbipy.apps import App
+from pbipy.dataflows import Dataflow
 from pbipy.groups import Group
 from pbipy.datasets import Dataset
 from pbipy.reports import Report
@@ -100,6 +101,55 @@ class PowerBI(RequestsMixin):
         ]
 
         return apps
+
+    def dataflow(
+        self,
+        dataflow: str | Dataflow,
+        group: str | Group,
+    ) -> Dataflow:
+        """
+        Get and load the specified dataflow.
+
+        Parameters
+        ----------
+        `dataflow` : `str | Dataflow`
+            The Dataflow Id of the Dataflow to retrieve.
+        `group` : `str | Group`
+            The Group Id or `Group` object where the Dataflow resides.
+
+        Returns
+        -------
+        `Dataflow`
+            The specified Dataflow.
+        
+        Notes
+        -----
+        The Get Dataflow endpoint returns a json file. For consistency 
+        with the rest of pbipy, this method returns a `Dataflow` object instead
+        of the file itself. To access the json file, use the `Dataflow.raw`
+        property.
+            
+        """
+
+        if isinstance(dataflow, Dataflow):
+            return Dataflow
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = self.BASE_URL + f"/groups/{group_id}/dataflows/{dataflow}"
+        raw = self.get_raw(resource, self.session)
+
+        dataflow = Dataflow(
+            raw.get("objectId"),
+            self.session,
+            group_id=group_id,
+            raw=raw,
+        )
+
+        return dataflow
 
     # TODO: Add support for passing in a group obj
     def dataset(

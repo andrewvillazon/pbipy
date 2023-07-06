@@ -3,6 +3,7 @@ import requests
 import responses
 from requests.exceptions import HTTPError
 from pbipy.apps import App
+from pbipy.dataflows import Dataflow
 
 from pbipy.groups import Group
 from pbipy.reports import Report
@@ -390,3 +391,22 @@ def test_apps(get_apps, powerbi):
     assert isinstance(apps, list)
     assert all(isinstance(app, App) for app in apps)
     assert len(apps) == 2
+
+
+@responses.activate
+def test_dataflow(powerbi, get_dataflow):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dataflows/bd32e5c0-363f-430b-a03b-5535a4804b9b",
+        body=get_dataflow,
+        content_type="application/json",
+    )
+
+    dataflow = powerbi.dataflow(
+        "bd32e5c0-363f-430b-a03b-5535a4804b9b",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert isinstance(dataflow, Dataflow)
+    assert dataflow.id == "bd32e5c0-363f-430b-a03b-5535a4804b9b"
+    assert dataflow.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert hasattr(dataflow, "ppdf_output_file_format")
