@@ -685,3 +685,19 @@ def get_dataflow():
       "ppdf:outputFileFormat": "csv"
     }
   """
+
+
+@pytest.fixture
+def get_dataflows():
+    return """
+    {
+      "value": [
+        {
+          "objectId": "bd32e5c0-363f-430b-a03b-5535a4804b9b",
+          "name": "AdventureWorks",
+          "description": "Our Adventure Works",
+          "modelUrl": "https://MyDataflowStorageAccount.dfs.core.windows.net/powerbi/contoso/AdventureWorks/model.json"
+        }
+      ]
+    }
+  """

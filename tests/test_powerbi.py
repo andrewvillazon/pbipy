@@ -410,3 +410,17 @@ def test_dataflow(powerbi, get_dataflow):
     assert dataflow.id == "bd32e5c0-363f-430b-a03b-5535a4804b9b"
     assert dataflow.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert hasattr(dataflow, "ppdf_output_file_format")
+
+
+@responses.activate
+def test_dataflows(powerbi, get_dataflows):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/a2f89923-421a-464e-bf4c-25eab39bb09f/dataflows",
+        body=get_dataflows,
+        content_type="application/json",
+    )
+
+    dataflows = powerbi.dataflows("a2f89923-421a-464e-bf4c-25eab39bb09f")
+
+    assert isinstance(dataflows, list)
+    assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)

@@ -121,14 +121,14 @@ class PowerBI(RequestsMixin):
         -------
         `Dataflow`
             The specified Dataflow.
-        
+
         Notes
         -----
-        The Get Dataflow endpoint returns a json file. For consistency 
+        The Get Dataflow endpoint returns a json file. For consistency
         with the rest of pbipy, this method returns a `Dataflow` object instead
         of the file itself. To access the json file, use the `Dataflow.raw`
         property.
-            
+
         """
 
         if isinstance(dataflow, Dataflow):
@@ -150,6 +150,45 @@ class PowerBI(RequestsMixin):
         )
 
         return dataflow
+
+    def dataflows(
+        self,
+        group: str | Group,
+    ) -> list[Dataflow]:
+        """
+        Returns a list of all dataflows from the specified Workspace.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object where the Dataflow resides.
+
+        Returns
+        -------
+        `list[Dataflow]`
+            List of `Dataflow` objects from the specified Workspace.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = self.BASE_URL + f"/groups/{group_id}/dataflows"
+        raw = self.get_raw(resource, self.session)
+
+        dataflows = [
+            Dataflow(
+                dataflow_js.get("objectId"),
+                self.session,
+                group_id=group_id,
+                raw=dataflow_js,
+            )
+            for dataflow_js in raw
+        ]
+
+        return dataflows
 
     # TODO: Add support for passing in a group obj
     def dataset(
