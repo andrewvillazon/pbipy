@@ -701,3 +701,30 @@ def get_dataflows():
       ]
     }
   """
+
+
+@pytest.fixture
+def get_dataflow_datasources():
+    return """
+    {
+      "value": [
+        {
+          "datasourceType": "Sql",
+          "datasourceId": "16a54ccd-620d-4af3-9197-0b8c779a9a6d",
+          "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+          "connectionDetails": {
+            "server": "MyServer.database.windows.net",
+            "database": "MyDatabase"
+          }
+        },
+        {
+          "datasourceType": "OData",
+          "connectionDetails": {
+            "url": "https://services.odata.org/V4/Northwind/Northwind.svc"
+          },
+          "datasourceId": "16a54ccd-620d-4af3-9197-0b8c779a9a6d",
+          "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674"
+        }
+      ]
+    }
+  """
