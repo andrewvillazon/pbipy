@@ -441,3 +441,15 @@ def test_cancel_transaction(powerbi, cancel_dataflow_transaction):
 
     assert isinstance(cancelled_transaction, dict)
     assert cancelled_transaction.get("status") == "SuccessfullyMarked"
+
+
+@responses.activate
+def test_delete_dataflow(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce"
+    )
+
+    powerbi.delete_dataflow(
+        dataflow="928228ba-008d-4fd9-864a-92d2752ee5ce",
+        group="51e47fc5-48fd-4826-89f0-021bd3a80abd",
+    )

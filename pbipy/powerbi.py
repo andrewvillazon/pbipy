@@ -226,6 +226,38 @@ class PowerBI(RequestsMixin):
 
         return dataflows
 
+    def delete_dataflow(
+        self,
+        dataflow: str | Dataflow,
+        group: str | Group,
+    ) -> None:
+        """
+        Deletes a dataflow from Power BI data prep storage, including its 
+        definition file and model.
+
+        Parameters
+        ----------
+        `dataflow` : `str | Dataflow`
+            Dataflow Id or `Dataflow` object to delete.
+        `group` : `str | Group`
+            Group Id or `Group` object where the Dataflow resides.
+        
+        """
+
+        if isinstance(dataflow, Dataflow):
+            dataflow_id = dataflow.id
+        else:
+            dataflow_id = dataflow
+        
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        resource = self.BASE_URL + f"/groups/{group_id}/dataflows/{dataflow_id}"
+
+        self.delete(resource, self.session)
+
     # TODO: Add support for passing in a group obj
     def dataset(
         self,
