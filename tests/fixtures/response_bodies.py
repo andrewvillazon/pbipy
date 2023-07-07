@@ -728,3 +728,21 @@ def get_dataflow_datasources():
       ]
     }
   """
+
+
+@pytest.fixture
+def get_dataflow_transactions():
+    return """
+    {
+      "@odata.context": "http://someserver.analysis.windows.net/v1.0/myorg/groups/98674fdf-baab-45e1-a04a-c17ab378dce1/$metadata#transactions",
+      "value": [
+        {
+          "id": "2020-08-27T16:07:47.2487692Z@8dbd8c92-4d16-4947-8329-4172f04f4f93$2"
+        },
+        {
+          "id": "2020-08-26T16:40:55.0968787Z@e33eed4d-5b1a-4bb9-8b5b-dff1cd371109$1",
+          "refreshType": "OnDemand"
+        }
+      ]
+    }
+  """

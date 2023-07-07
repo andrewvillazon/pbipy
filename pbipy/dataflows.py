@@ -36,10 +36,28 @@ class Dataflow(Resource):
         -------
         `list[dict]`
             The list of Datasources associated with the Dataflow.
-        
+
         """
 
         resource = self.base_path + "/datasources"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
+    def transactions(
+        self,
+    ) -> list[dict]:
+        """
+        Returns a list of transactions for the Dataflow.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Dataflow transactions.
+        
+        """
+
+        resource = self.base_path + "/transactions"
         raw = self.get_raw(resource, self.session)
 
         return raw

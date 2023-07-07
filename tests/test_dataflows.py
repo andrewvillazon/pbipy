@@ -43,3 +43,18 @@ def test_datasources(dataflow, get_dataflow_datasources):
 
     assert isinstance(datasources, list)
     assert all(isinstance(datasource, dict) for datasource in datasources)
+
+
+@responses.activate
+def test_transactions(dataflow, get_dataflow_transactions):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/transactions",
+        body=get_dataflow_transactions,
+        content_type="application/json",
+    )
+
+    transactions = dataflow.transactions()
+
+    assert isinstance(transactions, list)
+    assert all(isinstance(transaction, dict) for transaction in transactions)
+    assert len(transactions) == 2
