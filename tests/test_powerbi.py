@@ -424,3 +424,20 @@ def test_dataflows(powerbi, get_dataflows):
 
     assert isinstance(dataflows, list)
     assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)
+
+
+@responses.activate
+def test_cancel_transaction(powerbi, cancel_dataflow_transaction):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021111110abd/dataflows/transactions/2020-09-11T19:21:52.8778432Z@9cc7a369-6112-4dba-97b6-b07ff5699568$1374282/cancel",
+        body=cancel_dataflow_transaction,
+        content_type="application/json",
+    )
+
+    cancelled_transaction = powerbi.cancel_transaction(
+        transaction_id="2020-09-11T19:21:52.8778432Z@9cc7a369-6112-4dba-97b6-b07ff5699568$1374282",
+        group="51e47fc5-48fd-4826-89f0-021111110abd",
+    )
+
+    assert isinstance(cancelled_transaction, dict)
+    assert cancelled_transaction.get("status") == "SuccessfullyMarked"

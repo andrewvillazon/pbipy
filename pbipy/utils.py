@@ -253,7 +253,7 @@ class RequestsMixin:
         self,
         resource: str,
         session: Session,
-        payload: dict,
+        payload: dict = None,
         **kwargs: dict,
     ) -> dict:
         """

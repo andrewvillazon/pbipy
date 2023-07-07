@@ -102,6 +102,42 @@ class PowerBI(RequestsMixin):
 
         return apps
 
+    def cancel_transaction(
+        self,
+        transaction_id: str,
+        group: str | Group,
+    ) -> dict:
+        """
+        Attempt to cancel the specified transaction
+
+        Parameters
+        ----------
+        `transaction_id` : `str`
+            Id of the transaction to cancel.
+        `group` : `str | Group`
+            Group Id or `Group` object where the transaction resides. Should
+            match the Group of the Dataflow that generated the transaction.
+
+        Returns
+        -------
+        `dict`
+            Dataflow transaction status.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = (
+            self.BASE_URL
+            + f"/groups/{group_id}/dataflows/transactions/{transaction_id}/cancel"
+        )
+        raw = self.post_raw(resource, self.session)
+
+        return raw
+
     def dataflow(
         self,
         dataflow: str | Dataflow,

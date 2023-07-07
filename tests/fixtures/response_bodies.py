@@ -746,3 +746,13 @@ def get_dataflow_transactions():
       ]
     }
   """
+
+
+@pytest.fixture
+def cancel_dataflow_transaction():
+    return """
+    {
+      "transactionId": "2020-09-11T19:21:52.8778432Z@9cc7a369-6112-4dba-97b6-b07ff5699568$1374282",
+      "status": "SuccessfullyMarked"
+    }
+"""
