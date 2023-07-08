@@ -8,6 +8,7 @@ class Dataflow(Resource):
         "id",
         "name",
         "description",
+        "group_id",
     ]
 
     def __init__(
