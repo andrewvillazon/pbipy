@@ -5,7 +5,7 @@
 
 `pbipy` is a Python Library for interacting with the Power BI Rest API. It aims to simplyify working with the Power BI Rest API and support programatic administration of Power BI in Python.
 
-`pbipy` supports operations for Apps, Datasets, Groups (Workspaces) and Reports, allowing users to perform actions on their PowerBI instance using Python.
+`pbipy` supports operations for Apps, Dataflows, Datasets, Reports, and Workspaces (Groups), allowing users to perform actions on their PowerBI instance using Python.
 
 See [development progress](#development-progress) below for what's been implemented and what's coming.
 
@@ -126,7 +126,7 @@ Let's see how `pbipy` works by performing some operations on a Dataset.
 
 First, we need to load the Dataset from the API. To do this, we call the `dataset()` method from the `pbi` client we created above. 
 
-The Power BI Rest API will look for the Dataset in the current user's workspace if we don't provide a group argument.
+The Power BI Rest API will look for the Dataset in the current user's workspace if we don't provide a `group` argument.
 
 ```python
 sales = pbi.dataset(id="cfafbeb1-8037-4d0c-896e-a46fb27ff229")
@@ -135,7 +135,7 @@ print(sales)
 # <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', name='SalesMarketing', ...>
 ```
 
-But we likely want to target a Dataset in a *Workspace*. To do this, we provide the `group_id` when we call the `dataset()` method.
+But we likely want to target a Dataset in a *Workspace*. To do this, we provide the Workspace Id as the `group` argument when we call the `dataset()` method.
 
 ```python
 sales = pbi.dataset(
@@ -256,8 +256,8 @@ for user in users:
 | Groups (Workspaces) 	| Done    	|       	|
 | Reports             	| Done      |       	|
 | Apps                	| Done   	|       	|
-| Dataflows           	| Doing    	|       	|
-| Admin Operations     	| Todo     	|       	|
+| Dataflows           	| Done    	|       	|
+| Admin Operations     	| Doing    	|       	|
 | Dashboards          	| Todo     	|       	|
 | Everything else     	| Backlog  	|       	|
 
