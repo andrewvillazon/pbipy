@@ -54,10 +54,28 @@ class Dataflow(Resource):
         -------
         `list[dict]`
             List of Dataflow transactions.
-        
+
         """
 
         resource = self.base_path + "/transactions"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
+    def upstream_dataflows(
+        self,
+    ) -> list[dict]:
+        """
+        Returns a list of upstream dataflows for the Dataflow.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Dependent Dataflows.
+
+        """
+
+        resource = self.base_path + "/upstreamDataflows"
         raw = self.get_raw(resource, self.session)
 
         return raw

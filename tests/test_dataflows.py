@@ -58,3 +58,14 @@ def test_transactions(dataflow, get_dataflow_transactions):
     assert isinstance(transactions, list)
     assert all(isinstance(transaction, dict) for transaction in transactions)
     assert len(transactions) == 2
+
+
+# TODO: Add test that includes response body
+@responses.activate
+def test_upstream_dataflows(dataflow):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/upstreamDataflows",
+        body='{"value":[]}',
+    )
+
+    dataflow.upstream_dataflows()
