@@ -108,15 +108,16 @@ class PowerBI(RequestsMixin):
         group: str | Group,
     ) -> dict:
         """
-        Attempt to cancel the specified transaction
+        Attempt to cancel the specified Dataflow Transaction.
 
         Parameters
         ----------
         `transaction_id` : `str`
-            Id of the transaction to cancel.
+            Id of the Transaction to cancel.
         `group` : `str | Group`
-            Group Id or `Group` object where the transaction resides. Should
-            match the Group of the Dataflow that generated the transaction.
+            Group Id or `Group` object where the Transaction originated. 
+            Should match the Group of the Dataflow that generated the 
+            transaction.
 
         Returns
         -------

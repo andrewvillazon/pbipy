@@ -525,7 +525,7 @@ class Dataset(Resource):
         Parameters
         ----------
         `notify_option` : `str`
-            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
+            Email notification options, e.g., "MailOnCompletion", "MailOnFailure",
             or "NoNotification".
         `direct_query` : bool, optional
             Target the Direct Query Refresh Schedule (if there is one) of the
@@ -542,7 +542,7 @@ class Dataset(Resource):
             If `frequency` is supplied and `direct_query` is `false`, then `frequency`
             will be ignored.
         `local_time_zone_id` : `str`, optional
-            _The ID of the time zone to use, e.g, "UTC".
+            The ID of the time zone to use, e.g, "UTC".
         `times` : list[str], optional
             The times of day to execute the refresh expressed as hh:mm, e.g.,
             "07:00", "16:00", etc.
