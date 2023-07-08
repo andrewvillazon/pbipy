@@ -212,6 +212,7 @@ class RequestsMixin:
         resource: str,
         session: Session,
         payload: dict = None,
+        params: dict = None,
         success_codes: list[int] = [200, 201, 202],
     ) -> Response:
         """
@@ -240,7 +241,11 @@ class RequestsMixin:
             If the response status code was not found in `success_codes`.
         """
 
-        response = session.post(resource, json=payload)
+        response = session.post(
+            resource,
+            params=params,
+            json=payload,
+        )
 
         if response.status_code not in success_codes:
             raise HTTPError(
