@@ -98,3 +98,28 @@ def test_refresh_params(dataflow):
     )
 
     dataflow.refresh(notify_option="MailOnCompletion", process_type="default")
+
+
+@responses.activate
+def test_update_call(dataflow):
+    json_params = {
+        "name": "New Dataflow Name",
+        "allowNativeQueries": True,
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataflow.update(
+        name="New Dataflow Name",
+        allow_native_queries=True,
+    )
+
+
+def test_update_raises(dataflow):
+    with pytest.raises(ValueError):
+        dataflow.update()

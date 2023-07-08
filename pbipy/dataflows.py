@@ -1,5 +1,6 @@
 from requests import Session
 from pbipy.resources import Resource
+from pbipy.utils import remove_no_values
 
 
 class Dataflow(Resource):
@@ -55,15 +56,15 @@ class Dataflow(Resource):
         Parameters
         ----------
         `notify_option` : `str`
-            Email notification options. Supported options are: `MailOnFailure` 
+            Email notification options. Supported options are: `MailOnFailure`
             or `NoNotification`. `MailOnCompletion` is not supported.
         `process_type` : `str`, optional
             The type of refresh process to use.
-        
+
         """
 
         resource = self.base_path + "/refreshes"
-        payload={"notifyOption": notify_option}
+        payload = {"notifyOption": notify_option}
         params = {"processType": process_type}
 
         self.post(resource, self.session, payload=payload, params=params)
@@ -85,6 +86,52 @@ class Dataflow(Resource):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def update(
+        self,
+        name: str = None,
+        description: str = None,
+        allow_native_queries: bool = None,
+        compute_engine_behavior: str = None,
+    ) -> None:
+        """
+        Updates Dataflow properties, capabilities, and settings.
+
+        Parameters
+        ----------
+        `name` : `str`, optional
+            The new name for the Dataflow.
+        `description` : `str`, optional
+            The new description for the Dataflow.
+        `allow_native_queries` : `bool`, optional
+            Whether to allow native queries.
+        `compute_engine_behavior` : `str`, optional
+            The behavior of the compute engine.
+
+        Raises
+        ------
+        `ValueError`
+            If no properties to update were provided.
+
+        """
+
+        update_request = {
+            "name": name,
+            "description": description,
+            "allowNativeQueries": allow_native_queries,
+            "computeEngineBehavior": compute_engine_behavior,
+        }
+
+        request_body = remove_no_values(update_request)
+
+        if request_body in [None, {}]:
+            raise ValueError(
+                "No properties were provided to update. Please specify at least one property to update."
+            )
+
+        resource = self.base_path
+
+        self.patch(resource, self.session, request_body)
 
     def upstream_dataflows(
         self,
