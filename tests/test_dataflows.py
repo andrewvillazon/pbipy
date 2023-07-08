@@ -123,3 +123,38 @@ def test_update_call(dataflow):
 def test_update_raises(dataflow):
     with pytest.raises(ValueError):
         dataflow.update()
+
+
+@responses.activate
+def test_update_refresh_schedule(dataflow):
+    json_params = {
+        "value": {
+            "days": [
+                "Monday",
+                "Wednesday",
+            ],
+            "times": [
+                "10:00",
+                "16:00",
+            ],
+            "notifyOption": "NoNotification",
+        }
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/refreshSchedule",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataflow.update_refresh_schedule(
+        days=["Monday", "Wednesday"],
+        times=["10:00", "16:00"],
+        notify_option="NoNotification",
+    )
+
+
+def test_update_refresh_schedule_raises(dataflow):
+    with pytest.raises(ValueError):
+        dataflow.update_refresh_schedule()

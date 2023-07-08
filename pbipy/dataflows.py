@@ -133,6 +133,61 @@ class Dataflow(Resource):
 
         self.patch(resource, self.session, request_body)
 
+    def update_refresh_schedule(
+        self,
+        notify_option: str = None,
+        days: list[str] = None,
+        enabled: bool = None,
+        local_time_zone_id: str = None,
+        times: list[str] = None,
+    ) -> None:
+        """
+        Creates or updates the Refresh Schedule for the Dataflow.
+
+        Parameters
+        ----------
+        `notify_option` : `str`, optional
+            Email notification option, e.g. "MailOnCompletion", "MailOnFailure",
+            or "NoNotification".
+        `days` : `list[str]`, optional
+             The full name of days on which to execute the refresh,e.g, "Monday",
+            "Tuesday", "Wednesday", etc.
+        `enabled` : `bool`, optional
+            Enable/Disable the Refresh Schedule.
+        `local_time_zone_id` : `str`, optional
+            The ID of the time zone to use, e.g, "UTC".
+        `times` : `list[str]`, optional
+            The times of day to execute the refresh expressed as hh:mm, e.g.,
+            "07:00", "16:00", etc.
+
+        Raises
+        ------
+        `ValueError`
+            If no values are provided to update.
+
+        """
+
+        refresh_schedule_request = {
+            "value": {
+                "notifyOption": notify_option,
+                "days": days,
+                "enabled": enabled,
+                "localTimeZoneId": local_time_zone_id,
+                "times": times,
+            }
+        }
+
+        request_body = remove_no_values(refresh_schedule_request)
+
+        if request_body in [None, {}]:
+            raise ValueError(
+                "No options were provided to update. Please specify an option to update."
+            )
+
+        resource = self.base_path + "/refreshSchedule"
+
+        self.patch(resource, self.session, request_body)
+
     def upstream_dataflows(
         self,
     ) -> list[dict]:
