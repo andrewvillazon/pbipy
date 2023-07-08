@@ -44,6 +44,30 @@ class Dataflow(Resource):
 
         return raw
 
+    def refresh(
+        self,
+        notify_option: str,
+        process_type: str = None,
+    ) -> None:
+        """
+        Trigger a refresh of the Dataflow.
+
+        Parameters
+        ----------
+        `notify_option` : `str`
+            Email notification options. Supported options are: `MailOnFailure` 
+            or `NoNotification`. `MailOnCompletion` is not supported.
+        `process_type` : `str`, optional
+            The type of refresh process to use.
+        
+        """
+
+        resource = self.base_path + "/refreshes"
+        payload={"notifyOption": notify_option}
+        params = {"processType": process_type}
+
+        self.post(resource, self.session, payload=payload, params=params)
+
     def transactions(
         self,
     ) -> list[dict]:

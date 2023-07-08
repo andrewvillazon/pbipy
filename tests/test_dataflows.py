@@ -1,6 +1,7 @@
 import pytest
 import requests
 import responses
+from responses import matchers
 
 from pbipy.dataflows import Dataflow
 
@@ -69,3 +70,31 @@ def test_upstream_dataflows(dataflow):
     )
 
     dataflow.upstream_dataflows()
+
+
+@responses.activate
+def test_refresh_no_params(dataflow):
+    json_params = {"notifyOption": "MailOnCompletion"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/refreshes",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataflow.refresh(notify_option="MailOnCompletion")
+
+
+@responses.activate
+def test_refresh_params(dataflow):
+    json_params = {"notifyOption": "MailOnCompletion"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/refreshes?processType=default",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    dataflow.refresh(notify_option="MailOnCompletion", process_type="default")
