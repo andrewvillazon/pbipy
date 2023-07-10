@@ -9,13 +9,13 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 """
 
 import requests
-from requests.exceptions import HTTPError
 
 from pbipy import settings
+from pbipy.admin import Admin
 from pbipy.apps import App
 from pbipy.dataflows import Dataflow
-from pbipy.groups import Group
 from pbipy.datasets import Dataset
+from pbipy.groups import Group
 from pbipy.reports import Report
 from pbipy.utils import RequestsMixin, remove_no_values
 
@@ -57,6 +57,22 @@ class PowerBI(RequestsMixin):
             self.session = requests.Session()
 
         self.session.headers.update({"Authorization": f"Bearer {self.bearer_token}"})
+
+    def admin(
+        self,
+    ) -> Admin:
+        """
+        Initialize and return an `Admin` object. The `Admin` object is used
+        to access admin-only functionality.
+
+        Returns
+        -------
+        `Admin`
+            The initialized `Admin` object.
+        
+        """
+
+        return Admin(self.session)
 
     def app(
         self,
@@ -115,8 +131,8 @@ class PowerBI(RequestsMixin):
         `transaction_id` : `str`
             Id of the Transaction to cancel.
         `group` : `str | Group`
-            Group Id or `Group` object where the Transaction originated. 
-            Should match the Group of the Dataflow that generated the 
+            Group Id or `Group` object where the Transaction originated.
+            Should match the Group of the Dataflow that generated the
             transaction.
 
         Returns
@@ -233,7 +249,7 @@ class PowerBI(RequestsMixin):
         group: str | Group,
     ) -> None:
         """
-        Deletes a dataflow from Power BI data prep storage, including its 
+        Deletes a dataflow from Power BI data prep storage, including its
         definition file and model.
 
         Parameters
@@ -242,19 +258,19 @@ class PowerBI(RequestsMixin):
             Dataflow Id or `Dataflow` object to delete.
         `group` : `str | Group`
             Group Id or `Group` object where the Dataflow resides.
-        
+
         """
 
         if isinstance(dataflow, Dataflow):
             dataflow_id = dataflow.id
         else:
             dataflow_id = dataflow
-        
+
         if isinstance(group, Group):
             group_id = group.id
         else:
             group_id = group
-        
+
         resource = self.BASE_URL + f"/groups/{group_id}/dataflows/{dataflow_id}"
 
         self.delete(resource, self.session)
