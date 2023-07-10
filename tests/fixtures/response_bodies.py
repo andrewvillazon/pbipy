@@ -756,3 +756,21 @@ def cancel_dataflow_transaction():
       "status": "SuccessfullyMarked"
     }
 """
+
+
+@pytest.fixture
+def get_app_users_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "appUserAccessRight": "ReadExplore",
+          "identifier": "john@contoso.com",
+          "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+          "principalType": "User"
+        }
+      ]
+    }
+    """
