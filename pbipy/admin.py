@@ -14,6 +14,8 @@ class Admin(RequestsMixin):
     ) -> None:
         self.session = session
 
+        self.base_path = f"{self.BASE_URL}{self.resource_path}"
+
     def app_users(
         self,
         app: str | App,
@@ -23,7 +25,7 @@ class Admin(RequestsMixin):
         else:
             app_id = app
 
-        resource = self.BASE_URL + f"/admin/apps/{app_id}/users"
+        resource =self.base_path + f"/apps/{app_id}/users"
         raw = self.get_raw(resource, self.session)
 
         return raw
