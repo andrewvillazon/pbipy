@@ -14,6 +14,7 @@ class Admin(RequestsMixin):
     ) -> None:
         self.session = session
 
+        self.resource_path = "/admin"
         self.base_path = f"{self.BASE_URL}{self.resource_path}"
 
     def app_users(
