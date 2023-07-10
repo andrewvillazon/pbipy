@@ -27,12 +27,14 @@ class Admin(RequestsMixin):
         Parameters
         ----------
         top : `int`, optional
-            The requested number of entries in the refresh history. If not provided, the default is all available entries.
+            The requested number of entries in the refresh history. If not
+            provided, the default is all available entries.
 
         Returns
         -------
         `list[App]`
-            _description_
+            The list of Apps for the organization.
+
         """
 
         resource = self.base_path + "/apps"
