@@ -143,3 +143,15 @@ def test_dashboards_with_group(admin, get_dashboards_as_admin):
         session=requests.Session(),
     )
     dashboards = admin.dashboards(group=group)
+
+
+# TODO: Need to add response body for ExportDataflowAsAdmin endpoint
+@responses.activate
+def test_dataflow(admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dataflows/928228ba-008d-4fd9-864a-92d2752ee5ce/export",
+        body="{}",
+        content_type="application/json",
+    )
+
+    admin.dataflow(dataflow="928228ba-008d-4fd9-864a-92d2752ee5ce")

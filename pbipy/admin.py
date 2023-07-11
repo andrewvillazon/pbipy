@@ -3,6 +3,7 @@ import requests
 from pbipy import settings
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
+from pbipy.dataflows import Dataflow
 from pbipy.groups import Group
 from pbipy.utils import RequestsMixin
 
@@ -132,3 +133,43 @@ class Admin(RequestsMixin):
         ]
 
         return dashboards
+
+    def dataflow(
+        self,
+        dataflow: str | Dataflow,
+    ) -> Dataflow:
+        """
+        Get and load the specified Dataflow.
+
+        Parameters
+        ----------
+        `dataflow` : `str | Dataflow`
+            The Dataflow Id of the Dataflow to retrieve.
+
+        Returns
+        -------
+        `Dataflow`
+            The specified Dataflow.
+
+        Notes
+        -----
+        The ExportDataflowAsAdmin endpoint returns a json file. For consistency
+        with the rest of pbipy, this method returns a `Dataflow` object instead
+        of the file itself. To access the json file, use the `Dataflow.raw`
+        property.
+
+        """
+        if isinstance(dataflow, Dataflow):
+            return Dataflow
+
+        resource = self.base_path + f"/dataflows/{dataflow}/export"
+        raw = self.get_raw(resource, self.session)
+
+        dataflow = Dataflow(
+            raw.get("objectId"),
+            self.session,
+            group_id=None,
+            raw=raw,
+        )
+
+        return dataflow
