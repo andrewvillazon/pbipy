@@ -798,3 +798,20 @@ def get_apps_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dashboards_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+          "displayName": "SalesMarketing",
+          "embedUrl": "https://app.powerbi.com/dashboardEmbed?dashboardId=69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+          "isReadOnly": false,
+          "workspaceId": "abfbdc89-2659-43c1-9142-93e8378eac96"
+        }
+      ]
+    }
+    """

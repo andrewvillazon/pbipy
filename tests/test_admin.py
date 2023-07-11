@@ -1,8 +1,11 @@
 import pytest
+import requests
 import responses
 from responses import matchers
 
 from pbipy.apps import App
+from pbipy.dashboards import Dashboard
+from pbipy.groups import Group
 
 
 @pytest.fixture
@@ -68,3 +71,75 @@ def test_apps_result(admin, get_apps_as_admin):
 
     assert isinstance(apps, list)
     assert all(isinstance(app, App) for app in apps)
+
+
+@responses.activate
+def test_dashboards(admin, get_dashboards_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards",
+        body=get_dashboards_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    dashboards = admin.dashboards()
+
+
+@responses.activate
+def test_dashboards_with_params(admin, get_dashboards_as_admin):
+    params = {
+        "$skip": 1,
+        "$top": 3,
+        "$filter": "contains(name,'marketing')",
+    }
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards",
+        body=get_dashboards_as_admin,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+        content_type="application/json",
+    )
+
+    dashboards = admin.dashboards(
+        skip=1,
+        top=3,
+        filter="contains(name,'marketing')",
+    )
+
+
+@responses.activate
+def test_dashboards_result(admin, get_dashboards_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards",
+        body=get_dashboards_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    dashboards = admin.dashboards()
+
+    assert isinstance(dashboards, list)
+    assert all(isinstance(dashboard, Dashboard) for dashboard in dashboards)
+
+
+@responses.activate
+def test_dashboards_with_group(admin, get_dashboards_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards",
+        body=get_dashboards_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+    group = Group(
+        id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+    dashboards = admin.dashboards(group=group)

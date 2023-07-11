@@ -2,6 +2,8 @@ import requests
 
 from pbipy import settings
 from pbipy.apps import App
+from pbipy.dashboards import Dashboard
+from pbipy.groups import Group
 from pbipy.utils import RequestsMixin
 
 
@@ -66,3 +68,67 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def dashboards(
+        self,
+        group: str | Group = None,
+        expand: str = None,
+        filter: str = None,
+        skip: int = None,
+        top: int = None,
+    ) -> list[Dashboard]:
+        """
+        Returns a list of dashboards for the organization or specified Workspace.
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the Apps reside. If not supplied
+            then returns all apps for the organization.
+        `expand` : `str`, optional
+            Accepts a comma-separated list of data types, which will be
+            expanded inline in the response. Supports tiles.
+        `filter` : `str`, optional
+            Filters the results, based on a boolean condition.
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns only the first n results.
+
+        Returns
+        -------
+        `list[Dashboard]`
+            List of `Dashboard` objects for the organization.
+
+        """
+        if group:
+            if isinstance(group, Group):
+                group_id = group.id
+            else:
+                group_id = group
+
+            path = f"/groups/{group_id}/dashboards"
+        else:
+            path = "/dashboards"
+
+        resource = self.base_path + path
+
+        params = {
+            "$expand": expand,
+            "$filter": filter,
+            "$skip": skip,
+            "$top": top,
+        }
+
+        raw = self.get_raw(resource, self.session, params=params)
+
+        dashboards = [
+            Dashboard(
+                dashboard_js.get("id"),
+                self.session,
+                raw=dashboard_js,
+            )
+            for dashboard_js in raw
+        ]
+
+        return dashboards
