@@ -905,3 +905,46 @@ def get_dataset_users_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_datasets_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+          "name": "SalesMarketing",
+          "addRowsAPIEnabled": false,
+          "configuredBy": "john@contoso.com",
+          "isRefreshable": true,
+          "isEffectiveIdentityRequired": false,
+          "isEffectiveIdentityRolesRequired": false,
+          "isOnPremGatewayRequired": false,
+          "isInPlaceSharingEnabled": false,
+          "workspaceId": "5c968528-70b6-4588-809f-ce811ffa5c23"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def get_datasets_in_group_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+          "name": "SalesMarketing",
+          "addRowsAPIEnabled": false,
+          "configuredBy": "john@contoso.com",
+          "isRefreshable": true,
+          "isEffectiveIdentityRequired": false,
+          "isEffectiveIdentityRolesRequired": false,
+          "isOnPremGatewayRequired": false,
+          "isInPlaceSharingEnabled": false
+        }
+      ]
+    }
+    """

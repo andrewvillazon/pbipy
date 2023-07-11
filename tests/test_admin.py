@@ -245,3 +245,86 @@ def test_dataset_users(admin, get_dataset_users_as_admin):
 
     assert isinstance(users, list)
     assert all(isinstance(user, dict) for user in users)
+
+
+@responses.activate
+def test_datasets(admin, get_datasets_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/datasets",
+        body=get_datasets_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    datasets = admin.datasets()
+
+
+@responses.activate
+def test_datasets_with_params(admin, get_datasets_as_admin):
+    params = {
+        "$top": 2,
+        "$filter": "contains(name,'marketing')",
+    }
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/datasets",
+        body=get_datasets_as_admin,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+        content_type="application/json",
+    )
+
+    datasets = admin.datasets(filter="contains(name,'marketing')", top=2)
+
+
+@responses.activate
+def test_datasets_results(admin, get_datasets_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/datasets",
+        body=get_datasets_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    datasets = admin.datasets()
+
+    assert isinstance(datasets, list)
+    assert all(isinstance(dataset, Dataset) for dataset in datasets)
+    assert datasets[0].group_id is not None
+    assert datasets[0].group_id == datasets[0].workspace_id
+
+
+@responses.activate
+def test_datasets_with_group(admin, get_datasets_in_group_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets",
+        body=get_datasets_in_group_as_admin,
+        content_type="application/json",
+    )
+
+    datasets = admin.datasets(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert datasets[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert not hasattr(datasets[0], "workspace_id")
+
+
+@responses.activate
+def test_datasets_with_group_obj(admin, get_datasets_in_group_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets",
+        body=get_datasets_in_group_as_admin,
+        content_type="application/json",
+    )
+    group = Group(
+        id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+    datasets = admin.datasets(group=group)
+
+    assert datasets[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert not hasattr(datasets[0], "workspace_id")

@@ -268,6 +268,80 @@ class Admin(RequestsMixin):
 
         return raw
 
+    def datasets(
+        self,
+        group: str | Group = None,
+        expand: str = None,
+        filter: str = None,
+        skip: int = None,
+        top: int = None,
+    ) -> list[Dataset]:
+        """
+        Returns a list of datasets for the Organization or specified Workspace 
+        (Group).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to target. If provided then this
+            method will return Datasets for the specified Group and not the
+            Organization.
+        `expand` : `str`, optional
+            Expands related entities inline. If no `group` argument was 
+            provided, then this argument is ignored.
+        `filter` : `str`, optional
+            Filters the results, based on a boolean condition.
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns only the first n results.
+
+        Returns
+        -------
+        `list[Dataset]`
+            List of Datasets for the Organization or specified Workspace.
+        
+        """
+
+        params = {
+            "$expand": expand,
+            "$filter": filter,
+            "$skip": skip,
+            "$top": top,
+        }
+
+        # The non-group endpoint doesn't support $expand
+        if group is None:
+            params.pop("$expand")
+
+        # Avoid referencing error in dataset_js.get("workspaceId", group_id)
+        group_id = None
+
+        if group:
+            if isinstance(group, Group):
+                group_id = group.id
+            else:
+                group_id = group
+
+            path = f"/groups/{group_id}/datasets"
+        else:
+            path = "/datasets"
+
+        resource = self.base_path + path
+        raw = self.get_raw(resource, self.session, params=params)
+
+        datasets = [
+            Dataset(
+                id=dataset_js.get("id"),
+                session=self.session,
+                group_id=dataset_js.get("workspaceId", group_id),
+                raw=dataset_js,
+            )
+            for dataset_js in raw
+        ]
+
+        return datasets
+
     def dataset_users(
         self,
         dataset: str | Dataset,
@@ -284,7 +358,7 @@ class Admin(RequestsMixin):
         -------
         `list[dict]`
             List of Users with access to the specified Dataset.
-        
+
         """
 
         if isinstance(dataset, Dataset):
