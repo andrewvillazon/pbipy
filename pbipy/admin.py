@@ -197,3 +197,32 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def dataflow_users(
+        self,
+        dataflow: str | Dataflow,
+    ) -> list[dict]:
+        """
+        Returns a list of users that have access to the specified Dataflow.
+
+        Parameters
+        ----------
+        `dataflow` : `str | Dataflow`
+            The Dataflow Id or `Dataflow` object to retrieve the users for.
+
+        Returns
+        -------
+        `list[dict]`
+            List of users with access to the Dataflow.
+
+        """
+
+        if isinstance(dataflow, Dataflow):
+            dataflow_id = dataflow.id
+        else:
+            dataflow_id = dataflow
+
+        resource = self.base_path + f"/dataflows/{dataflow_id}/users"
+        raw = self.get_raw(resource, self.session)
+
+        return raw

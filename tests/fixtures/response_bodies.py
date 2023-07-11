@@ -836,3 +836,21 @@ def get_dataflow_datasources_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dataflow_users_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "dataflowUserAccessRight": "ReadWrite",
+          "identifier": "john@contoso.com",
+          "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+          "principalType": "User"
+        }
+      ]
+    }
+    """
