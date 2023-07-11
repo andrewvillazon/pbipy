@@ -887,3 +887,21 @@ def get_dataset_to_dataflow_links_in_group_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dataset_users_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "datasetUserAccessRight": "ReadWriteReshareExplore",
+          "identifier": "john@contoso.com",
+          "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+          "principalType": "User"
+        }
+      ]
+    }
+    """

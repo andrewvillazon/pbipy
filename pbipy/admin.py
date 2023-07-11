@@ -4,6 +4,7 @@ from pbipy import settings
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
+from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.utils import RequestsMixin
 
@@ -263,6 +264,35 @@ class Admin(RequestsMixin):
             dataflow_id = dataflow
 
         resource = self.base_path + f"/dataflows/{dataflow_id}/users"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
+    def dataset_users(
+        self,
+        dataset: str | Dataset,
+    ) -> list[dict]:
+        """
+        Return a list of users that have access to the specified Dataset.
+
+        Parameters
+        ----------
+        dataset : `str | Dataset`
+            Dataset Id or `Dataset` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Users with access to the specified Dataset.
+        
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+
+        resource = self.base_path + f"/datasets/{dataset_id}/users"
         raw = self.get_raw(resource, self.session)
 
         return raw

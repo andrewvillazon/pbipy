@@ -5,6 +5,7 @@ from responses import matchers
 
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
+from pbipy.datasets import Dataset
 from pbipy.groups import Group
 
 
@@ -225,3 +226,22 @@ def test_dataset_upstream_dataflows(
     assert all(
         isinstance(upstream_dataflow, dict) for upstream_dataflow in upstream_dataflows
     )
+
+
+@responses.activate
+def test_dataset_users(admin, get_dataset_users_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
+        body=get_dataset_users_as_admin,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    users = admin.dataset_users(dataset=dataset)
+
+    assert isinstance(users, list)
+    assert all(isinstance(user, dict) for user in users)
