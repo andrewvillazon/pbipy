@@ -155,3 +155,19 @@ def test_dataflow(admin):
     )
 
     admin.dataflow(dataflow="928228ba-008d-4fd9-864a-92d2752ee5ce")
+
+
+@responses.activate
+def test_dataflow_datasources(admin, get_dataflow_datasources_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dataflows/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_dataflow_datasources_as_admin,
+        content_type="application/json",
+    )
+
+    datasources = admin.dataflow_datasources(
+        dataflow="cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    )
+
+    assert isinstance(datasources, list)
+    assert all(isinstance(datasource, dict) for datasource in datasources)

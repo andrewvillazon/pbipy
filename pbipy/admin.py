@@ -173,3 +173,27 @@ class Admin(RequestsMixin):
         )
 
         return dataflow
+
+    def dataflow_datasources(
+        self,
+        dataflow: str | Dataflow,
+    ) -> list[dict]:
+        """
+        Return a list of Datasources for the specified Dataflow.
+
+        Returns
+        -------
+        `list[dict]`
+            The list of Datasources associated with the Dataflow.
+
+        """
+
+        if isinstance(dataflow, Dataflow):
+            dataflow_id = dataflow.id
+        else:
+            dataflow_id = dataflow
+
+        resource = self.base_path + f"/dataflows/{dataflow_id}/datasources"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
