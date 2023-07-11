@@ -197,6 +197,46 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
+    
+    def dataflow_upstream_dataflows(
+        self,
+        dataflow: str | Dataflow,
+        group: str | Group,
+    ) -> list[dict]:
+        """
+        Returns a list of upstream dataflows for the specified Dataflow.
+
+        Parameters
+        ----------
+        `dataflow` : `str | Dataflow`
+            The Dataflow Id or `Dataflow` object to target.
+        `group` : `str | Group`
+            The Group Id or `Group` object where the target Dataflow resides.
+
+        Returns
+        -------
+        `list[dict]`
+            List of upstream dataflows.
+
+        """
+
+        if isinstance(dataflow, Dataflow):
+            dataflow_id = dataflow.id
+        else:
+            dataflow_id = dataflow
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = (
+            self.base_path
+            + f"/groups/{group_id}/dataflows/{dataflow_id}/upstreamDataflows"
+        )
+        raw = self.get_raw(resource, self.session)
+
+        return raw
 
     def dataflow_users(
         self,

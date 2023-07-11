@@ -854,3 +854,21 @@ def get_dataflow_users_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_upstream_dataflows_in_group_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "targetDataflowId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+          "groupId": "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+        },
+        {
+          "targetDataflowId": "67a4529b-0cdd-4584-9867-5c0e77d57a2f",
+          "groupId": "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+        }
+      ]
+    }
+    """
