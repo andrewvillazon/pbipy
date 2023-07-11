@@ -872,3 +872,18 @@ def get_upstream_dataflows_in_group_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dataset_to_dataflow_links_in_group_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "datasetObjectId": "0d6e2a35-c606-4fb7-8690-1b3a5370a294",
+          "dataflowObjectId": "4caab73a-2660-4255-8e53-de6745f3d92c",
+          "workspaceObjectId": "358240c2-b8f3-4817-aa7a-0efa03687a7b"
+        }
+      ]
+    }
+    """

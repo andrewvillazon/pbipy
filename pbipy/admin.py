@@ -197,7 +197,7 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
-    
+
     def dataflow_upstream_dataflows(
         self,
         dataflow: str | Dataflow,
@@ -263,6 +263,38 @@ class Admin(RequestsMixin):
             dataflow_id = dataflow
 
         resource = self.base_path + f"/dataflows/{dataflow_id}/users"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
+    def datasets_upstream_dataflows(
+        self,
+        group: str | Group,
+    ) -> list[dict]:
+        """
+        Return a list of upstream dataflows for datasets from the specified
+        Workspace (Group).
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Dataset to Dataflow Links for the specified Workspace.
+            Each element in this list represents a link between a Dataset
+            and Dataflow.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = self.base_path + f"/groups/{group_id}/datasets/upstreamDataflows"
         raw = self.get_raw(resource, self.session)
 
         return raw
