@@ -948,3 +948,38 @@ def get_datasets_in_group_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dataflows_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "objectId": "bd32e5c0-363f-430b-a03b-5535a4804b9b",
+          "name": "AdventureWorks",
+          "description": "Our Adventure Works",
+          "modelUrl": "https://MyDataflowStorageAccount.dfs.core.windows.net/powerbi/contoso/AdventureWorks/model.json",
+          "configuredBy": "john@contoso.com",
+          "workspaceId": "6369a442-4bc4-425c-916d-460c42be746b"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def get_dataflows_in_group_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "objectId": "bd32e5c0-363f-430b-a03b-5535a4804b9b",
+          "name": "AdventureWorks",
+          "description": "Our Adventure Works",
+          "modelUrl": "https://MyDataflowStorageAccount.dfs.core.windows.net/powerbi/contoso/AdventureWorks/model.json",
+          "configuredBy": "john@contoso.com"
+        }
+      ]
+    }
+    """

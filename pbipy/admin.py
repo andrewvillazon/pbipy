@@ -175,6 +175,68 @@ class Admin(RequestsMixin):
 
         return dataflow
 
+    def dataflows(
+        self,
+        group: str | Group = None,
+        filter: str = None,
+        skip: int = None,
+        top: int = None,
+    ) -> list[Dataflow]:
+        """
+        Returns a list of dataflows for the organization or specified Workspace
+        (Group).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to target. If not provided, then
+            all Dataflows for the Organization will be returned.
+        `filter` : `str`, optional
+            Filters the results, based on a boolean condition.
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns only the first n results.
+
+        Returns
+        -------
+        `list[Dataflow]`
+            List of Dataflows for the Organization or specified Workspace.
+        """
+
+        group_id = None
+
+        if group:
+            if isinstance(group, Group):
+                group_id = group.id
+            else:
+                group_id = group
+
+            path = f"/groups/{group_id}/dataflows"
+        else:
+            path = "/dataflows"
+
+        params = {
+            "$filter": filter,
+            "$skip": skip,
+            "$top": top,
+        }
+
+        resource = self.base_path + path
+        raw = self.get_raw(resource, self.session, params=params)
+
+        dataflows = [
+            Dataflow(
+                id=dataflow_js.get("id"),
+                session=self.session,
+                group_id=dataflow_js.get("workspaceId", group_id),
+                raw=dataflow_js,
+            )
+            for dataflow_js in raw
+        ]
+
+        return dataflows
+
     def dataflow_datasources(
         self,
         dataflow: str | Dataflow,
@@ -277,7 +339,7 @@ class Admin(RequestsMixin):
         top: int = None,
     ) -> list[Dataset]:
         """
-        Returns a list of datasets for the Organization or specified Workspace 
+        Returns a list of datasets for the Organization or specified Workspace
         (Group).
 
         Parameters
@@ -287,7 +349,7 @@ class Admin(RequestsMixin):
             method will return Datasets for the specified Group and not the
             Organization.
         `expand` : `str`, optional
-            Expands related entities inline. If no `group` argument was 
+            Expands related entities inline. If no `group` argument was
             provided, then this argument is ignored.
         `filter` : `str`, optional
             Filters the results, based on a boolean condition.
@@ -300,7 +362,7 @@ class Admin(RequestsMixin):
         -------
         `list[Dataset]`
             List of Datasets for the Organization or specified Workspace.
-        
+
         """
 
         params = {

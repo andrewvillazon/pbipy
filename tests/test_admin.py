@@ -5,6 +5,7 @@ from responses import matchers
 
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
+from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 
@@ -328,3 +329,58 @@ def test_datasets_with_group_obj(admin, get_datasets_in_group_as_admin):
 
     assert datasets[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert not hasattr(datasets[0], "workspace_id")
+
+
+@responses.activate
+def test_dataflows(admin, get_dataflows_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dataflows",
+        body=get_dataflows_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    dataflows = admin.dataflows()
+
+    assert isinstance(dataflows, list)
+    assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)
+
+    assert dataflows[0].group_id == dataflows[0].workspace_id
+
+
+@responses.activate
+def test_dataflows_with_group(admin, get_dataflows_in_group_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dataflows",
+        body=get_dataflows_in_group_as_admin,
+        match=[
+            matchers.query_param_matcher(None),
+        ],
+        content_type="application/json",
+    )
+
+    dataflows = admin.dataflows(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert isinstance(dataflows, list)
+    assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)
+
+    assert dataflows[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert not hasattr(dataflows[0], "workspace_id")
+
+
+@responses.activate
+def test_dataflows_with_params(admin, get_dataflows_as_admin):
+    params = {"$top": 1, "$skip": 3}
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dataflows",
+        body=get_dataflows_as_admin,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+        content_type="application/json",
+    )
+
+    dataflows = admin.dataflows(top=1, skip=3)
