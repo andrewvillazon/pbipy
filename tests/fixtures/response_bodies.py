@@ -983,3 +983,17 @@ def get_dataflows_in_group_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def add_power_bi_encryption_key():
+    return """
+    {
+      "id": "82d9a37a-2b45-4221-b012-cb109b8e30c7",
+      "name": "Contoso Sales",
+      "keyVaultKeyIdentifier": "https://contoso-vault2.vault.azure.net/keys/ContosoKeyVault/b2ab4ba1c7b341eea5ecaaa2wb54c4d2",
+      "isDefault": true,
+      "createdAt": "2019-04-30T21:35:15.867-07:00",
+      "updatedAt": "2019-04-30T21:35:15.867-07:00"
+    }
+    """

@@ -384,3 +384,31 @@ def test_dataflows_with_params(admin, get_dataflows_as_admin):
     )
 
     dataflows = admin.dataflows(top=1, skip=3)
+
+
+@responses.activate
+def test_add_encryption_key(admin, add_power_bi_encryption_key):
+    json_params = {
+        "name": "Contoso Sales",
+        "keyVaultKeyIdentifier": "https://contoso-vault2.vault.azure.net/keys/ContosoKeyVault/b2ab4ba1c7b341eea5ecaaa2wb54c4d2",
+        "activate": True,
+        "isDefault": True,
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/tenantKeys",
+        body=add_power_bi_encryption_key,
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        content_type="application/json",
+    )
+
+    encryption_key = admin.add_encryption_key(
+        name="Contoso Sales",
+        key_vault_identifier="https://contoso-vault2.vault.azure.net/keys/ContosoKeyVault/b2ab4ba1c7b341eea5ecaaa2wb54c4d2",
+        activate=True,
+        is_default=True,
+    )
+
+    assert isinstance(encryption_key, dict)

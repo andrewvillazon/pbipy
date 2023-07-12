@@ -21,6 +21,49 @@ class Admin(RequestsMixin):
         self.resource_path = "/admin"
         self.base_path = f"{self.BASE_URL}{self.resource_path}"
 
+    def add_encryption_key(
+        self,
+        name: str,
+        key_vault_identifier: str,
+        activate: bool,
+        is_default: bool,
+    ) -> dict:
+        """
+        Adds an encryption key for Power BI workspaces assigned to a capacity.
+
+        Parameters
+        ----------
+        `name` : `str`
+            The name of the encryption key.
+        `key_vault_identifier` : `str`
+            The URI that uniquely specifies an encryption key in Azure Key
+            Vault.
+        `activate` : `bool`
+            Whether to activate any inactivated capacities and to use this
+            key for its encryption.
+        `is_default` : `bool`
+            Whether an encryption key is the default key for the entire
+            tenant. Any newly created capacity inherits the default key.
+
+        Returns
+        -------
+        `dict`
+            The newly created Tenant Key.
+
+        """
+
+        payload = {
+            "name": name,
+            "keyVaultKeyIdentifier": key_vault_identifier,
+            "activate": activate,
+            "isDefault": is_default,
+        }
+
+        resource = self.base_path + "/tenantKeys"
+        raw = self.post_raw(resource, self.session, payload=payload)
+
+        return raw
+
     def apps(
         self,
         top: int = None,
