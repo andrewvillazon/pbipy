@@ -428,3 +428,17 @@ def test_dashboard_subscriptions(admin, get_dashboard_subscriptions_as_admin):
 
     assert isinstance(subscriptions, list)
     assert all(isinstance(subscription, dict) for subscription in subscriptions)
+
+
+@responses.activate
+def test_dashboard_users(admin, get_dashboard_users_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards/69ffaa6c-b36d-4d01-96f5-1ed67c64d4af/users",
+        body=get_dashboard_users_as_admin,
+        content_type="application/json",
+    )
+
+    users = admin.dashboard_users(dashboard="69ffaa6c-b36d-4d01-96f5-1ed67c64d4af")
+
+    assert isinstance(users, list)
+    assert all(isinstance(user, dict) for user in users)

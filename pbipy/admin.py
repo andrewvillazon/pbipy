@@ -208,6 +208,35 @@ class Admin(RequestsMixin):
 
         return raw
 
+    def dashboard_users(
+        self,
+        dashboard: str | Dashboard,
+    ) -> list[dict]:
+        """
+        Returns a list of users that have access to the specified dashboard.
+
+        Parameters
+        ----------
+        `dashboard` : `str | Dashboard`
+            The Dashboard Id or `Dashboard` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Dashboard Users.
+
+        """
+
+        if isinstance(dashboard, Dashboard):
+            dashboard_id = dashboard.id
+        else:
+            dashboard_id = dashboard
+
+        resource = self.base_path + f"/dashboards/{dashboard_id}/users"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
     def dataflow(
         self,
         dataflow: str | Dataflow,

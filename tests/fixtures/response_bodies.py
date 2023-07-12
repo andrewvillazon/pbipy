@@ -1029,3 +1029,21 @@ def get_dashboard_subscriptions_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_dashboard_users_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "dashboardUserAccessRight": "Owner",
+          "identifier": "john@contoso.com",
+          "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+          "principalType": "User"
+        }
+      ]
+    }
+    """
