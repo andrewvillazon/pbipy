@@ -997,3 +997,35 @@ def add_power_bi_encryption_key():
       "updatedAt": "2019-04-30T21:35:15.867-07:00"
     }
     """
+
+
+@pytest.fixture
+def get_dashboard_subscriptions_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "18b746fe-c6d5-4a00-9523-05dc91424275",
+          "title": "TestDashboardSubscription-1",
+          "artifactId": "7b71b90a-a333-4006-b12c-ef3d767fa4e9",
+          "artifactDisplayName": "Customer Profitability Sample",
+          "artifactType": "Dashboard",
+          "isEnabled": true,
+          "frequency": "Daily",
+          "startDate": "10/13/2021 12:00:00 AM",
+          "endDate": "10/13/2022 12:00:00 AM",
+          "linkToContent": true,
+          "previewImage": false,
+          "users": [
+            {
+              "displayName": "John Nick",
+              "emailAddress": "john@contoso.com",
+              "identifier": "john@contoso.com",
+              "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+              "principalType": "User"
+            }
+          ]
+        }
+      ]
+    }
+    """

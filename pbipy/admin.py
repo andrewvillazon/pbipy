@@ -178,6 +178,36 @@ class Admin(RequestsMixin):
 
         return dashboards
 
+    def dashboard_subscriptions(
+        self,
+        dashboard: str | Dashboard,
+    ) -> list[dict]:
+        """
+        Returns a list of dashboard subscriptions along with subscriber
+        details.
+
+        Parameters
+        ----------
+        `dashboard` : `str | Dashboard`
+            Dashboard Id or `Dashboard` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of subscriptions.
+
+        """
+
+        if isinstance(dashboard, Dashboard):
+            dashboard_id = dashboard.id
+        else:
+            dashboard_id = dashboard
+
+        resource = self.base_path + f"/dashboards/{dashboard_id}/subscriptions"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
     def dataflow(
         self,
         dataflow: str | Dataflow,

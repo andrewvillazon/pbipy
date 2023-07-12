@@ -412,3 +412,19 @@ def test_add_encryption_key(admin, add_power_bi_encryption_key):
     )
 
     assert isinstance(encryption_key, dict)
+
+
+@responses.activate
+def test_dashboard_subscriptions(admin, get_dashboard_subscriptions_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards/69ffaa6c-b36d-4d01-96f5-1ed67c64d4af/subscriptions",
+        body=get_dashboard_subscriptions_as_admin,
+        content_type="application/json",
+    )
+
+    subscriptions = admin.dashboard_subscriptions(
+        dashboard="69ffaa6c-b36d-4d01-96f5-1ed67c64d4af"
+    )
+
+    assert isinstance(subscriptions, list)
+    assert all(isinstance(subscription, dict) for subscription in subscriptions)
