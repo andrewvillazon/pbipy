@@ -64,6 +64,24 @@ class Admin(RequestsMixin):
 
         return raw
 
+    def encryption_keys(
+        self,
+    ) -> list[dict]:
+        """
+        Returns the Encryption Keys for the tenant.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Encryption Keys for the tenant.
+        
+        """
+
+        resource = self.base_path + "/tenantKeys"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
     def apps(
         self,
         top: int = None,

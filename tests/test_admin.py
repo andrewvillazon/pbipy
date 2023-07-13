@@ -475,3 +475,17 @@ def test_dataset_datasources(admin, get_datasources_as_admin):
 
     assert isinstance(datasources, list)
     assert all(isinstance(datasource, dict) for datasource in datasources)
+
+
+@responses.activate
+def test_encryption_keys(admin, get_power_bi_encryption_keys):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/tenantKeys",
+        body=get_power_bi_encryption_keys,
+        content_type="application/json",
+    )
+
+    encryption_keys = admin.encryption_keys()
+
+    assert isinstance(encryption_keys, list)
+    assert all(isinstance(encryption_key, dict) for encryption_key in encryption_keys)
