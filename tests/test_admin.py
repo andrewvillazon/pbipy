@@ -461,3 +461,17 @@ def test_dashboard_tiles(admin, get_tiles_as_admin):
 
     assert isinstance(tiles, list)
     assert all(isinstance(tile, Tile) for tile in tiles)
+
+
+@responses.activate
+def test_dataset_datasources(admin, get_datasources_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources",
+        body=get_datasources_as_admin,
+        content_type="application/json",
+    )
+
+    datasources = admin.dataset_datasources("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+
+    assert isinstance(datasources, list)
+    assert all(isinstance(datasource, dict) for datasource in datasources)

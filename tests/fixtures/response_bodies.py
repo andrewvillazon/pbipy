@@ -1066,3 +1066,24 @@ def get_tiles_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_datasources_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "name": "301",
+          "connectionString": "data source=MyServer.database.windows.net;initial catalog=MyDatabase;persist security info=True;encrypt=True;trustservercertificate=False",
+          "datasourceType": "Sql",
+          "datasourceId": "16a54ccd-620d-4af3-9197-0b8c779a9a6d",
+          "gatewayId": "7f1c4e55-544b-403f-b132-da0d3a024674",
+          "connectionDetails": {
+            "server": "MyServer.database.windows.net",
+            "database": "MyDatabase"
+          }
+        }
+      ]
+    }
+    """

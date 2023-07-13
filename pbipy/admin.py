@@ -545,6 +545,35 @@ class Admin(RequestsMixin):
 
         return datasets
 
+    def dataset_datasources(
+        self,
+        dataset: str | Dataset,
+    ) -> list[dict]:
+        """
+        Returns a list of data sources for the specified dataset.
+
+        Parameters
+        ----------
+        `dataset` : `str | Dataset`
+            Dataset Id or `Dataset` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Datasources for the specified Dataset.
+
+        """
+
+        if isinstance(dataset, Dataset):
+            dataset_id = dataset.id
+        else:
+            dataset_id = dataset
+
+        resource = self.base_path + f"/datasets/{dataset_id}/datasources"
+        raw = self.get_raw(resource, self.session)
+
+        return raw
+
     def dataset_users(
         self,
         dataset: str | Dataset,
