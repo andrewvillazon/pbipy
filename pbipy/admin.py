@@ -2,7 +2,7 @@ import requests
 
 from pbipy import settings
 from pbipy.apps import App
-from pbipy.dashboards import Dashboard
+from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
@@ -207,6 +207,45 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def dashboard_tiles(
+        self,
+        dashboard: str | Dashboard,
+    ) -> list[Tile]:
+        """
+        Returns a list of tiles within the specified dashboard.
+
+        Parameters
+        ----------
+        `dashboard` : `str | Dashboard`
+            The Dashboard Id or `Dashboard` object to target.
+
+        Returns
+        -------
+        `list[Tile]`
+            List of Tiles from the specified Dashboard.
+
+        """
+
+        if isinstance(dashboard, Dashboard):
+            dashboard_id = dashboard.id
+        else:
+            dashboard_id = dashboard
+
+        resource = self.base_path + f"/dashboards/{dashboard_id}/tiles"
+        raw = self.get_raw(resource, self.session)
+
+        tiles = [
+            Tile(
+                tile_js.get("id"),
+                dashboard_id=dashboard,
+                session=self.session,
+                raw=tile_js,
+            )
+            for tile_js in raw
+        ]
+
+        return tiles
 
     def dashboard_users(
         self,

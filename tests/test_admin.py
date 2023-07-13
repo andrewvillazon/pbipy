@@ -4,7 +4,7 @@ import responses
 from responses import matchers
 
 from pbipy.apps import App
-from pbipy.dashboards import Dashboard
+from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
@@ -442,3 +442,22 @@ def test_dashboard_users(admin, get_dashboard_users_as_admin):
 
     assert isinstance(users, list)
     assert all(isinstance(user, dict) for user in users)
+
+
+@responses.activate
+def test_dashboard_tiles(admin, get_tiles_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/dashboards/69ffaa6c-b36d-4d01-96f5-1ed67c64d4af/tiles",
+        body=get_tiles_as_admin,
+        content_type="application/json",
+    )
+
+    dashboard = Dashboard(
+        id="69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+        session=requests.Session(),
+    )
+
+    tiles = admin.dashboard_tiles(dashboard)
+
+    assert isinstance(tiles, list)
+    assert all(isinstance(tile, Tile) for tile in tiles)

@@ -1047,3 +1047,22 @@ def get_dashboard_users_as_admin():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_tiles_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+          "title": "SalesMarketingTile",
+          "embedUrl": "https://app.powerbi.com/embed?dashboardId=69ffaa6c-b36d-4d01-96f5-1ed67c64d4af&tileId=312fbfe9-2eda-44e0-9ed0-ab5dc571bb4b",
+          "rowSpan": 0,
+          "colSpan": 0,
+          "reportId": "5b218778-e7a5-4d73-8187-f10824047715",
+          "datasetId": "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+        }
+      ]
+    }
+    """
