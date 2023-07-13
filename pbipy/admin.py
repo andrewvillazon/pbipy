@@ -6,7 +6,7 @@ from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
-from pbipy.utils import RequestsMixin
+from pbipy.utils import RequestsMixin, remove_no_values
 
 
 class Admin(RequestsMixin):
@@ -74,7 +74,7 @@ class Admin(RequestsMixin):
         -------
         `list[dict]`
             List of Encryption Keys for the tenant.
-        
+
         """
 
         resource = self.base_path + "/tenantKeys"
@@ -652,3 +652,68 @@ class Admin(RequestsMixin):
         raw = self.get_raw(resource, self.session)
 
         return raw
+
+    def add_group_user(
+        self,
+        group: str | Group,
+        identifier: str,
+        principal_type: str,
+        group_user_access_right: str,
+        display_name: str = None,
+        email_address: str = None,
+        graph_id: str = None,
+        profile: dict = None,
+        user_type: str = None,
+    ) -> None:
+        """
+        Grants user permissions to the specified workspace. This API call
+        only supports adding a user principal.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to add the user to.
+        `identifier` : `str`
+            Identifier of the principal.
+        `principal_type` : `str`
+            The principal type, e.g., "App", "Group", "None", or "User".
+        `group_user_access_right` : `str`
+            The access right (permission level) that a user has on the
+            workspace, e.g. "Admin", "Contributor", "Member", "None",
+            or "Viewer".
+        `display_name` : `str`, optional
+            Display name of the principal.
+        `email_address` : `str`, optional
+            Email address of the user.
+        `graph_id` : `str`, optional
+            Identifier of the principal in Microsoft Graph. Only available
+            for admin APIs.
+        `profile` : `dict`, optional
+            A Power BI service principal profile. Only relevant for Power
+            BI Embedded multi-tenancy solution.
+        `user_type` : `str`, optional
+            Type of the user.
+
+        """
+
+        group_user = {
+            "identifier": identifier,
+            "principalType": principal_type,
+            "groupUserAccessRight": group_user_access_right,
+            "displayName": display_name,
+            "emailAddress": email_address,
+            "graphId": graph_id,
+            "profile": profile,
+            "userType": user_type,
+        }
+
+        payload = remove_no_values(group_user)
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        resource = self.base_path + f"/groups/{group_id}/users"
+
+        self.post(resource, self.session, payload=payload)

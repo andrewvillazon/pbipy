@@ -489,3 +489,51 @@ def test_encryption_keys(admin, get_power_bi_encryption_keys):
 
     assert isinstance(encryption_keys, list)
     assert all(isinstance(encryption_key, dict) for encryption_key in encryption_keys)
+
+
+@responses.activate
+def test_add_group_user(admin):
+    json_params = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "groupUserAccessRight": "Admin",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/206d27ca-94e8-4a69-855b-5c32bdd458a8/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    admin.add_group_user(
+        group="206d27ca-94e8-4a69-855b-5c32bdd458a8",
+        identifier="john@contoso.com",
+        principal_type="User",
+        group_user_access_right="Admin",
+    )
+
+
+@responses.activate
+def test_add_group_user_with_optional_params(admin):
+    json_params = {
+        "identifier": "john@contoso.com",
+        "principalType": "User",
+        "groupUserAccessRight": "Admin",
+        "emailAddress": "john@contoso.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/206d27ca-94e8-4a69-855b-5c32bdd458a8/users",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    admin.add_group_user(
+        group="206d27ca-94e8-4a69-855b-5c32bdd458a8",
+        identifier="john@contoso.com",
+        principal_type="User",
+        group_user_access_right="Admin",
+        email_address="john@contoso.com",
+    )
