@@ -135,6 +135,7 @@ class RequestsMixin:
         self,
         resource: str,
         session: Session,
+        params: dict = None,
         success_codes: list[int] = [200, 201],
     ) -> None:
         """
@@ -156,7 +157,10 @@ class RequestsMixin:
             If the response status code was not found in `success_codes`.
         """
 
-        response = session.delete(resource)
+        response = session.delete(
+            resource,
+            params=params,
+        )
 
         if response.status_code not in success_codes:
             raise HTTPError(
