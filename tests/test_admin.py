@@ -537,3 +537,33 @@ def test_add_group_user_with_optional_params(admin):
         group_user_access_right="Admin",
         email_address="john@contoso.com",
     )
+
+
+@responses.activate
+def test_delete_group_user(admin):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f7d76f5a-7190-43c6-bf12-7a135c6c2d69/users/john@contoso.com"
+    )
+
+    admin.delete_group_user(
+        "f7d76f5a-7190-43c6-bf12-7a135c6c2d69",
+        "john@contoso.com",
+    )
+
+
+@responses.activate
+def test_delete_group_user_with_params(admin):
+    params = {"profileId": "154aef10-47b8-48c4-ab97-f0bf9d5f8fcf"}
+
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f7d76f5a-7190-43c6-bf12-7a135c6c2d69/users/john@contoso.com",
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+    )
+
+    admin.delete_group_user(
+        "f7d76f5a-7190-43c6-bf12-7a135c6c2d69",
+        "john@contoso.com",
+        profile_id="154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
+    )

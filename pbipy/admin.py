@@ -717,3 +717,38 @@ class Admin(RequestsMixin):
         resource = self.base_path + f"/groups/{group_id}/users"
 
         self.post(resource, self.session, payload=payload)
+
+    def delete_group_user(
+        self,
+        group: str | Group,
+        user: str,
+        profile_id: str = None,
+    ) -> None:
+        """
+        Removes user permissions from the specified workspace.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to target.
+        `user` : `str`
+            The user principal name (UPN) of the user to remove, e.g. `john@contoso.com`
+        `profile_id` : `str`, optional
+            The service principal profile ID to delete.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        params = {"profileId": profile_id}
+
+        resource = self.base_path + f"/groups/{group_id}/users/{user}"
+
+        self.delete(
+            resource,
+            self.session,
+            params=params,
+        )
