@@ -580,3 +580,41 @@ def test_group(admin):
     group = admin.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
 
     assert isinstance(group, Group)
+
+
+@responses.activate
+def test_groups(admin, get_groups_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups?$top=1",
+        body=get_groups_as_admin,
+        content_type="application/json",
+    )
+
+    groups = admin.groups(top=1)
+
+    assert isinstance(groups, list)
+    assert all(isinstance(group, Group) for group in groups)
+
+
+@responses.activate
+def test_groups_with_params(admin, get_groups_as_admin_with_expand):
+    params = {
+        "$expand": "dashboards",
+        "$top": 100,
+    }
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups",
+        body=get_groups_as_admin_with_expand,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+        content_type="application/json",
+    )
+
+    groups = admin.groups(expand="dashboards", top=100)
+
+    assert isinstance(groups, list)
+    assert all(isinstance(group, Group) for group in groups)
+    assert hasattr(groups[0], "dashboards")
+    assert isinstance(groups[0].dashboards, list)

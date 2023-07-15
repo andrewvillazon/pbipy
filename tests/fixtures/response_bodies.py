@@ -1105,3 +1105,55 @@ def get_power_bi_encryption_keys():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_groups_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "id": "183dcf10-47b8-48c4-84aa-f0bf9d5f8fcf",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "name": "Sample Group 2",
+          "description": "Deleted sample group",
+          "type": "Workspace",
+          "state": "Deleted"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def get_groups_as_admin_with_expand():
+    return """
+    {
+      "value": [
+        {
+          "id": "94E57E92-CEE2-486D-8CC8-218C97200579",
+          "isReadOnly": false,
+          "isOnDedicatedCapacity": false,
+          "capacityMigrationStatus": "Migrated",
+          "description": "shorter description",
+          "type": "Workspace",
+          "state": "Removing",
+          "name": "a",
+          "hasWorkspaceLevelSettings": false,
+          "dashboards": [
+            {
+              "id": "4668133c-ae3f-42fb-ad7c-214a8623280c",
+              "displayName": "SQlAzure-Refresh.pbix",
+              "isReadOnly": false
+            },
+            {
+              "id": "a8f18ca7-63e8-4220-bc1c-f576ec180b98",
+              "displayName": "cdvc",
+              "isReadOnly": false
+            }
+          ]
+        }
+      ]
+    }
+    """

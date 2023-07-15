@@ -693,6 +693,60 @@ class Admin(RequestsMixin):
 
         return Group(raw.get("id"), self.session, raw=raw)
 
+    def groups(
+        self,
+        top: int,
+        expand: str = None,
+        filter: str = None,
+        skip: int = None,
+    ) -> list[Group]:
+        """
+        Returns a list of Workspaces (Groups) for the Organization.
+
+        Parameters
+        ----------
+        `top` : `int`, optional
+            Returns only the first n results. This parameter is mandatory
+            and must be in the range of 1-5000.
+        `expand` : `str`, optional
+            Accepts a comma-separated list of data types, which will be
+            expanded inline in the response. Supports `users`, `reports`,
+            `dashboards`, `datasets`, `dataflows`, and `workbooks`.
+        `filter` : `str`, optional
+            Filters the results based on a boolean condition, e.g.,
+            `state eq 'Deleted'`
+        `skip` : `int`, optional
+            Skips the first n results. Use with top to fetch results beyond
+            the first 5000.
+
+        Returns
+        -------
+        `list[Group]`
+            List of Workspaces (Groups) for the Organization.
+
+        """
+
+        params = {
+            "$expand": expand,
+            "$filter": filter,
+            "$top": top,
+            "$skip": skip,
+        }
+
+        resource = self.base_path + "/groups"
+        raw = self.get_raw(resource, self.session, params=params)
+
+        groups = [
+            Group(
+                group_js.get("id"),
+                session=self.session,
+                raw=group_js,
+            )
+            for group_js in raw
+        ]
+
+        return groups
+
     def add_group_user(
         self,
         group: str | Group,
