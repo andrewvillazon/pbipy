@@ -567,3 +567,16 @@ def test_delete_group_user_with_params(admin):
         "john@contoso.com",
         profile_id="154aef10-47b8-48c4-ab97-f0bf9d5f8fcf",
     )
+
+
+@responses.activate
+def test_group(admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/a2f89923-421a-464e-bf4c-25eab39bb09f",
+        body="""{"id": "a2f89923-421a-464e-bf4c-25eab39bb09f"}""",
+        content_type="application/json",
+    )
+
+    group = admin.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+
+    assert isinstance(group, Group)

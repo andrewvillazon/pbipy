@@ -653,6 +653,46 @@ class Admin(RequestsMixin):
 
         return raw
 
+    def group(
+        self,
+        group: str | Group,
+        expand: str = None,
+    ) -> Group:
+        """
+        Returns a workspace for the organization.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to target.
+        `expand` : `str`, optional
+            Accepts a comma-separated list of data types, which will be
+            expanded inline in the response. Supports `users`, `reports`,
+            `dashboards`, `datasets`, `dataflows`, and `workbooks`.
+
+        Returns
+        -------
+        `Group`
+            The specified Group for the Organization.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        params = {"$expand": expand}
+
+        resource = self.base_path + f"/groups/{group_id}"
+        raw = self.get_raw(
+            resource,
+            self.session,
+            params=params,
+        )
+
+        return Group(raw.get("id"), self.session, raw=raw)
+
     def add_group_user(
         self,
         group: str | Group,
