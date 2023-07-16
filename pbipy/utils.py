@@ -3,9 +3,47 @@
 import json
 from pathlib import Path
 import re
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from pbipy.resources import Resource
 
 from requests import Response, Session
 from requests.exceptions import HTTPError
+
+
+def build_path(
+    path_format: str,
+    *identifiers: "str | Resource",
+) -> str:
+    """
+    Build a path to a resource from the supplied components.
+
+    Parameters
+    ----------
+    `path_format` : `str`
+        The resource format with bracketed placeholders, e.g., `reports/{}/datasources`
+    `*identifiers` : `str | Resource`
+        Ids or Resource Objects with an `id` attribute. The provided Ids
+        will be added to the path according `path_format`.
+
+    Returns
+    -------
+    `str`
+        Path to a resource.
+    
+    """
+    
+    ids = []
+
+    for identifier in identifiers:
+        try:
+            ids.append(identifier.id)
+        except AttributeError:
+            ids.append(identifier)
+    
+    path = path_format.format(*ids)
+
+    return path
 
 
 def to_snake_case(s):

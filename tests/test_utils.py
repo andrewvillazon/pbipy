@@ -6,6 +6,8 @@ from requests.exceptions import HTTPError
 from responses import matchers
 
 from pbipy import utils
+from pbipy.groups import Group
+from pbipy.reports import Report
 
 # TODO: Tests for request_mixin.delete()
 # TODO: Tests for request_mixin.get()
@@ -363,3 +365,47 @@ def test_request_mixin_patch_raises(request_mixin, session):
 
     with pytest.raises(HTTPError):
         request_mixin.patch(resource, session, payload)
+
+
+def test_build_url():
+    path_format = "/reports/{}/datasources"
+
+    id = "cfafbeb1-8037-4d0c-896e-a46fb27ff228"
+
+    path = utils.build_path(path_format, id)
+    expected_path = "/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff228/datasources"
+
+    assert expected_path == path
+
+
+def test_build_url_with_obj():
+    path_format = "/reports/{}/datasources"
+
+    id = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff228",
+        session=requests.Session(),
+    )
+
+    path = utils.build_path(path_format, id)
+    expected_path = "/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff228/datasources"
+
+    assert expected_path == path
+
+
+def test_build_url_with_multiple_obj():
+    path_format = "/groups/{}/reports/{}/datasources"
+
+    report = Report(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    group = Group(
+        id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        session=requests.Session(),
+    )
+
+    path = utils.build_path(path_format, group, report)
+    expected_path = "/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources"
+
+    assert expected_path == path
