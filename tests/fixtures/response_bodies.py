@@ -1157,3 +1157,36 @@ def get_groups_as_admin_with_expand():
       ]
     }
     """
+
+
+@pytest.fixture
+def get_group_users_as_admin():
+    return """
+    {
+      "value": [
+        {
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "groupUserAccessRight": "Admin",
+          "identifier": "john@contoso.com",
+          "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+          "principalType": "User"
+        },
+        {
+          "displayName": "Adam Wood",
+          "emailAddress": "Adam@contoso.com",
+          "groupUserAccessRight": "Member",
+          "identifier": "Adam@contoso.com",
+          "graphId": "785e192c-0f1f-41ca-ae7a-a85da28e565a",
+          "principalType": "User"
+        },
+        {
+          "displayName": "ContosoTestApp",
+          "groupUserAccessRight": "Admin",
+          "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "graphId": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "principalType": "App"
+        }
+      ]
+    }
+"""

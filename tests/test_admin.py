@@ -618,3 +618,17 @@ def test_groups_with_params(admin, get_groups_as_admin_with_expand):
     assert all(isinstance(group, Group) for group in groups)
     assert hasattr(groups[0], "dashboards")
     assert isinstance(groups[0].dashboards, list)
+
+
+@responses.activate
+def test_group_users(admin, get_group_users_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/users",
+        body=get_group_users_as_admin,
+        content_type="application/json",
+    )
+
+    users = admin.group_users("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert isinstance(users, list)
+    assert all(isinstance(user, dict) for user in users)

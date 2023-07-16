@@ -6,7 +6,7 @@ from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
-from pbipy.utils import RequestsMixin, remove_no_values
+from pbipy.utils import build_path, RequestsMixin, remove_no_values
 
 
 class Admin(RequestsMixin):
@@ -746,6 +746,33 @@ class Admin(RequestsMixin):
         ]
 
         return groups
+
+    def group_users(
+        self,
+        group: str | Group,
+    ) -> list[dict]:
+        """
+        Returns a list of users that have access to the specified Workspace (Group).
+
+        Parameters
+        ----------
+        group : `str | Group`
+            Group Id or `Group` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Group Users and associated details and permissions.
+
+        """
+
+        resource_fmt = "/groups/{}/users"
+        path = build_path(resource_fmt, group)
+        url = self.base_path + path
+
+        users = self.get_raw(url, self.session)
+
+        return users
 
     def add_group_user(
         self,
