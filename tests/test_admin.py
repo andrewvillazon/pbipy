@@ -632,3 +632,24 @@ def test_group_users(admin, get_group_users_as_admin):
 
     assert isinstance(users, list)
     assert all(isinstance(user, dict) for user in users)
+
+
+@responses.activate
+def test_restore_group(admin):
+    json_params = {
+        "name": "Restored Workspace",
+        "emailAddress": "john@contoso.com",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/3bec11ee-48a9-490c-8e4d-1ebba90d491a/restore",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    admin.restore_group(
+        "3bec11ee-48a9-490c-8e4d-1ebba90d491a",
+        email_address="john@contoso.com",
+        name="Restored Workspace",
+    )

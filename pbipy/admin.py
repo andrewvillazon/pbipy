@@ -873,3 +873,38 @@ class Admin(RequestsMixin):
             self.session,
             params=params,
         )
+
+    def restore_group(
+        self,
+        group: str | Group,
+        email_address: str,
+        name: str = None,
+    ) -> None:
+        """
+        Restores a deleted Workspace (Group).
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object of the deleted Workspace.
+        `email_address` : `str`
+            The email address of the owner of the group to be restored.
+        `name` : `str`, optional
+            The name of the workspace to be restored.
+        
+        """
+
+        request_body = {
+            "emailAddress": email_address,
+            "name": name,
+        }
+        request_body = remove_no_values(request_body)
+
+        path = build_path("/groups/{}/restore", group)
+        url = self.base_path + path
+
+        self.post(
+            url,
+            self.session,
+            payload=request_body,
+        )
