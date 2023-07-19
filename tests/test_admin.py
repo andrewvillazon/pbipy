@@ -653,3 +653,48 @@ def test_restore_group(admin):
         email_address="john@contoso.com",
         name="Restored Workspace",
     )
+
+
+@responses.activate
+def test_update_group_log_analytics_workspace_none(admin):
+    json_params = {
+        "logAnalyticsWorkspace": None,
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/e2284830-c8dc-416b-b19a-8cdcd2729332",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    admin.update_group(
+        group="e2284830-c8dc-416b-b19a-8cdcd2729332",
+        log_analytics_workspace=None,
+    )
+
+
+@responses.activate
+def test_update_group_multi(admin):
+    json_params = {
+        "name": "New Group Name",
+        "logAnalyticsWorkspace": None,
+    }
+
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/e2284830-c8dc-416b-b19a-8cdcd2729332",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    admin.update_group(
+        group="e2284830-c8dc-416b-b19a-8cdcd2729332",
+        name="New Group Name",
+        log_analytics_workspace=None,
+    )
+
+
+def test_update_group_raises(admin):
+    with pytest.raises(ValueError):
+        admin.update_group(group="e2284830-c8dc-416b-b19a-8cdcd2729332")

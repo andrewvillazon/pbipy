@@ -891,7 +891,7 @@ class Admin(RequestsMixin):
             The email address of the owner of the group to be restored.
         `name` : `str`, optional
             The name of the workspace to be restored.
-        
+
         """
 
         request_body = {
@@ -904,6 +904,64 @@ class Admin(RequestsMixin):
         url = self.base_path + path
 
         self.post(
+            url,
+            self.session,
+            payload=request_body,
+        )
+
+    def update_group(
+        self,
+        group: str | Group,
+        name: str = None,
+        description: str = None,
+        **kwargs,
+    ) -> None:
+        """
+        Updates the properties of the specified workspace. 
+        
+        Only the name, description and Log Analytics Workspace can be updated.
+        The name must be unique inside an Organization. To unassign a Log 
+        Analytics Workspace, explicitly set the value to `None`.
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            Group Id or `Group` object to target.
+        `name` : `str`, optional
+            The updated name.
+        `description` : `str`, optional
+            The updated description.
+        `log_analytics_workspace` : `dict | None`, optional
+            The Log Analytics Workspace to assign to the Group. Use `None`
+            to unassign the Log Analytics Workspace.
+
+        Raises
+        ------
+        `ValueError`
+            If no values to update were provided.
+        
+        """
+
+        request_body = {
+            "name": name,
+            "description": description,
+        }
+        request_body = remove_no_values(request_body)
+
+        # To disable, the caller passes in None. Excluding implies logAnalyticsWorkspace
+        # remains unchanged.
+        if "log_analytics_workspace" in kwargs:
+            request_body.update({"logAnalyticsWorkspace": kwargs["log_analytics_workspace"]})
+        
+        if request_body in [None, {}]:
+            raise ValueError(
+                "No options were provided to update. Please specify an option to update."
+            )
+
+        path = build_path("/groups/{}", group)
+        url = self.base_path + path
+
+        self.patch(
             url,
             self.session,
             payload=request_body,
