@@ -712,3 +712,17 @@ def test_report_subscriptions_call(admin, get_report_subscriptions_as_admin):
 
     assert isinstance(subscriptions, list)
     assert all(isinstance(subscription, dict) for subscription in subscriptions)
+
+
+@responses.activate
+def test_report_users(admin, get_report_users_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/reports/5b218778-e7a5-4d73-8187-f10824047715/users",
+        body=get_report_users_as_admin,
+        content_type="application/json",
+    )
+
+    users = admin.report_users("5b218778-e7a5-4d73-8187-f10824047715")
+
+    assert isinstance(users, list)
+    assert all(isinstance(user, dict) for user in users)

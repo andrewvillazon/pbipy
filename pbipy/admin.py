@@ -977,7 +977,7 @@ class Admin(RequestsMixin):
         report: str | Report,
     ) -> list[dict]:
         """
-        Returns a list of Report subscriptions along with subscriber details. 
+        Returns a list of Report subscriptions along with subscriber details.
         This is a preview API call.
 
         Parameters
@@ -989,10 +989,36 @@ class Admin(RequestsMixin):
         -------
         `list[dict]`
             List of report subscriptions and their details.
-        
+
         """
 
         path = build_path("/reports/{}/subscriptions", report)
+        url = self.base_path + path
+
+        raw = self.get_raw(url, self.session)
+
+        return raw
+
+    def report_users(
+        self,
+        report: str | Report,
+    ) -> list[dict]:
+        """
+        Returns a list of users that have access to the specified report.
+
+        Parameters
+        ----------
+        `report` : `str | Report`
+            Report Id or `Report` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Report Users and associated details.
+        
+        """
+
+        path = build_path("/reports/{}/users", report)
         url = self.base_path + path
 
         raw = self.get_raw(url, self.session)
