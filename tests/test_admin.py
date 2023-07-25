@@ -698,3 +698,17 @@ def test_update_group_multi(admin):
 def test_update_group_raises(admin):
     with pytest.raises(ValueError):
         admin.update_group(group="e2284830-c8dc-416b-b19a-8cdcd2729332")
+
+
+@responses.activate
+def test_report_subscriptions_call(admin, get_report_subscriptions_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/reports/5b218778-e7a5-4d73-8187-f10824047715/subscriptions",
+        body=get_report_subscriptions_as_admin,
+        content_type="application/json",
+    )
+
+    subscriptions = admin.report_subscriptions("5b218778-e7a5-4d73-8187-f10824047715")
+
+    assert isinstance(subscriptions, list)
+    assert all(isinstance(subscription, dict) for subscription in subscriptions)

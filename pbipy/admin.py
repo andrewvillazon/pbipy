@@ -6,6 +6,7 @@ from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
+from pbipy.reports import Report
 from pbipy.utils import build_path, RequestsMixin, remove_no_values
 
 
@@ -917,10 +918,10 @@ class Admin(RequestsMixin):
         **kwargs,
     ) -> None:
         """
-        Updates the properties of the specified workspace. 
-        
+        Updates the properties of the specified workspace.
+
         Only the name, description and Log Analytics Workspace can be updated.
-        The name must be unique inside an Organization. To unassign a Log 
+        The name must be unique inside an Organization. To unassign a Log
         Analytics Workspace, explicitly set the value to `None`.
 
         Parameters
@@ -939,7 +940,7 @@ class Admin(RequestsMixin):
         ------
         `ValueError`
             If no values to update were provided.
-        
+
         """
 
         request_body = {
@@ -951,8 +952,12 @@ class Admin(RequestsMixin):
         # To disable, the caller passes in None. Excluding implies logAnalyticsWorkspace
         # remains unchanged.
         if "log_analytics_workspace" in kwargs:
-            request_body.update({"logAnalyticsWorkspace": kwargs["log_analytics_workspace"]})
-        
+            request_body.update(
+                {
+                    "logAnalyticsWorkspace": kwargs["log_analytics_workspace"],
+                }
+            )
+
         if request_body in [None, {}]:
             raise ValueError(
                 "No options were provided to update. Please specify an option to update."
@@ -966,3 +971,30 @@ class Admin(RequestsMixin):
             self.session,
             payload=request_body,
         )
+
+    def report_subscriptions(
+        self,
+        report: str | Report,
+    ) -> list[dict]:
+        """
+        Returns a list of Report subscriptions along with subscriber details. 
+        This is a preview API call.
+
+        Parameters
+        ----------
+        `report` : `str | Report`
+            Report Id or `Report` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of report subscriptions and their details.
+        
+        """
+
+        path = build_path("/reports/{}/subscriptions", report)
+        url = self.base_path + path
+
+        raw = self.get_raw(url, self.session)
+
+        return raw
