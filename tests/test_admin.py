@@ -8,6 +8,7 @@ from pbipy.dashboards import Dashboard, Tile
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
+from pbipy.reports import Report
 
 
 @pytest.fixture
@@ -726,3 +727,37 @@ def test_report_users(admin, get_report_users_as_admin):
 
     assert isinstance(users, list)
     assert all(isinstance(user, dict) for user in users)
+
+
+@responses.activate
+def test_reports(admin, get_reports_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/reports",
+        body=get_reports_as_admin,
+        content_type="application/json",
+    )
+
+    reports = admin.reports()
+
+    assert isinstance(reports, list)
+    assert all(isinstance(report, Report) for report in reports)
+
+    assert reports[0].group_id == "278e22a3-2aee-4057-886d-c3225423bc10"
+    assert reports[0].group_id == reports[0].workspace_id
+
+
+@responses.activate
+def test_reports_with_group(admin, get_reports_in_group_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports",
+        body=get_reports_in_group_as_admin,
+        content_type="application/json",
+    )
+
+    reports = admin.reports(group="f089354e-8366-4e18-aea3-4cb4a3a50b48")
+
+    assert isinstance(reports, list)
+    assert all(isinstance(report, Report) for report in reports)
+
+    assert reports[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert not hasattr(reports[0], "workspace_id")

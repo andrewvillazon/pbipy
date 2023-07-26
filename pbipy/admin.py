@@ -972,6 +972,68 @@ class Admin(RequestsMixin):
             payload=request_body,
         )
 
+    def reports(
+        self,
+        group: str | Group = None,
+        filter: str = None,
+        skip: int = None,
+        top: int = None,
+    ) -> list[Report]:
+        """
+        Returns a list of reports for the organization or the specified
+        Workspace (Group).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the reports reside. If not
+            supplied then returns all reports for the organization.
+        `filter` : `str`, optional
+            Filters the results, based on a boolean condition.
+        `skip` : `int`, optional
+            Skips the first n results.
+        `top` : `int`, optional
+            Returns only the first n results.
+
+        Returns
+        -------
+        `list[Report]`
+            List of reports for the organization or specified workspace
+
+        """
+
+        group_id = None
+        if group:
+            if isinstance(group, Group):
+                group_id = group.id
+            else:
+                group_id = group
+
+        if group:
+            path = build_path("/groups/{}/reports", group)
+        else:
+            path = "/reports"
+
+        url = self.base_path + path
+        params = {
+            "$filter": filter,
+            "$skip": skip,
+            "$top": top,
+        }
+        raw = self.get_raw(url, self.session, params=params)
+
+        reports = [
+            Report(
+                id=report_js.get("id"),
+                session=self.session,
+                group_id=report_js.get("workspaceId", group_id),
+                raw=report_js,
+            )
+            for report_js in raw
+        ]
+
+        return reports
+
     def report_subscriptions(
         self,
         report: str | Report,
@@ -1015,7 +1077,7 @@ class Admin(RequestsMixin):
         -------
         `list[dict]`
             List of Report Users and associated details.
-        
+
         """
 
         path = build_path("/reports/{}/users", report)
