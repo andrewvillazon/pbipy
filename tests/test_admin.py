@@ -1,7 +1,10 @@
+from datetime import datetime
+
 import pytest
 import requests
 import responses
 from responses import matchers
+from responses.registries import OrderedRegistry
 
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard, Tile
@@ -761,3 +764,55 @@ def test_reports_with_group(admin, get_reports_in_group_as_admin):
 
     assert reports[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert not hasattr(reports[0], "workspace_id")
+
+
+@responses.activate(registry=OrderedRegistry)
+def test_activity_events(admin, get_activity_events):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
+        body=get_activity_events[0],
+        match=[
+            matchers.query_param_matcher(
+                {
+                    "startDateTime": "'2019-08-31T00:00:00'",
+                    "endDateTime": "'2019-08-31T23:59:59'",
+                }
+            )
+        ],
+        content_type="application/json",
+    )
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
+        body=get_activity_events[1],
+        match=[
+            matchers.query_param_matcher(
+                {
+                    "continuationToken": "%2BRID%3A244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D"
+                }
+            )
+        ],
+        content_type="application/json",
+    )
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
+        body=get_activity_events[2],
+        match=[
+            matchers.query_param_matcher(
+                {
+                    "continuationToken": "%2BRID%$4Z244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D"
+                }
+            )
+        ],
+        content_type="application/json",
+    )
+
+    start = datetime(2019, 8, 31, 0, 0, 0)
+    end = datetime(2019, 8, 31, 23, 59, 59)
+
+    activity_events = admin.activity_events(start, end)
+
+    assert isinstance(activity_events, list)
+    assert all(isinstance(activity_event, dict) for activity_event in activity_events)
+    assert len(activity_events) == 6

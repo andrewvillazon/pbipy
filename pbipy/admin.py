@@ -1,3 +1,5 @@
+from datetime import datetime
+
 import requests
 
 from pbipy import settings
@@ -21,6 +23,76 @@ class Admin(RequestsMixin):
 
         self.resource_path = "/admin"
         self.base_path = f"{self.BASE_URL}{self.resource_path}"
+
+    def activity_events(
+        self,
+        start_date_time: datetime,
+        end_date_time: datetime,
+        filter: str = None,
+    ) -> list[dict]:
+        """
+        Returns a list of audit Activity Events for the tenant. Activity Events
+        are user and admin activities within a Power BI tenant.
+
+        Due to limitations placed on the endpoint, `start_date_time` and
+        `end_date_time` must be the same UTC day, i.e. you may only retrieve
+        Activity Events one day at a time.
+
+        Parameters
+        ----------
+        `start_date_time` : `datetime`
+            Start date and time of the window for audit event results. Must
+            be in ISO 8601 compliant UTC format.
+        `end_date_time` : `datetime`
+            End date and time of the window for audit event results. Must
+            be in ISO 8601 compliant UTC format.
+        `filter` : `str`, optional
+            Filters the results based on a boolean condition, using `Activity`,
+            `UserId`, or both properties. Supports only `eq` and `and` operators.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Activity Events. The structure of each item will depend
+            on what type of Activity Event it is.
+
+        Notes
+        -----
+        As per the design of the associated endpoint, this method will make 
+        multiple requests as it retrieves the complete Activity Log for the
+        specified time window.
+
+        See: https://powerbi.microsoft.com/en-us/blog/the-power-bi-activity-log-makes-it-easy-to-download-activity-data-for-custom-usage-reporting/
+
+        """
+
+        start_iso = start_date_time.isoformat()
+        end_iso = end_date_time.isoformat()
+
+        init_params = {
+            "startDateTime": f"'{start_iso}'",
+            "endDateTime": f"'{end_iso}'",
+            "$filter": filter,
+        }
+
+        path = "/activityevents"
+        url = self.base_path + path
+
+        init_raw = self.get_raw(url, self.session, params=init_params)
+
+        activity_events = init_raw["activityEventEntities"]
+        continuation_token = init_raw["continuationToken"]
+
+        while continuation_token is not None:
+            raw = self.get_raw(
+                url, self.session, params={"continuationToken": continuation_token}
+            )
+
+            activity_events.extend(raw["activityEventEntities"])
+
+            continuation_token = raw["continuationToken"]
+
+        return activity_events
 
     def add_encryption_key(
         self,
