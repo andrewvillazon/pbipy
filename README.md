@@ -7,8 +7,6 @@
 
 `pbipy` supports operations for Apps, Dataflows, Datasets, Reports, and Workspaces (Groups), allowing users to perform actions on their PowerBI instance using Python.
 
-See [development progress](#development-progress) below for what's been implemented and what's coming.
-
 ## Installation
 
 ```console
