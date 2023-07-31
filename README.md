@@ -27,28 +27,22 @@ To use `pbipy` you'll first need to acquire a `bearer_token`.
 
 *How do I get a `bearer_token`?*
 
-To acquire a `bearer_token` you'll need to authenticate against your [Registered Azure Power BI App](https://learn.microsoft.com/en-us/power-bi/developer/embedded/register-app?tabs=customers). Registering is the first step in turning on the Power BI Rest API, so from this point on it's assumed your Power BI Rest API is up and running.
+To acquire a `bearer_token` you'll need to authenticate against your [Registered Azure Power BI App](https://learn.microsoft.com/en-us/power-bi/developer/embedded/register-app?tabs=customers). Registering is the first step in turning on the Power BI Rest API, so from here on it's assumed your Power BI Rest API is up and running.
 
-To authenticate against the Registered App, Microsoft provides the `MSAL` and `azure-identity` python libraries. These libraries support many different ways of acquiring a `bearer_token`.
+To authenticate against the Registered App, Microsoft provides the `MSAL` and `azure-identity` python libraries. These libraries support different ways of acquiring a `bearer_token` and which to use will depend on how your cloud/tenant is configured.
 
-Because there are multiple ways to acquire the token, `pbipy` assumes you'll do this in the way that suits, rather than directly handling authentication (of course, this might change in future).
+Because there are multiple ways to acquire the token, `pbipy` leaves it up to do this in the way that suits, rather than directly handling authentication (of course, this might change in future).
 
-This `README` doesn't cover Authentication in detail, however, these are some helpful resources that look at acquiring a `bearer_token` in the context of Power BI:
+This `README` doesn't cover authentication in detail, however, these are some helpful resources that look at acquiring a `bearer_token` in the context of Power BI:
 
 * [Power BI REST API with Python and MSAL. Part II.](https://www.datalineo.com/post/power-bi-rest-api-with-python-and-msal-part-ii)
 * [Power BI REST API with Python Part III, azure-identity](https://www.datalineo.com/post/power-bi-rest-api-with-python-part-iii-azure-identity)
 * [Monitoring Power BI using REST APIs from Python](https://data-goblins.com/power-bi/power-bi-api-python)
 
-The example below uses the `msal` library to to get a `bearer_token`.
-
-## Useage
-
-Start by creating the `PowerBI()` client. All interactions with the Power BI Rest API go through this object. 
+The example below uses the `msal` library to to get a bearer_token.
 
 ```python
 import msal
-
-from pbipy import PowerBI
 
 
 #  msal auth setup
@@ -65,8 +59,17 @@ bearer_token = acquire_bearer_token(
     client_id="your-pbi-client-id",
     scopes=["https://analysis.windows.net/powerbi/api/.default"],
 )
+```
 
-# Create Client
+The code that follows assumes you've authenticated and acquired your `bearer_token`.
+
+## Useage
+
+Start by creating the `PowerBI()` client. Interactions with the Power BI Rest API go through this object. 
+
+```python
+from pbipy import PowerBI
+
 pbi = PowerBI(bearer_token)
 ```
 
@@ -93,7 +96,10 @@ print(hasattr(sales, "configured_by"))
 Most methods take in an object id...
 
 ```python
-dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", group="a2f89923-421a-464e-bf4c-25eab39bb09f")
+dataset = pbi.dataset(
+    id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+    group="a2f89923-421a-464e-bf4c-25eab39bb09f"
+)
 ```
 
 ... or just pass in the object itself.
@@ -101,7 +107,10 @@ dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", group="a2f89923-42
 ```python
 group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
 
-dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229", group=group)
+dataset = pbi.dataset(
+    "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    ,group=group
+)
 ```
 
 If you need to access the raw json representation, this is supported to.
@@ -124,35 +133,33 @@ print(sales.raw)
 
 Let's see how `pbipy` works by performing some operations on a Dataset.
 
-First, we need to load the Dataset from the API. To do this, we call the `dataset()` method from the `pbi` client we created above. 
-
-The Power BI Rest API will look for the Dataset in the current user's workspace if we don't provide a `group` argument.
+First, we initialize our client.
 
 ```python
-sales = pbi.dataset(id="cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+from pbipy import PowerBI
+
+pbi = PowerBI(bearer_token)
+```
+
+Now that we've got a client, we can load a Dataset from the API. To load a Dataset, we call the `dataset()` method with an `id` and `group` argument. In the Power BI Rest API, a **Group** and **Workspace** are synonymous and used interchangeably.
+
+```python
+sales = pbi.dataset(
+    id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+    group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+)
+
 print(sales)
 
 # <Dataset id='cfafbeb1-8037-4d0c-896e-a46fb27ff229', name='SalesMarketing', ...>
 ```
 
-But we likely want to target a Dataset in a *Workspace*. To do this, we provide the Workspace Id as the `group` argument when we call the `dataset()` method.
+Dataset not updating? Let's look at the Refresh History. 
+
+We call the `refresh_history()` method on our Dataset. Easy.
 
 ```python
-sales = pbi.dataset(
-    "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-    group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
-)
-```
-
-Now that we've got our target Dataset let's look at its Refresh History. We call the `refresh_history()` method on our Dataset. Easy.
-
-```python
-dataset = pbi.dataset(
-    "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-    group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
-)
-
-refresh_history = dataset.refresh_history()
+refresh_history = sales.refresh_history()
 
 for entry in refresh_history:
     print(entry)
@@ -160,21 +167,23 @@ for entry in refresh_history:
 # {"refreshType":"ViaApi", "startTime":"2017-06-13T09:25:43.153Z", "status": "Completed" ...}
 ```
 
-How about adding some user permissions to our Dataset? That's easy too. Just call the `add_user()` method with the User's details and permissions.
+Need to kick off a refresh? That's easy too.
 
 ```python
-sales_ds = pbi.dataset( "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+sales.refresh()
+```
 
+How about adding some user permissions to our Dataset? Just call the `add_user()` method with the User's details and permissions.
+
+```python
 # Give John 'Read' access on the dataset
-sales_ds.add_user("john@contoso.com", "User", "Read")
+sales.add_user("john@contoso.com", "User", "Read")
 ```
 
 Lastly, if we're feeling adventurous, we can execute DAX against a Dataset and use the results in Python.
 
 ```python
-dataset = pbi.dataset( "cfafbeb1-8037-4d0c-896e-a46fb27ff229")
-
-dxq_result = dataset.execute_queries("EVALUATE VALUES(MyTable)")
+dxq_result = sales.execute_queries("EVALUATE VALUES(MyTable)")
 print(dxq_result)
 
 # {
@@ -189,6 +198,56 @@ print(dxq_result)
 #             },
 # ...
 # }
+```
+
+## Example: Working with the Admin object
+
+`pbypi` also supports [Administrator Operations](https://learn.microsoft.com/en-us/rest/api/power-bi/admin), specialized operations available to users with Power BI Admin rights. Let's see how we can use these.
+
+First, we need to initialize our client. Then we call the `admin` method and initialize an `Admin` object.
+
+```python
+from pbipy import PowerBI
+
+pbi = PowerBI(bearer_token)
+admin = pbi.admin()
+```
+
+Need to review some access on some reports? We can call the `report_users` method.
+
+```python
+users = admin.report_users("5b218778-e7a5-4d73-8187-f10824047715")
+print(users[0])
+
+# {"displayName": "John Nick", "emailAddress": "john@contoso.com", ...}
+```
+
+What about understanding User activity on your Power BI tenant?
+
+```python
+from datetime import datetime
+
+start_dtm = datetime(2019, 8, 31, 0, 0, 0)
+end_dtm = datetime(2019, 8, 31, 23, 59, 59)
+
+activity_events = admin.activity_events(start_dtm, end_dtm)
+
+print(activity_events)
+
+# [
+#   {
+#       "Id": "41ce06d1", 
+#       "CreationTime": "2019-08-13T07:55:15", 
+#       "Operation": "ViewReport", 
+#       ...
+#   },
+#   {
+#       "Id": "c632aa64", 
+#       "CreationTime": "2019-08-13T07:55:10", 
+#       "Operation": "GetSnapshots", 
+#       ...
+#   }
+# ]
 ```
 
 ## More examples
@@ -246,20 +305,22 @@ for user in users:
 [Power BI REST APIs for embedded analytics and automation - Power BI REST API](https://learn.microsoft.com/en-us/rest/api/power-bi/)
 
 
-## Development Progress
+## What's implemented?
 
-`pbipy` is in development so expect a few features to be missing. The aim is to cover off most of the core stuff like Datasets, Workspaces (Groups), Reports, Apps, etc., and the rest later on. Check back regularly to see what's been added or still in the pipeline.
+Most of the core operations on Datasets, Workspaces (Groups), Reports, Apps, and Dataflows are implemented. Given the many available endpoints, not everything is covered by `pbipy`, so expect a few features to be missing.
 
-| PowerBI Component   	| Progress 	| Notes 	|
-|---------------------	|----------	|-------	|
-| Datasets            	| Done     	|       	|
-| Groups (Workspaces) 	| Done    	|       	|
-| Reports             	| Done      |       	|
-| Apps                	| Done   	|       	|
-| Dataflows           	| Done    	|       	|
-| Admin Operations     	| Doing    	|       	|
-| Dashboards          	| Todo     	|       	|
-| Everything else     	| Backlog  	|       	|
+If an operation is missing and you think it'd be useful, feel free to suggest it on the [Issues tab](https://github.com/andrewvillazon/pbipy/issues).
+
+| PowerBI Component   	| Progress 	| Notes 	                                                                            |
+|---------------------	|----------	|-------------------------------------------------------------------------------------- |
+| Datasets            	| Done     	|       	                                                                            |
+| Groups (Workspaces) 	| Done    	|       	                                                                            |
+| Reports             	| Done      |       	                                                                            |
+| Apps                	| Done   	|       	                                                                            |
+| Dataflows           	| Done    	|       	                                                                            |
+| Admin Operations     	| Done    	| Implements operations related to Datasets, Groups, Reports, Apps, and Dataflows only. |
+| Dashboards          	| Todo     	|       	                                                                            |
+| Everything else     	| Backlog  	|       	                                                                            |
 
 ## Contributing
 
