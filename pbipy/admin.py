@@ -58,7 +58,7 @@ class Admin(RequestsMixin):
 
         Notes
         -----
-        As per the design of the associated endpoint, this method will make 
+        As per the design of the associated endpoint, this method will make
         multiple requests as it retrieves the complete Activity Log for the
         specified time window.
 
@@ -195,13 +195,9 @@ class Admin(RequestsMixin):
         self,
         app: str | App,
     ) -> list[dict]:
-        if isinstance(app, App):
-            app_id = app.id
-        else:
-            app_id = app
-
-        resource = self.base_path + f"/apps/{app_id}/users"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/apps/{}/users", app)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -237,17 +233,13 @@ class Admin(RequestsMixin):
             List of `Dashboard` objects for the organization.
 
         """
-        if group:
-            if isinstance(group, Group):
-                group_id = group.id
-            else:
-                group_id = group
 
-            path = f"/groups/{group_id}/dashboards"
+        if group:
+            path = build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
 
-        resource = self.base_path + path
+        url = self.base_path + path
 
         params = {
             "$expand": expand,
@@ -256,7 +248,7 @@ class Admin(RequestsMixin):
             "$top": top,
         }
 
-        raw = self.get_raw(resource, self.session, params=params)
+        raw = self.get_raw(url, self.session, params=params)
 
         dashboards = [
             Dashboard(
@@ -289,13 +281,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dashboard, Dashboard):
-            dashboard_id = dashboard.id
-        else:
-            dashboard_id = dashboard
-
-        resource = self.base_path + f"/dashboards/{dashboard_id}/subscriptions"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/dashboards/{}/subscriptions", dashboard)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -318,13 +306,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dashboard, Dashboard):
-            dashboard_id = dashboard.id
-        else:
-            dashboard_id = dashboard
-
-        resource = self.base_path + f"/dashboards/{dashboard_id}/tiles"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/dashboards/{}/tiles", dashboard)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         tiles = [
             Tile(
@@ -357,13 +341,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dashboard, Dashboard):
-            dashboard_id = dashboard.id
-        else:
-            dashboard_id = dashboard
-
-        resource = self.base_path + f"/dashboards/{dashboard_id}/users"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/dashboards/{}/users", dashboard)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -392,6 +372,7 @@ class Admin(RequestsMixin):
         property.
 
         """
+
         if isinstance(dataflow, Dataflow):
             return Dataflow
 
@@ -454,8 +435,8 @@ class Admin(RequestsMixin):
             "$top": top,
         }
 
-        resource = self.base_path + path
-        raw = self.get_raw(resource, self.session, params=params)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session, params=params)
 
         dataflows = [
             Dataflow(
@@ -483,13 +464,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dataflow, Dataflow):
-            dataflow_id = dataflow.id
-        else:
-            dataflow_id = dataflow
-
-        resource = self.base_path + f"/dataflows/{dataflow_id}/datasources"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/dataflows/{}/datasources", dataflow)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -515,21 +492,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dataflow, Dataflow):
-            dataflow_id = dataflow.id
-        else:
-            dataflow_id = dataflow
-
-        if isinstance(group, Group):
-            group_id = group.id
-        else:
-            group_id = group
-
-        resource = (
-            self.base_path
-            + f"/groups/{group_id}/dataflows/{dataflow_id}/upstreamDataflows"
-        )
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -552,13 +517,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dataflow, Dataflow):
-            dataflow_id = dataflow.id
-        else:
-            dataflow_id = dataflow
-
-        resource = self.base_path + f"/dataflows/{dataflow_id}/users"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/dataflows/{}/users", dataflow)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -621,8 +582,8 @@ class Admin(RequestsMixin):
         else:
             path = "/datasets"
 
-        resource = self.base_path + path
-        raw = self.get_raw(resource, self.session, params=params)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session, params=params)
 
         datasets = [
             Dataset(
@@ -655,13 +616,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dataset, Dataset):
-            dataset_id = dataset.id
-        else:
-            dataset_id = dataset
-
-        resource = self.base_path + f"/datasets/{dataset_id}/datasources"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/datasets/{}/datasources", dataset)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -684,13 +641,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(dataset, Dataset):
-            dataset_id = dataset.id
-        else:
-            dataset_id = dataset
-
-        resource = self.base_path + f"/datasets/{dataset_id}/users"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/datasets/{}/users", dataset)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -716,13 +669,9 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(group, Group):
-            group_id = group.id
-        else:
-            group_id = group
-
-        resource = self.base_path + f"/groups/{group_id}/datasets/upstreamDataflows"
-        raw = self.get_raw(resource, self.session)
+        path = build_path("/groups/{}/datasets/upstreamDataflows", group)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
 
         return raw
 
@@ -750,16 +699,13 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(group, Group):
-            group_id = group.id
-        else:
-            group_id = group
-
         params = {"$expand": expand}
 
-        resource = self.base_path + f"/groups/{group_id}"
+        path = build_path("/groups/{}", group)
+        url = self.base_path + path
+
         raw = self.get_raw(
-            resource,
+            url,
             self.session,
             params=params,
         )
@@ -806,8 +752,8 @@ class Admin(RequestsMixin):
             "$skip": skip,
         }
 
-        resource = self.base_path + "/groups"
-        raw = self.get_raw(resource, self.session, params=params)
+        url = self.base_path + "/groups"
+        raw = self.get_raw(url, self.session, params=params)
 
         groups = [
             Group(
@@ -839,8 +785,7 @@ class Admin(RequestsMixin):
 
         """
 
-        resource_fmt = "/groups/{}/users"
-        path = build_path(resource_fmt, group)
+        path = build_path("/groups/{}/users", group)
         url = self.base_path + path
 
         users = self.get_raw(url, self.session)
@@ -903,14 +848,10 @@ class Admin(RequestsMixin):
 
         payload = remove_no_values(group_user)
 
-        if isinstance(group, Group):
-            group_id = group.id
-        else:
-            group_id = group
+        path = build_path("/groups/{}/users", group)
+        url = self.base_path + path
 
-        resource = self.base_path + f"/groups/{group_id}/users"
-
-        self.post(resource, self.session, payload=payload)
+        self.post(url, self.session, payload=payload)
 
     def delete_group_user(
         self,
@@ -932,17 +873,13 @@ class Admin(RequestsMixin):
 
         """
 
-        if isinstance(group, Group):
-            group_id = group.id
-        else:
-            group_id = group
-
         params = {"profileId": profile_id}
 
-        resource = self.base_path + f"/groups/{group_id}/users/{user}"
+        path = build_path("/groups/{}/users/{}", group, user)
+        url = self.base_path + path
 
         self.delete(
-            resource,
+            url,
             self.session,
             params=params,
         )
