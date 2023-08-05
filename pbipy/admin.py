@@ -13,6 +13,14 @@ from pbipy.utils import build_path, RequestsMixin, remove_no_values
 
 
 class Admin(RequestsMixin):
+    """
+    Groups methods that wrap around the Power BI Rest API Admin Endpoints.
+
+    This object should be initialized by calling the `admin()` method on a
+    `PowerBI` client object.
+
+    """
+
     BASE_URL = settings.BASE_URL
 
     def __init__(
@@ -164,7 +172,7 @@ class Admin(RequestsMixin):
 
         Parameters
         ----------
-        top : `int`, optional
+        `top` : `int`, optional
             The requested number of entries in the refresh history. If not
             provided, the default is all available entries.
 
@@ -195,6 +203,21 @@ class Admin(RequestsMixin):
         self,
         app: str | App,
     ) -> list[dict]:
+        """
+        Returns a list of users that have access to the specified app.
+
+        Parameters
+        ----------
+        `app` : `str | App`
+            The App Id or `App` object to target.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Users for the specified app.
+
+        """
+
         path = build_path("/apps/{}/users", app)
         url = self.base_path + path
         raw = self.get_raw(url, self.session)
@@ -415,6 +438,7 @@ class Admin(RequestsMixin):
         -------
         `list[Dataflow]`
             List of Dataflows for the Organization or specified Workspace.
+        
         """
 
         group_id = None
@@ -631,7 +655,7 @@ class Admin(RequestsMixin):
 
         Parameters
         ----------
-        dataset : `str | Dataset`
+        `dataset` : `str | Dataset`
             Dataset Id or `Dataset` object to target.
 
         Returns
@@ -775,7 +799,7 @@ class Admin(RequestsMixin):
 
         Parameters
         ----------
-        group : `str | Group`
+        `group` : `str | Group`
             Group Id or `Group` object to target.
 
         Returns
