@@ -1402,3 +1402,27 @@ def get_activity_events():
     }
     """,
     ]
+
+
+@pytest.fixture
+def add_dashboard():
+    return """
+    {
+      "id": "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+      "displayName": "SalesMarketing",
+      "embedUrl": "https://app.powerbi.com/dashboardEmbed?dashboardId=69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+      "isReadOnly": false
+    }
+    """
+
+
+@pytest.fixture
+def add_dashboard_in_group():
+    return """
+    {
+      "id": "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+      "displayName": "SalesMarketing",
+      "embedUrl": "https://app.powerbi.com/dashboardEmbed?dashboardId=69ffaa6c-b36d-4d01-96f5-1ed67c64d4af&groupId=f089354e-8366-4e18-aea3-4cb4a3a50b48",
+      "isReadOnly": false
+    }
+    """

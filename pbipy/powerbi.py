@@ -13,11 +13,12 @@ import requests
 from pbipy import settings
 from pbipy.admin import Admin
 from pbipy.apps import App
+from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import RequestsMixin, remove_no_values
+from pbipy.utils import RequestsMixin, build_path, remove_no_values
 
 
 class PowerBI(RequestsMixin):
@@ -69,7 +70,7 @@ class PowerBI(RequestsMixin):
         -------
         `Admin`
             The initialized `Admin` object.
-        
+
         """
 
         return Admin(self.session)
@@ -154,6 +155,52 @@ class PowerBI(RequestsMixin):
         raw = self.post_raw(resource, self.session)
 
         return raw
+
+    def add_dashboard(
+        self,
+        name: str,
+        group: str | Group = None,
+    ) -> Dashboard:
+        """
+        Creates a new empty dashboard in current users workspace or the
+        specified Workspace.
+
+        Parameters
+        ----------
+        `name` : `str`
+            The name of the new dashboard.
+        `group` : `str | Group`, optional
+            The Group Id or `Group` object to target.
+
+        Returns
+        -------
+        `Dashboard`
+            The newly created `Dashboard`.
+        
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+        
+        if group:    
+            path = build_path("/groups/{}/dashboards", group)
+        else:
+            path = "/dashboards"
+
+        url = self.BASE_URL + path
+        payload = {"name": name}
+        raw = self.post_raw(url, self.session, payload=payload)
+
+        dashboard = Dashboard(
+            raw.get("id"),
+            self.session,
+            group_id=group_id,
+            raw=raw,
+        )
+
+        return dashboard
 
     def dataflow(
         self,
