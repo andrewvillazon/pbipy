@@ -1,7 +1,5 @@
 import pytest
 import requests
-import responses
-from responses import matchers
 
 from pbipy.dashboards import Dashboard, Tile
 
@@ -58,46 +56,3 @@ def test_tile_creation(tile):
     assert tile.col_span == 0
     assert tile.report_id == "5b218778-e7a5-4d73-8187-f10824047715"
     assert tile.title == "SalesMarketingTile"
-
-
-@responses.activate
-def test_add_dashboard(powerbi, add_dashboard):
-    json_params = {"name": "SalesMarketing"}
-
-    responses.post(
-        "https://api.powerbi.com/v1.0/myorg/dashboards",
-        body=add_dashboard,
-        match=[
-            matchers.json_params_matcher(json_params),
-        ],
-        content_type="application/json",
-    )
-
-    dashboard = powerbi.add_dashboard("SalesMarketing")
-
-    assert isinstance(dashboard, Dashboard)
-    assert dashboard.group_id is None
-    assert dashboard.id == "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af"
-
-
-@responses.activate
-def test_add_dashboard_with_group(powerbi, add_dashboard):
-    json_params = {"name": "SalesMarketing"}
-
-    responses.post(
-        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards",
-        body=add_dashboard,
-        match=[
-            matchers.json_params_matcher(json_params),
-        ],
-        content_type="application/json",
-    )
-
-    dashboard = powerbi.add_dashboard(
-        "SalesMarketing",
-        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
-    )
-
-    assert isinstance(dashboard, Dashboard)
-    assert dashboard.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
-    assert dashboard.id == "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af"

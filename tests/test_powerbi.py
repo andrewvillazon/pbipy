@@ -1,6 +1,7 @@
 import pytest
 import requests
 import responses
+from responses import matchers
 from requests.exceptions import HTTPError
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
@@ -454,6 +455,49 @@ def test_delete_dataflow(powerbi):
         dataflow="928228ba-008d-4fd9-864a-92d2752ee5ce",
         group="51e47fc5-48fd-4826-89f0-021bd3a80abd",
     )
+
+
+@responses.activate
+def test_add_dashboard(powerbi, add_dashboard):
+    json_params = {"name": "SalesMarketing"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/dashboards",
+        body=add_dashboard,
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        content_type="application/json",
+    )
+
+    dashboard = powerbi.add_dashboard("SalesMarketing")
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.group_id is None
+    assert dashboard.id == "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af"
+
+
+@responses.activate
+def test_add_dashboard_with_group(powerbi, add_dashboard):
+    json_params = {"name": "SalesMarketing"}
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards",
+        body=add_dashboard,
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        content_type="application/json",
+    )
+
+    dashboard = powerbi.add_dashboard(
+        "SalesMarketing",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    assert dashboard.id == "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af"
 
 
 @responses.activate
