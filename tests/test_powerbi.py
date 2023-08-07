@@ -3,6 +3,7 @@ import requests
 import responses
 from requests.exceptions import HTTPError
 from pbipy.apps import App
+from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 
 from pbipy.groups import Group
@@ -453,3 +454,37 @@ def test_delete_dataflow(powerbi):
         dataflow="928228ba-008d-4fd9-864a-92d2752ee5ce",
         group="51e47fc5-48fd-4826-89f0-021bd3a80abd",
     )
+
+
+@responses.activate
+def test_dashboard(powerbi, get_dashboard):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/dashboards/69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+        body=get_dashboard,
+        content_type="application/json",
+    )
+
+    dashboard = powerbi.dashboard("69ffaa6c-b36d-4d01-96f5-1ed67c64d4af")
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.display_name == "SalesMarketing"
+    assert dashboard.group_id is None
+
+
+@responses.activate
+def test_dashboard_with_group(powerbi, get_dashboard_in_group):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/dashboards/69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+        body=get_dashboard_in_group,
+        content_type="application/json",
+    )
+
+    group = Group("f089354e-8366-4e18-aea3-4cb4a3a50b48", requests.Session())
+    dashboard = powerbi.dashboard(
+        "69ffaa6c-b36d-4d01-96f5-1ed67c64d4af",
+        group,
+    )
+
+    assert isinstance(dashboard, Dashboard)
+    assert dashboard.display_name == "SalesMarketing"
+    assert dashboard.group_id == group.id

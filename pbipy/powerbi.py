@@ -176,15 +176,15 @@ class PowerBI(RequestsMixin):
         -------
         `Dashboard`
             The newly created `Dashboard`.
-        
+
         """
 
         if isinstance(group, Group):
             group_id = group.id
         else:
             group_id = group
-        
-        if group:    
+
+        if group:
             path = build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
@@ -192,6 +192,54 @@ class PowerBI(RequestsMixin):
         url = self.BASE_URL + path
         payload = {"name": name}
         raw = self.post_raw(url, self.session, payload=payload)
+
+        dashboard = Dashboard(
+            raw.get("id"),
+            self.session,
+            group_id=group_id,
+            raw=raw,
+        )
+
+        return dashboard
+
+    def dashboard(
+        self,
+        dashboard: str | Dashboard,
+        group: str | Group = None,
+    ) -> Dashboard:
+        """
+        Returns the specified dashboard from the current user's Workspace
+        or the specified Workspace.
+
+        Parameters
+        ----------
+        `dashboard` : `str | Dashboard`
+            The id of the Dashboard to retrieve.
+        `group` : `str | Group`, optional
+            The Group Id or `Group` object to target.
+
+        Returns
+        -------
+        `Dashboard`
+            The specified Dashboard.
+
+        """
+
+        if isinstance(dashboard, Dashboard):
+            return dashboard
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group:
+            path = build_path("/groups/{}/dashboards/{}", group, dashboard)
+        else:
+            path = build_path("/dashboards/{}", dashboard)
+
+        url = self.BASE_URL + path
+        raw = self.get_raw(url, self.session)
 
         dashboard = Dashboard(
             raw.get("id"),
