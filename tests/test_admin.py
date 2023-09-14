@@ -768,7 +768,7 @@ def test_reports_with_group(admin, get_reports_in_group_as_admin):
 
 @responses.activate(registry=OrderedRegistry)
 def test_activity_events(admin, get_activity_events):
-    responses.get(
+    initial_response = responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
         body=get_activity_events[0],
         match=[
@@ -782,26 +782,26 @@ def test_activity_events(admin, get_activity_events):
         content_type="application/json",
     )
 
-    responses.get(
+    next_response_1 = responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
         body=get_activity_events[1],
         match=[
             matchers.query_param_matcher(
                 {
-                    "continuationToken": "%2BRID%3A244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D"
+                    "continuationToken": "'%2BRID%3A244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D'"
                 }
             )
         ],
         content_type="application/json",
     )
 
-    responses.get(
+    next_response_2 = responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/activityevents",
         body=get_activity_events[2],
         match=[
             matchers.query_param_matcher(
                 {
-                    "continuationToken": "%2BRID%$4Z244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D"
+                    "continuationToken": "'%2BRID%$4Z244SAKlHY7YQAAAAAAAAAA%3D%3D%23RT%3A1%23TRC%3A5%23FPC%3AARAAAAAAAAAAFwAAAAAAAAA%3D'"
                 }
             )
         ],
@@ -813,6 +813,11 @@ def test_activity_events(admin, get_activity_events):
 
     activity_events = admin.activity_events(start, end)
 
+    assert initial_response.call_count == 1
+    assert next_response_1.call_count == 1
+    assert next_response_2.call_count == 1
+
     assert isinstance(activity_events, list)
     assert all(isinstance(activity_event, dict) for activity_event in activity_events)
     assert len(activity_events) == 6
+    assert activity_events[5]["Id"] == "1db4c464-3e5d-4a89-b412-c2ce6fbae88e"

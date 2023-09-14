@@ -93,11 +93,14 @@ class Admin(RequestsMixin):
 
         while continuation_token is not None:
             raw = self.get_raw(
-                url, self.session, params={"continuationToken": continuation_token}
+                url,
+                self.session,
+                params={
+                    "continuationToken": f"'{continuation_token}'",
+                },
             )
 
             activity_events.extend(raw["activityEventEntities"])
-
             continuation_token = raw["continuationToken"]
 
         return activity_events
@@ -438,7 +441,7 @@ class Admin(RequestsMixin):
         -------
         `list[Dataflow]`
             List of Dataflows for the Organization or specified Workspace.
-        
+
         """
 
         group_id = None
