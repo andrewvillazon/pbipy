@@ -600,10 +600,12 @@ class PowerBI(RequestsMixin):
             resource = self.BASE_URL + "/groups"
 
         raw = self.post_raw(resource, self.session, payload)
-        # Endpoint returns as list with one element.
-        group_raw = raw[0]
 
-        return Group(group_raw.get("id"), self.session, raw=group_raw)
+        return Group(
+            raw.get("id"),
+            self.session,
+            raw=raw,
+        )
 
     def delete_group(
         self,
