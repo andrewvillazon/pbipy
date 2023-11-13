@@ -377,7 +377,6 @@ class RequestsMixin:
         resource: str,
         session: Session,
         payload: dict,
-        success_codes: list[int] = [200, 201],
     ) -> Response:
         """
         Make a put request to an api endpoint.
@@ -390,9 +389,6 @@ class RequestsMixin:
             Requests Session object used to make the request.
         `payload` : `dict`
             Payload data to include with the put request.
-        `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request.
-            Status codes not equal to these will raise an `HTTPError`.
 
         Returns
         -------
@@ -401,18 +397,15 @@ class RequestsMixin:
 
         Raises
         ------
-        `HTTPError`
-            If the response status code was not found in `success_codes`.
+        `Exception`
+            If there was an error during the request process.
         """
 
-        response = session.put(resource, json=payload)
-
-        if response.status_code not in success_codes:
-            raise HTTPError(
-                f"""Encountered api error. Response: 
-                
-                {json.dumps(response.json(), indent=True)})"""
-            )
+        try:
+            response = session.put(resource, json=payload)
+            self._raise_errors(response)
+        except Exception as ex:
+            raise ex
 
         return response
 
