@@ -236,6 +236,58 @@ def test_request_mixin_get_raw_single_object(
 
 
 @responses.activate
+def test_request_mixin_get_error_includes_additional_info(
+    request_mixin,
+    session,
+):
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    responses.get(
+        resource,
+        body='{"error":{"code":"ItemNotFound","message":"Dataset cfafbeb1-8037-4d0c-896e-a46fb27ff229 is not found."}}',
+        status=404
+    )
+
+    with pytest.raises(HTTPError) as ex:
+        request_mixin.get(resource, session)
+
+    assert "cfafbeb1-8037-4d0c-896e-a46fb27ff229" in str(ex.value)
+
+
+@responses.activate
+def test_request_mixin_get_raises_no_body(
+    request_mixin,
+    session,
+):
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    responses.get(
+        resource,
+        status=404
+    )
+
+    with pytest.raises(HTTPError) as ex:
+        request_mixin.get(resource, session)
+
+
+@responses.activate
+def test_request_mixin_get_raises_with_exception_body(
+    request_mixin,
+    session,
+):
+    resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    responses.get(
+        resource,
+        body=Exception("Something Exceptional happened."),
+        status=404
+    )
+
+    with pytest.raises(Exception) as ex:
+        request_mixin.get(resource, session)
+
+
+@responses.activate
 def test_request_mixin_get_raw_single_object(
     request_mixin,
     session,

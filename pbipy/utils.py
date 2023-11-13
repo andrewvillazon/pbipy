@@ -4,11 +4,12 @@ import json
 from pathlib import Path
 import re
 from typing import TYPE_CHECKING
+
 if TYPE_CHECKING:
     from pbipy.resources import Resource
 
 from requests import Response, Session
-from requests.exceptions import HTTPError
+from requests.exceptions import HTTPError, RequestException
 
 
 def build_path(
@@ -30,9 +31,9 @@ def build_path(
     -------
     `str`
         Path to a resource.
-    
+
     """
-    
+
     ids = []
 
     for identifier in identifiers:
@@ -40,7 +41,7 @@ def build_path(
             ids.append(identifier.id)
         except AttributeError:
             ids.append(identifier)
-    
+
     path = path_format.format(*ids)
 
     return path
@@ -168,6 +169,42 @@ class RequestsMixin:
 
     Mostly requests lib boilerplate with a sprinkling of json parsing.
     """
+
+    def _raise_errors(
+        self,
+        response: Response,
+    ) -> None:
+        """
+        Wrapper around request's `raise_for_status()` method that customizes
+        the error if any extra information was provided by the api.
+
+        Parameters
+        ----------
+        `response` : `Response`
+            Requests `Response` object.
+        
+        Raises
+        ------
+        `Exception`
+            If there was an error in the response.
+        
+        """
+
+        try:
+            js = response.json()
+        except Exception:
+            js = None
+        
+        try:
+            response.raise_for_status()
+        except RequestException as rex:
+            if js:
+                if len(rex.args) >= 1:
+                    rex.args = (
+                        rex.args[0] + f". Additional information from API: {js}",
+                    ) + rex.args[1:]
+
+            raise rex
 
     def delete(
         self,
@@ -384,7 +421,6 @@ class RequestsMixin:
         resource: str,
         session: Session,
         params: dict = None,
-        success_codes: list[int] = [200, 201],
     ) -> Response:
         """
         Get a resource from an api endpoint.
@@ -397,9 +433,6 @@ class RequestsMixin:
             Requests Session object used to make the request.
         `params` : `dict`, optional
             Request parameters.
-        `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request.
-            Status codes not equal to these will raise an `HTTPError`.
 
         Returns
         -------
@@ -408,18 +441,15 @@ class RequestsMixin:
 
         Raises
         ------
-        `HTTPError`
-            If the response status code was not found in `success_codes`.
+        `Exception`
+            If there was an error during the request process.
         """
 
-        response = session.get(resource, params=params)
-
-        if response.status_code not in success_codes:
-            raise HTTPError(
-                f"""Encountered api error. Response: 
-                
-                {json.dumps(response.json(), indent=True)})"""
-            )
+        try:
+            response = session.get(resource, params=params)
+            self._raise_errors(response)
+        except Exception as ex:
+            raise ex
 
         return response
 
