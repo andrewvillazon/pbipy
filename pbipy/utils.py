@@ -211,7 +211,6 @@ class RequestsMixin:
         resource: str,
         session: Session,
         params: dict = None,
-        success_codes: list[int] = [200, 201],
     ) -> None:
         """
         Make a delete request to an api endpoint.
@@ -222,27 +221,28 @@ class RequestsMixin:
             URL of the resource.
         `session` : `Session`
             Requests Session object used to make the request.
-        `success_codes` : `list[int]`, optional
-            HTTP response status codes that indicate a successful request.
-            Status codes not equal to these will raise an `HTTPError`.
+
+        Returns
+        -------
+        `Response`
+            Response generated from the delete request.
 
         Raises
         ------
-        `HTTPError`
-            If the response status code was not found in `success_codes`.
+        `Exception`
+            If there was an error during the request process.
         """
 
-        response = session.delete(
-            resource,
-            params=params,
-        )
-
-        if response.status_code not in success_codes:
-            raise HTTPError(
-                f"""Encountered api error. Response: 
-                
-                {json.dumps(response.json(), indent=True)})"""
+        try:
+            response = session.delete(
+                resource,
+                params=params,
             )
+            self._raise_errors(response)
+        except Exception as ex:
+            raise ex
+
+        return response
 
     def patch(
         self,
