@@ -741,7 +741,7 @@ class Admin(RequestsMixin):
 
     def groups(
         self,
-        top: int,
+        top: int = 5000,
         expand: str = None,
         filter: str = None,
         skip: int = None,
@@ -752,8 +752,9 @@ class Admin(RequestsMixin):
         Parameters
         ----------
         `top` : `int`, optional
-            Returns only the first n results. This parameter is mandatory
-            and must be in the range of 1-5000.
+            Returns only the first n results. This parameter is considered 
+            mandatory by the end point and must be in the range of 1-5000.
+            If not provided, will default to 5000, the maximum value permitted.
         `expand` : `str`, optional
             Accepts a comma-separated list of data types, which will be
             expanded inline in the response. Supports `users`, `reports`,

@@ -601,6 +601,23 @@ def test_groups(admin, get_groups_as_admin):
 
 
 @responses.activate
+def test_groups_without_top(admin, get_groups_as_admin):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups",
+        body=get_groups_as_admin,
+        content_type="application/json",
+        match=[
+            matchers.query_param_matcher({"$top": 5000}),
+        ],
+    )
+
+    groups = admin.groups()
+
+    assert isinstance(groups, list)
+    assert all(isinstance(group, Group) for group in groups)
+
+
+@responses.activate
 def test_groups_with_params(admin, get_groups_as_admin_with_expand):
     params = {
         "$expand": "dashboards",
