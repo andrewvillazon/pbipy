@@ -525,6 +525,32 @@ class Admin(RequestsMixin):
 
         return raw
 
+    def dataset_dataflows_links(
+        self,
+        group: str | Group,
+    ) -> list[dict]:
+        """
+        Returns a list of upstream dataflows for datasets from the specified workspace.
+
+
+        Parameters
+        ----------
+        `group` : `str | Group`
+            The Group Id or `Group` object where the target Dataflow resides.
+
+        Returns
+        -------
+        `list[dict]`
+            List of upstream dataflows.
+
+        """
+
+        path = build_path("/groups/{}/upstreamDataflows", group)
+        url = self.base_path + path
+        raw = self.get_raw(url, self.session)
+
+        return raw
+
     def dataflow_users(
         self,
         dataflow: str | Dataflow,

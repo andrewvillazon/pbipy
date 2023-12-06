@@ -884,6 +884,17 @@ def get_dataset_to_dataflow_links_in_group_as_admin():
     }
     """
 
+@pytest.fixture
+def get_dataset_dataflows_links():
+     return """
+    {
+      "value": [
+        {
+          "groupId": "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+        }
+      ]
+    }
+    """   
 
 @pytest.fixture
 def get_dataset_users_as_admin():

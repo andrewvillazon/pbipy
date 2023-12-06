@@ -213,6 +213,18 @@ def test_dataflow_upstream_dataflows(admin, get_upstream_dataflows_in_group_as_a
 
 
 @responses.activate
+def test_dataset_dataflows_links(admin, get_dataset_dataflows_links):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/groups/51e47fc5-48fd-4826-89f0-021bd3a80abd/datasets/upstreamDataflows",
+        body=get_dataset_dataflows_links,
+        content_type="application/json",
+    )
+    upstream_dataflows = admin.dataset_dataflows_links(
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48"
+    )
+    assert isinstance(upstream_dataflows,list)
+
+@responses.activate
 def test_dataset_upstream_dataflows(
     admin,
     get_dataset_to_dataflow_links_in_group_as_admin,
