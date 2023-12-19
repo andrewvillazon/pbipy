@@ -9,11 +9,11 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import build_path, RequestsMixin, remove_no_values
+from pbipy.utils import build_path, remove_no_values
 from pbipy import _utils
 
 
-class Admin(RequestsMixin):
+class Admin:
     """
     Groups methods that wrap around the Power BI Rest API Admin Endpoints.
 
