@@ -5,7 +5,7 @@ import responses
 from requests.exceptions import HTTPError
 from responses import matchers
 
-from pbipy import utils
+from pbipy import _utils
 from pbipy.groups import Group
 from pbipy.reports import Report
 
@@ -14,17 +14,17 @@ from pbipy.reports import Report
 
 
 def test_to_snake_case():
-    assert (utils.to_snake_case("FluffyWuffy")) == "fluffy_wuffy"
-    assert (utils.to_snake_case("webURL")) == "web_url"
-    assert utils.to_snake_case("AyeBeeCee") == "aye_bee_cee"
+    assert (_utils.to_snake_case("FluffyWuffy")) == "fluffy_wuffy"
+    assert (_utils.to_snake_case("webURL")) == "web_url"
+    assert _utils.to_snake_case("AyeBeeCee") == "aye_bee_cee"
 
 
 def test_to_camel_case():
     assert (
-        utils.to_camel_case("dataset_user_access_right")
+        _utils.to_camel_case("dataset_user_access_right")
     ) == "datasetUserAccessRight"
-    assert (utils.to_camel_case("identifier")) == "identifier"
-    assert (utils.to_camel_case("principal_type")) == "principalType"
+    assert (_utils.to_camel_case("identifier")) == "identifier"
+    assert (_utils.to_camel_case("principal_type")) == "principalType"
 
 
 def test_remove_no_values():
@@ -47,13 +47,13 @@ def test_remove_no_values():
         "impersonatedUserName": "someuser@mycompany.com",
     }
 
-    assert utils.remove_no_values(test_d) == expected_d
+    assert _utils.remove_no_values(test_d) == expected_d
 
 
 def test_file_path_from_components():
     expected_path = Path("sample_report.pbix")
 
-    path = utils.file_path_from_components(
+    path = _utils.file_path_from_components(
         file_name="sample_report",
         extension="pbix",
     )
@@ -66,7 +66,7 @@ def test_file_path_from_components_path_object():
     expected_path = Path("C:\sample_dir\sample_report.pbix")
 
     directory = Path("C:\sample_dir")
-    path = utils.file_path_from_components(
+    path = _utils.file_path_from_components(
         file_name="sample_report",
         directory=directory,
         extension="pbix",
@@ -79,7 +79,7 @@ def test_file_path_from_components_path_object():
 def test_file_path_from_components_str_directory():
     expected_path = Path("C:\sample_dir\sample_report.pbix")
 
-    path = utils.file_path_from_components(
+    path = _utils.file_path_from_components(
         file_name="sample_report",
         directory="C:\sample_dir",
         extension="pbix",
@@ -92,7 +92,7 @@ def test_file_path_from_components_str_directory():
 def test_file_path_from_components_dot_ext():
     expected_path = Path("C:\sample_dir\sample_report.pbix")
 
-    path = utils.file_path_from_components(
+    path = _utils.file_path_from_components(
         file_name="sample_report",
         directory="C:\sample_dir",
         extension=".pbix",
@@ -103,14 +103,9 @@ def test_file_path_from_components_dot_ext():
 
 
 def test_to_identifier():
-    assert utils.to_identifier("$type") == "type"
-    assert utils.to_identifier("pbi:mashup") == "pbi_mashup"
-    assert utils.to_identifier("ppdf:outputFileFormat") == "ppdf_outputFileFormat"
-
-
-@pytest.fixture
-def request_mixin():
-    return utils.RequestsMixin()
+    assert _utils.to_identifier("$type") == "type"
+    assert _utils.to_identifier("pbi:mashup") == "pbi_mashup"
+    assert _utils.to_identifier("ppdf:outputFileFormat") == "ppdf_outputFileFormat"
 
 
 @pytest.fixture
@@ -122,7 +117,7 @@ def session():
 
 
 @responses.activate
-def test_request_mixin_post(request_mixin, session):
+def test_post(session):
     json_params = {
         "identifier": "john@contoso.com",
         "principalType": "User",
@@ -141,11 +136,11 @@ def test_request_mixin_post(request_mixin, session):
         "datasetUserAccessRight": "Read",
     }
 
-    request_mixin.post(resource, session, payload)
+    _utils.post(resource, session, payload)
 
 
 @responses.activate
-def test_request_mixin_post_raises(request_mixin, session):
+def test_post_raises(session):
     json_params = {
         "identifier": "john@contoso.com",
         "principalType": "User",
@@ -167,7 +162,7 @@ def test_request_mixin_post_raises(request_mixin, session):
     }
 
     with pytest.raises(HTTPError):
-        request_mixin.post(resource, session, payload)
+        _utils.post(resource, session, payload)
 
 
 @pytest.fixture
@@ -213,8 +208,7 @@ def response_body_multiple_objects():
 
 
 @responses.activate
-def test_request_mixin_get_raw_single_object(
-    request_mixin,
+def test_get_raw_single_object(
     session,
     response_body_single_object,
 ):
@@ -226,7 +220,7 @@ def test_request_mixin_get_raw_single_object(
     resource = (
         "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48"
     )
-    raw = request_mixin.get_raw(resource, session)
+    raw = _utils.get_raw(resource, session)
 
     assert "id" in raw
     assert "description" in raw
@@ -236,60 +230,47 @@ def test_request_mixin_get_raw_single_object(
 
 
 @responses.activate
-def test_request_mixin_get_error_includes_additional_info(
-    request_mixin,
-    session,
-):
+def test_get_error_includes_additional_info(session):
     resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
 
     responses.get(
         resource,
         body='{"error":{"code":"ItemNotFound","message":"Dataset cfafbeb1-8037-4d0c-896e-a46fb27ff229 is not found."}}',
-        status=404
+        status=404,
     )
 
     with pytest.raises(HTTPError) as ex:
-        request_mixin.get(resource, session)
+        _utils.get(resource, session)
 
     assert "cfafbeb1-8037-4d0c-896e-a46fb27ff229" in str(ex.value)
 
 
 @responses.activate
-def test_request_mixin_get_raises_no_body(
-    request_mixin,
-    session,
-):
+def test_get_raises_no_body(session):
     resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
 
-    responses.get(
-        resource,
-        status=404
-    )
+    responses.get(resource, status=404)
 
     with pytest.raises(HTTPError) as ex:
-        request_mixin.get(resource, session)
+        _utils.get(resource, session)
 
 
 @responses.activate
-def test_request_mixin_get_raises_with_exception_body(
-    request_mixin,
-    session,
-):
+def test_get_raises_with_exception_body(session):
     resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
 
     responses.get(
         resource,
         body=Exception("Something Exceptional happened."),
-        status=404
+        status=404,
     )
 
     with pytest.raises(Exception) as ex:
-        request_mixin.get(resource, session)
+        _utils.get(resource, session)
 
 
 @responses.activate
-def test_request_mixin_get_raw_single_object(
-    request_mixin,
+def test_get_raw_single_object(
     session,
     response_body_multiple_objects,
 ):
@@ -301,14 +282,13 @@ def test_request_mixin_get_raw_single_object(
     resource = (
         "https://api.powerbi.com/v1.0/myorg/apps/f089354e-8366-4e18-aea3-4cb4a3a50b48"
     )
-    raw = request_mixin.get_raw(resource, session)
+    raw = _utils.get_raw(resource, session)
 
     assert isinstance(raw, list)
 
 
 @responses.activate
-def test_request_mixin_get_raw_raises(
-    request_mixin,
+def test_get_raw_raises(
     session,
 ):
     responses.get(
@@ -322,11 +302,11 @@ def test_request_mixin_get_raw_raises(
     )
 
     with pytest.raises(HTTPError):
-        request_mixin.get_raw(resource, session)
+        _utils.get_raw(resource, session)
 
 
 @responses.activate
-def test_request_mixin_put(request_mixin, session):
+def test_put(session):
     json_params = {
         "identifier": "john@contoso.com",
         "principalType": "User",
@@ -335,7 +315,9 @@ def test_request_mixin_put(request_mixin, session):
 
     responses.put(
         "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users",
-        match=[matchers.json_params_matcher(json_params)],
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
     )
 
     resource = "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/users"
@@ -345,11 +327,11 @@ def test_request_mixin_put(request_mixin, session):
         "datasetUserAccessRight": "Read",
     }
 
-    request_mixin.put(resource, session, payload)
+    _utils.put(resource, session, payload)
 
 
 @responses.activate
-def test_request_mixin_put_raises(request_mixin, session):
+def test_put_raises(session):
     json_params = {
         "identifier": "john@contoso.com",
         "principalType": "User",
@@ -371,11 +353,11 @@ def test_request_mixin_put_raises(request_mixin, session):
     }
 
     with pytest.raises(HTTPError):
-        request_mixin.put(resource, session, payload)
+        _utils.put(resource, session, payload)
 
 
 @responses.activate
-def test_request_mixin_patch(request_mixin, session):
+def test_patch(session):
     json_params = {
         "targetStorageMode": "PremiumFiles",
     }
@@ -392,11 +374,11 @@ def test_request_mixin_patch(request_mixin, session):
         "targetStorageMode": "PremiumFiles",
     }
 
-    request_mixin.patch(resource, session, payload)
+    _utils.patch(resource, session, payload)
 
 
 @responses.activate
-def test_request_mixin_patch_raises(request_mixin, session):
+def test_request_mixin_patch_raises(session):
     json_params = {
         "targetStorageMode": "PremiumFiles",
     }
@@ -416,7 +398,7 @@ def test_request_mixin_patch_raises(request_mixin, session):
     }
 
     with pytest.raises(HTTPError):
-        request_mixin.patch(resource, session, payload)
+        _utils.patch(resource, session, payload)
 
 
 def test_build_url():
@@ -424,7 +406,7 @@ def test_build_url():
 
     id = "cfafbeb1-8037-4d0c-896e-a46fb27ff228"
 
-    path = utils.build_path(path_format, id)
+    path = _utils.build_path(path_format, id)
     expected_path = "/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff228/datasources"
 
     assert expected_path == path
@@ -438,7 +420,7 @@ def test_build_url_with_obj():
         session=requests.Session(),
     )
 
-    path = utils.build_path(path_format, id)
+    path = _utils.build_path(path_format, id)
     expected_path = "/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff228/datasources"
 
     assert expected_path == path
@@ -457,7 +439,7 @@ def test_build_url_with_multiple_obj():
         session=requests.Session(),
     )
 
-    path = utils.build_path(path_format, group, report)
+    path = _utils.build_path(path_format, group, report)
     expected_path = "/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources"
 
     assert expected_path == path
