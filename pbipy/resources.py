@@ -1,7 +1,6 @@
 from requests import Session
 
 from pbipy import settings
-from pbipy.utils import to_identifier, to_snake_case
 from pbipy import _utils
 
 
@@ -45,8 +44,8 @@ class Resource:
         self.raw = raw
 
         for k, v in raw.items():
-            attr = to_identifier(k)
-            attr = to_snake_case(attr)
+            attr = _utils.to_identifier(k)
+            attr = _utils.to_snake_case(attr)
             setattr(self, attr, v)
 
         return self
