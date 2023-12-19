@@ -1,6 +1,7 @@
 from pbipy.resources import Resource
 from pbipy.utils import remove_no_values
 
+from pbipy import _utils
 
 from requests import Session
 
@@ -38,7 +39,7 @@ class Group(Resource):
     ) -> None:
         """
         Grants the specified user the specified permissions to the workspace.
-        
+
         Parameters
         ----------
         `identifier` : `str`
@@ -61,7 +62,7 @@ class Group(Resource):
             BI Embedded multi-tenancy solution.
         `user_type` : `str`, optional
             Type of the user.
-        
+
         """
 
         payload = {
@@ -78,7 +79,7 @@ class Group(Resource):
         prepared_payload = remove_no_values(payload)
         resource = self.base_path + "/users"
 
-        self.post(resource, self.session, prepared_payload)
+        _utils.post(resource, self.session, prepared_payload)
 
     def delete_user(
         self,
@@ -87,7 +88,7 @@ class Group(Resource):
     ) -> None:
         """
         Deletes the specified user permissions from the specified workspace.
-        
+
         Parameters
         ----------
         `user` : `str`
@@ -95,7 +96,7 @@ class Group(Resource):
             to delete.
         `profile` : `str`, optional
             The service principal profile ID to delete.
-        
+
         """
 
         if profile:
@@ -103,7 +104,7 @@ class Group(Resource):
         else:
             resource = self.base_path + f"/users/{user}"
 
-        self.delete(resource, self.session)
+        _utils.delete(resource, self.session)
 
     def update_user(
         self,
@@ -118,7 +119,7 @@ class Group(Resource):
     ) -> None:
         """
         Updates the specified user permissions on the workspace.
-        
+
         Parameters
         ----------
         `identifier` : `str`
@@ -141,7 +142,7 @@ class Group(Resource):
             BI Embedded multi-tenancy solution.
         `user_type` : `str`, optional
             Type of the user.
-        
+
         """
 
         payload = {
@@ -158,7 +159,7 @@ class Group(Resource):
         prepared_payload = remove_no_values(payload)
         resource = self.base_path + "/users"
 
-        self.put(resource, self.session, prepared_payload)
+        _utils.put(resource, self.session, prepared_payload)
 
     def users(
         self,
@@ -167,7 +168,7 @@ class Group(Resource):
     ) -> list[dict]:
         """
         Returns a list of users that have access to the workspace.
-        
+
         Parameters
         ----------
         `skip` : `int`, optional
@@ -178,7 +179,7 @@ class Group(Resource):
         -------
         `list[dict]`
             List of users that have access to the workspace.
-        
+
         """
 
         params = {
@@ -189,6 +190,10 @@ class Group(Resource):
         prepared_params = remove_no_values(params)
         resource = self.base_path + "/users"
 
-        raw = self.get_raw(resource, self.session, params=prepared_params)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+            params=prepared_params,
+        )
 
         return raw
