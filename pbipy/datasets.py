@@ -1,9 +1,7 @@
-from pbipy.resources import Resource
-from pbipy.utils import remove_no_values
-from pbipy import _utils
-
-
 from requests import Session
+
+from pbipy.resources import Resource
+from pbipy import _utils
 
 
 class Dataset(Resource):
@@ -233,7 +231,7 @@ class Dataset(Resource):
             },
             "impersonatedUserName": impersonated_user_name,
         }
-        prepared_request = remove_no_values(dataset_execute_queries_request)
+        prepared_request = _utils.remove_no_values(dataset_execute_queries_request)
 
         resource = self.base_path + "/executeQueries"
 
@@ -329,7 +327,7 @@ class Dataset(Resource):
             "type": type,
         }
 
-        prepared_request = remove_no_values(refresh_request)
+        prepared_request = _utils.remove_no_values(refresh_request)
         resource = self.base_path + "/refreshes"
 
         _utils.post(
@@ -620,7 +618,7 @@ class Dataset(Resource):
         if not direct_query:
             refresh_schedule_request.pop("frequency", None)
 
-        request_body = remove_no_values(refresh_schedule_request)
+        request_body = _utils.remove_no_values(refresh_schedule_request)
 
         if request_body in [None, {}]:
             raise ValueError(
