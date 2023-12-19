@@ -9,7 +9,6 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import build_path, remove_no_values
 from pbipy import _utils
 
 
@@ -237,7 +236,7 @@ class Admin:
 
         """
 
-        path = build_path("/apps/{}/users", app)
+        path = _utils.build_path("/apps/{}/users", app)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -280,7 +279,7 @@ class Admin:
         """
 
         if group:
-            path = build_path("/groups/{}/dashboards", group)
+            path = _utils.build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
 
@@ -330,7 +329,7 @@ class Admin:
 
         """
 
-        path = build_path("/dashboards/{}/subscriptions", dashboard)
+        path = _utils.build_path("/dashboards/{}/subscriptions", dashboard)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -358,7 +357,7 @@ class Admin:
 
         """
 
-        path = build_path("/dashboards/{}/tiles", dashboard)
+        path = _utils.build_path("/dashboards/{}/tiles", dashboard)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -396,7 +395,7 @@ class Admin:
 
         """
 
-        path = build_path("/dashboards/{}/users", dashboard)
+        path = _utils.build_path("/dashboards/{}/users", dashboard)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -530,7 +529,7 @@ class Admin:
 
         """
 
-        path = build_path("/dataflows/{}/datasources", dataflow)
+        path = _utils.build_path("/dataflows/{}/datasources", dataflow)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -561,7 +560,7 @@ class Admin:
 
         """
 
-        path = build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
+        path = _utils.build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -589,7 +588,7 @@ class Admin:
 
         """
 
-        path = build_path("/dataflows/{}/users", dataflow)
+        path = _utils.build_path("/dataflows/{}/users", dataflow)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -695,7 +694,7 @@ class Admin:
 
         """
 
-        path = build_path("/datasets/{}/datasources", dataset)
+        path = _utils.build_path("/datasets/{}/datasources", dataset)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -723,7 +722,7 @@ class Admin:
 
         """
 
-        path = build_path("/datasets/{}/users", dataset)
+        path = _utils.build_path("/datasets/{}/users", dataset)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -754,7 +753,7 @@ class Admin:
 
         """
 
-        path = build_path("/groups/{}/datasets/upstreamDataflows", group)
+        path = _utils.build_path("/groups/{}/datasets/upstreamDataflows", group)
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -789,7 +788,7 @@ class Admin:
 
         params = {"$expand": expand}
 
-        path = build_path("/groups/{}", group)
+        path = _utils.build_path("/groups/{}", group)
         url = self.base_path + path
 
         raw = _utils.get_raw(
@@ -878,7 +877,7 @@ class Admin:
 
         """
 
-        path = build_path("/groups/{}/users", group)
+        path = _utils.build_path("/groups/{}/users", group)
         url = self.base_path + path
 
         users = _utils.get_raw(
@@ -942,9 +941,9 @@ class Admin:
             "userType": user_type,
         }
 
-        payload = remove_no_values(group_user)
+        payload = _utils.remove_no_values(group_user)
 
-        path = build_path("/groups/{}/users", group)
+        path = _utils.build_path("/groups/{}/users", group)
         url = self.base_path + path
 
         _utils.post(
@@ -975,7 +974,7 @@ class Admin:
 
         params = {"profileId": profile_id}
 
-        path = build_path("/groups/{}/users/{}", group, user)
+        path = _utils.build_path("/groups/{}/users/{}", group, user)
         url = self.base_path + path
 
         _utils.delete(
@@ -1008,9 +1007,9 @@ class Admin:
             "emailAddress": email_address,
             "name": name,
         }
-        request_body = remove_no_values(request_body)
+        request_body = _utils.remove_no_values(request_body)
 
-        path = build_path("/groups/{}/restore", group)
+        path = _utils.build_path("/groups/{}/restore", group)
         url = self.base_path + path
 
         _utils.post(
@@ -1056,7 +1055,7 @@ class Admin:
             "name": name,
             "description": description,
         }
-        request_body = remove_no_values(request_body)
+        request_body = _utils.remove_no_values(request_body)
 
         # To disable, the caller passes in None. Excluding implies logAnalyticsWorkspace
         # remains unchanged.
@@ -1072,7 +1071,7 @@ class Admin:
                 "No options were provided to update. Please specify an option to update."
             )
 
-        path = build_path("/groups/{}", group)
+        path = _utils.build_path("/groups/{}", group)
         url = self.base_path + path
 
         _utils.patch(
@@ -1119,7 +1118,7 @@ class Admin:
                 group_id = group
 
         if group:
-            path = build_path("/groups/{}/reports", group)
+            path = _utils.build_path("/groups/{}/reports", group)
         else:
             path = "/reports"
 
@@ -1167,7 +1166,7 @@ class Admin:
 
         """
 
-        path = build_path("/reports/{}/subscriptions", report)
+        path = _utils.build_path("/reports/{}/subscriptions", report)
         url = self.base_path + path
 
         raw = _utils.get_raw(
@@ -1196,7 +1195,7 @@ class Admin:
 
         """
 
-        path = build_path("/reports/{}/users", report)
+        path = _utils.build_path("/reports/{}/users", report)
         url = self.base_path + path
 
         raw = _utils.get_raw(
