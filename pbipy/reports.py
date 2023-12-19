@@ -6,7 +6,6 @@ from requests import Session
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.resources import Resource
-from pbipy.utils import file_path_from_components, remove_no_values
 from pbipy import _utils
 
 
@@ -87,7 +86,7 @@ class Report(Resource):
             "targetWorkspaceId": target_group,
         }
 
-        payload = remove_no_values(init_payload)
+        payload = _utils.remove_no_values(init_payload)
         resource = self.base_path + "/Clone"
 
         _utils.post(resource, self.session, payload)
@@ -137,7 +136,7 @@ class Report(Resource):
 
         ext = self.REPORT_EXTENSIONS.get(self.report_type)
 
-        file_path = file_path_from_components(
+        file_path = _utils.file_path_from_components(
             file_name=f_name,
             extension=ext,
             directory=save_to,
@@ -182,7 +181,7 @@ class Report(Resource):
         content_type = response.headers.get("content-type")
         ext = mimetypes.guess_extension(content_type)
 
-        file_path = file_path_from_components(
+        file_path = _utils.file_path_from_components(
             f_name,
             extension=ext,
             directory=save_to,
@@ -410,7 +409,7 @@ class Report(Resource):
             "sourceType": source_type,
         }
 
-        prepared_payload = remove_no_values(payload)
+        prepared_payload = _utils.remove_no_values(payload)
         resource = self.base_path + "/UpdateReportContent"
 
         _utils.post(resource, self.session, prepared_payload)
