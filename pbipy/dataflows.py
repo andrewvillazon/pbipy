@@ -1,6 +1,5 @@
 from requests import Session
 from pbipy.resources import Resource
-from pbipy.utils import remove_no_values
 from pbipy import _utils
 
 
@@ -135,7 +134,7 @@ class Dataflow(Resource):
             "computeEngineBehavior": compute_engine_behavior,
         }
 
-        request_body = remove_no_values(update_request)
+        request_body = _utils.remove_no_values(update_request)
 
         if request_body in [None, {}]:
             raise ValueError(
@@ -194,7 +193,7 @@ class Dataflow(Resource):
             }
         }
 
-        request_body = remove_no_values(refresh_schedule_request)
+        request_body = _utils.remove_no_values(refresh_schedule_request)
 
         if request_body in [None, {}]:
             raise ValueError(
