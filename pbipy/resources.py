@@ -1,11 +1,11 @@
 from requests import Session
 
 from pbipy import settings
-from pbipy.utils import RequestsMixin, to_identifier, to_snake_case
+from pbipy.utils import to_identifier, to_snake_case
 from pbipy import _utils
 
 
-class Resource(RequestsMixin):
+class Resource:
     BASE_URL = settings.BASE_URL
 
     def __init__(
