@@ -227,7 +227,7 @@ def post_raw(
     ------
     `Exception`
         If there was an error during the request process.
-    
+
     """
 
     try:
@@ -277,6 +277,47 @@ def put(
 
     try:
         response = session.put(resource, json=payload)
+        raise_error(response)
+    except Exception as ex:
+        raise ex
+
+    return response
+
+
+def patch(
+    resource: str,
+    session: Session,
+    payload: dict = None,
+) -> Response:
+    """
+    Make a patch request to an api endpoint. Wraps request's `patch` method
+    to include api-specific error handling.
+
+    Parameters
+    ----------
+    `resource` : `str`
+        URL of the resource to patch.
+    `session` : `Session`
+        Authenticated `requests.Session` object used to make the request.
+    `payload` : `dict`
+        Data to patch on the resource.
+
+    Returns
+    -------
+    `Response`
+        Response generated from the patch request.
+
+    Raises
+    ------
+    `Exception`
+        If there was an error during the request process.
+    """
+
+    try:
+        response = session.patch(
+            resource,
+            json=payload,
+        )
         raise_error(response)
     except Exception as ex:
         raise ex
