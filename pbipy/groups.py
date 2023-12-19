@@ -1,6 +1,4 @@
 from pbipy.resources import Resource
-from pbipy.utils import remove_no_values
-
 from pbipy import _utils
 
 from requests import Session
@@ -76,7 +74,7 @@ class Group(Resource):
             "userType": user_type,
         }
 
-        prepared_payload = remove_no_values(payload)
+        prepared_payload = _utils.remove_no_values(payload)
         resource = self.base_path + "/users"
 
         _utils.post(resource, self.session, prepared_payload)
@@ -156,7 +154,7 @@ class Group(Resource):
             "userType": user_type,
         }
 
-        prepared_payload = remove_no_values(payload)
+        prepared_payload = _utils.remove_no_values(payload)
         resource = self.base_path + "/users"
 
         _utils.put(resource, self.session, prepared_payload)
@@ -187,7 +185,7 @@ class Group(Resource):
             "$top": top,
         }
 
-        prepared_params = remove_no_values(params)
+        prepared_params = _utils.remove_no_values(params)
         resource = self.base_path + "/users"
 
         raw = _utils.get_raw(
