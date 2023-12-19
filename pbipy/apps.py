@@ -3,6 +3,7 @@ from requests import Session
 from pbipy.dashboards import Dashboard, Tile
 from pbipy.reports import Report
 from pbipy.resources import Resource
+from pbipy import _utils
 
 
 class App(Resource):
@@ -46,7 +47,10 @@ class App(Resource):
         """
 
         resource = self.base_path + f"/dashboards/{dashboard}"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         dashboard = Dashboard(
             id=raw.get("id"),
@@ -70,7 +74,10 @@ class App(Resource):
         """
 
         resource = self.base_path + "/dashboards"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         dashboards = [
             Dashboard(
@@ -106,7 +113,10 @@ class App(Resource):
         """
 
         resource = self.base_path + f"/reports/{report}"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         report = Report(
             id=raw.get("id"),
@@ -130,7 +140,10 @@ class App(Resource):
         """
 
         resource = self.base_path + "/reports"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         reports = [
             Report(
@@ -166,7 +179,10 @@ class App(Resource):
         """
 
         resource = self.base_path + f"/dashboards/{dashboard}/tiles/{tile}"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         tile = Tile(
             tile,
@@ -182,7 +198,7 @@ class App(Resource):
         dashboard: str,
     ) -> list[Tile]:
         """
-        Returns a list of `Tile` objects within the specified dashboard 
+        Returns a list of `Tile` objects within the specified dashboard
         from the App.
 
         Parameters
@@ -194,11 +210,14 @@ class App(Resource):
         -------
         `list[Tile]`
             List of `Tile` objects from the specified dashboard and App.
-        
+
         """
 
         resource = self.base_path + f"/dashboards/{dashboard}/tiles"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         tiles = [
             Tile(
