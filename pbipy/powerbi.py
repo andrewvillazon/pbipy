@@ -18,7 +18,6 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import build_path, remove_no_values
 from pbipy import _utils
 
 
@@ -192,7 +191,7 @@ class PowerBI:
             group_id = group
 
         if group:
-            path = build_path("/groups/{}/dashboards", group)
+            path = _utils.build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
 
@@ -245,9 +244,9 @@ class PowerBI:
             group_id = group
 
         if group:
-            path = build_path("/groups/{}/dashboards/{}", group, dashboard)
+            path = _utils.build_path("/groups/{}/dashboards/{}", group, dashboard)
         else:
-            path = build_path("/dashboards/{}", dashboard)
+            path = _utils.build_path("/dashboards/{}", dashboard)
 
         url = self.BASE_URL + path
         raw = _utils.get_raw(
@@ -583,7 +582,7 @@ class PowerBI:
             "$top": top,
         }
 
-        preparred_params = remove_no_values(params)
+        preparred_params = _utils.remove_no_values(params)
 
         path = self.BASE_URL + "/groups"
         raw = _utils.get_raw(
