@@ -244,9 +244,12 @@ class Report(Resource):
         """
 
         resource = self.base_path + f"/exports/{id}"
-        response = _utils.get(resource, self.session)
+        response = _utils.get(
+            resource,
+            self.session,
+        )
 
-        raw = self.parse_raw(response.json())
+        raw = _utils.parse_raw(response.json())
 
         if include_retry_after:
             try:
