@@ -6,11 +6,11 @@ from requests import Session
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.resources import Resource
-from pbipy.utils import file_path_from_components, remove_no_values
+from pbipy import _utils
 
 
 class Report(Resource):
-    _REPR =[
+    _REPR = [
         "id",
         "name",
         "group_id",
@@ -21,7 +21,6 @@ class Report(Resource):
         "PowerBIReport": "pbix",
         "PaginatedReport": "rdl",
     }
-    
 
     def __init__(
         self,
@@ -87,10 +86,10 @@ class Report(Resource):
             "targetWorkspaceId": target_group,
         }
 
-        payload = remove_no_values(init_payload)
+        payload = _utils.remove_no_values(init_payload)
         resource = self.base_path + "/Clone"
 
-        self.post(resource, self.session, payload)
+        _utils.post(resource, self.session, payload)
 
     def datasources(
         self,
@@ -106,7 +105,7 @@ class Report(Resource):
         """
 
         resource = self.base_path + "/datasources"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(resource, self.session)
 
         return raw
 
@@ -137,14 +136,14 @@ class Report(Resource):
 
         ext = self.REPORT_EXTENSIONS.get(self.report_type)
 
-        file_path = file_path_from_components(
+        file_path = _utils.file_path_from_components(
             file_name=f_name,
             extension=ext,
             directory=save_to,
         )
 
         resource = self.base_path + "/Export"
-        response = self.get(resource, self.session)
+        response = _utils.get(resource, self.session)
 
         with open(file_path, "wb") as out_file:
             out_file.write(response.content)
@@ -166,13 +165,13 @@ class Report(Resource):
             Folder/directory to save the exported file to. If not provided
             will save to the current working directory.
         `file_name` : `str`, optional
-            Name to give to the export file. If not provided, will use the 
+            Name to give to the export file. If not provided, will use the
             name of the Report as the file name.
-        
+
         """
 
         resource = self.base_path + f"/exports/{id}/file"
-        response = self.get(resource, self.session)
+        response = _utils.get(resource, self.session)
 
         if file_name is None:
             f_name = self.name
@@ -182,7 +181,7 @@ class Report(Resource):
         content_type = response.headers.get("content-type")
         ext = mimetypes.guess_extension(content_type)
 
-        file_path = file_path_from_components(
+        file_path = _utils.file_path_from_components(
             f_name,
             extension=ext,
             directory=save_to,
@@ -213,7 +212,7 @@ class Report(Resource):
         resource = self.base_path + "/ExportTo"
         payload = {"format": format.upper()}
 
-        raw = self.post_raw(resource, self.session, payload)
+        raw = _utils.post_raw(resource, self.session, payload)
 
         return raw
 
@@ -244,9 +243,12 @@ class Report(Resource):
         """
 
         resource = self.base_path + f"/exports/{id}"
-        response = self.get(resource, self.session)
+        response = _utils.get(
+            resource,
+            self.session,
+        )
 
-        raw = self.parse_raw(response.json())
+        raw = _utils.parse_raw(response.json())
 
         if include_retry_after:
             try:
@@ -278,7 +280,7 @@ class Report(Resource):
         """
 
         resource = self.base_path + f"/pages/{name}"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(resource, self.session)
 
         return raw
 
@@ -296,7 +298,7 @@ class Report(Resource):
         """
 
         resource = self.base_path + "/pages"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(resource, self.session)
 
         return raw
 
@@ -333,7 +335,7 @@ class Report(Resource):
         }
         resource = self.base_path + "/Rebind"
 
-        self.post(resource, self.session, payload)
+        _utils.post(resource, self.session, payload)
 
     def take_over(
         self,
@@ -356,7 +358,7 @@ class Report(Resource):
             )
 
         resource = self.base_path + "/Default.TakeOver"
-        self.post(resource, self.session)
+        _utils.post(resource, self.session)
 
     def update_content(
         self,
@@ -407,10 +409,10 @@ class Report(Resource):
             "sourceType": source_type,
         }
 
-        prepared_payload = remove_no_values(payload)
+        prepared_payload = _utils.remove_no_values(payload)
         resource = self.base_path + "/UpdateReportContent"
 
-        self.post(resource, self.session, prepared_payload)
+        _utils.post(resource, self.session, prepared_payload)
 
     def update_datasources(
         self,
@@ -442,4 +444,4 @@ class Report(Resource):
 
         resource = self.base_path + "/Default.UpdateDatasources"
 
-        self.post(resource, self.session, payload)
+        _utils.post(resource, self.session, payload)

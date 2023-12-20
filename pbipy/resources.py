@@ -1,10 +1,10 @@
 from requests import Session
 
 from pbipy import settings
-from pbipy.utils import RequestsMixin, to_identifier, to_snake_case
+from pbipy import _utils
 
 
-class Resource(RequestsMixin):
+class Resource:
     BASE_URL = settings.BASE_URL
 
     def __init__(
@@ -44,12 +44,15 @@ class Resource(RequestsMixin):
         self.raw = raw
 
         for k, v in raw.items():
-            attr = to_identifier(k)
-            attr = to_snake_case(attr)
+            attr = _utils.to_identifier(k)
+            attr = _utils.to_snake_case(attr)
             setattr(self, attr, v)
 
         return self
 
     def load(self):
-        raw = self.get_raw(self.base_path, self.session)
+        raw = _utils.get_raw(
+            self.base_path,
+            self.session,
+        )
         self._load_from_raw(raw)

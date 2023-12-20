@@ -1,6 +1,6 @@
 from requests import Session
 from pbipy.resources import Resource
-from pbipy.utils import remove_no_values
+from pbipy import _utils
 
 
 class Dataflow(Resource):
@@ -42,7 +42,10 @@ class Dataflow(Resource):
         """
 
         resource = self.base_path + "/datasources"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         return raw
 
@@ -68,7 +71,12 @@ class Dataflow(Resource):
         payload = {"notifyOption": notify_option}
         params = {"processType": process_type}
 
-        self.post(resource, self.session, payload=payload, params=params)
+        _utils.post(
+            resource,
+            self.session,
+            payload=payload,
+            params=params,
+        )
 
     def transactions(
         self,
@@ -84,7 +92,10 @@ class Dataflow(Resource):
         """
 
         resource = self.base_path + "/transactions"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         return raw
 
@@ -123,7 +134,7 @@ class Dataflow(Resource):
             "computeEngineBehavior": compute_engine_behavior,
         }
 
-        request_body = remove_no_values(update_request)
+        request_body = _utils.remove_no_values(update_request)
 
         if request_body in [None, {}]:
             raise ValueError(
@@ -132,7 +143,11 @@ class Dataflow(Resource):
 
         resource = self.base_path
 
-        self.patch(resource, self.session, request_body)
+        _utils.patch(
+            resource,
+            self.session,
+            request_body,
+        )
 
     def update_refresh_schedule(
         self,
@@ -178,7 +193,7 @@ class Dataflow(Resource):
             }
         }
 
-        request_body = remove_no_values(refresh_schedule_request)
+        request_body = _utils.remove_no_values(refresh_schedule_request)
 
         if request_body in [None, {}]:
             raise ValueError(
@@ -187,7 +202,11 @@ class Dataflow(Resource):
 
         resource = self.base_path + "/refreshSchedule"
 
-        self.patch(resource, self.session, request_body)
+        _utils.patch(
+            resource,
+            self.session,
+            request_body,
+        )
 
     def upstream_dataflows(
         self,
@@ -203,6 +222,9 @@ class Dataflow(Resource):
         """
 
         resource = self.base_path + "/upstreamDataflows"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         return raw

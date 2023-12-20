@@ -18,10 +18,10 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import RequestsMixin, build_path, remove_no_values
+from pbipy import _utils
 
 
-class PowerBI(RequestsMixin):
+class PowerBI:
     """
     User Interface into Power BI Rest Api.
 
@@ -106,7 +106,10 @@ class PowerBI(RequestsMixin):
         self,
     ) -> list[App]:
         resource = self.BASE_URL + "/apps"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         apps = [
             App(
@@ -152,7 +155,10 @@ class PowerBI(RequestsMixin):
             self.BASE_URL
             + f"/groups/{group_id}/dataflows/transactions/{transaction_id}/cancel"
         )
-        raw = self.post_raw(resource, self.session)
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+        )
 
         return raw
 
@@ -185,13 +191,17 @@ class PowerBI(RequestsMixin):
             group_id = group
 
         if group:
-            path = build_path("/groups/{}/dashboards", group)
+            path = _utils.build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
 
         url = self.BASE_URL + path
         payload = {"name": name}
-        raw = self.post_raw(url, self.session, payload=payload)
+        raw = _utils.post_raw(
+            url,
+            self.session,
+            payload=payload,
+        )
 
         dashboard = Dashboard(
             raw.get("id"),
@@ -234,12 +244,15 @@ class PowerBI(RequestsMixin):
             group_id = group
 
         if group:
-            path = build_path("/groups/{}/dashboards/{}", group, dashboard)
+            path = _utils.build_path("/groups/{}/dashboards/{}", group, dashboard)
         else:
-            path = build_path("/dashboards/{}", dashboard)
+            path = _utils.build_path("/dashboards/{}", dashboard)
 
         url = self.BASE_URL + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         dashboard = Dashboard(
             raw.get("id"),
@@ -288,7 +301,10 @@ class PowerBI(RequestsMixin):
             group_id = group
 
         resource = self.BASE_URL + f"/groups/{group_id}/dataflows/{dataflow}"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         dataflow = Dataflow(
             raw.get("objectId"),
@@ -324,7 +340,10 @@ class PowerBI(RequestsMixin):
             group_id = group
 
         resource = self.BASE_URL + f"/groups/{group_id}/dataflows"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         dataflows = [
             Dataflow(
@@ -368,7 +387,10 @@ class PowerBI(RequestsMixin):
 
         resource = self.BASE_URL + f"/groups/{group_id}/dataflows/{dataflow_id}"
 
-        self.delete(resource, self.session)
+        _utils.delete(
+            resource,
+            self.session,
+        )
 
     # TODO: Add support for passing in a group obj
     def dataset(
@@ -428,7 +450,10 @@ class PowerBI(RequestsMixin):
             path = "/datasets"
 
         resource = self.BASE_URL + path
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         datasets = [
             Dataset(
@@ -478,7 +503,10 @@ class PowerBI(RequestsMixin):
 
         resource = self.BASE_URL + path
 
-        self.delete(resource, self.session)
+        _utils.delete(
+            resource,
+            self.session,
+        )
 
     def group(
         self,
@@ -554,10 +582,14 @@ class PowerBI(RequestsMixin):
             "$top": top,
         }
 
-        preparred_params = remove_no_values(params)
+        preparred_params = _utils.remove_no_values(params)
 
         path = self.BASE_URL + "/groups"
-        raw = self.get_raw(path, self.session, params=preparred_params)
+        raw = _utils.get_raw(
+            path,
+            self.session,
+            params=preparred_params,
+        )
 
         groups = [
             Group(
@@ -599,7 +631,11 @@ class PowerBI(RequestsMixin):
         else:
             resource = self.BASE_URL + "/groups"
 
-        raw = self.post_raw(resource, self.session, payload)
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+            payload,
+        )
 
         return Group(
             raw.get("id"),
@@ -628,7 +664,10 @@ class PowerBI(RequestsMixin):
 
         resource = self.BASE_URL + f"/groups/{group_id}"
 
-        self.delete(resource, self.session)
+        _utils.delete(
+            resource,
+            self.session,
+        )
 
     def report(
         self,
@@ -697,7 +736,10 @@ class PowerBI(RequestsMixin):
             path = "/reports"
 
         resource = self.BASE_URL + path
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         reports = [
             Report(
@@ -755,4 +797,7 @@ class PowerBI(RequestsMixin):
         else:
             resource = self.BASE_URL + f"/reports/{report_id}"
 
-        self.delete(resource, self.session)
+        _utils.delete(
+            resource,
+            self.session,
+        )

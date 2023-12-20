@@ -9,10 +9,10 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
 from pbipy.reports import Report
-from pbipy.utils import build_path, RequestsMixin, remove_no_values
+from pbipy import _utils
 
 
-class Admin(RequestsMixin):
+class Admin:
     """
     Groups methods that wrap around the Power BI Rest API Admin Endpoints.
 
@@ -86,13 +86,17 @@ class Admin(RequestsMixin):
         path = "/activityevents"
         url = self.base_path + path
 
-        init_raw = self.get_raw(url, self.session, params=init_params)
+        init_raw = _utils.get_raw(
+            url,
+            self.session,
+            params=init_params,
+        )
 
         activity_events = init_raw["activityEventEntities"]
         continuation_token = init_raw["continuationToken"]
 
         while continuation_token is not None:
-            raw = self.get_raw(
+            raw = _utils.get_raw(
                 url,
                 self.session,
                 params={
@@ -144,7 +148,11 @@ class Admin(RequestsMixin):
         }
 
         resource = self.base_path + "/tenantKeys"
-        raw = self.post_raw(resource, self.session, payload=payload)
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+            payload=payload,
+        )
 
         return raw
 
@@ -162,7 +170,10 @@ class Admin(RequestsMixin):
         """
 
         resource = self.base_path + "/tenantKeys"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         return raw
 
@@ -189,7 +200,11 @@ class Admin(RequestsMixin):
         resource = self.base_path + "/apps"
         params = {"$top": top}
 
-        raw = self.get_raw(resource, self.session, params)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+            params,
+        )
 
         apps = [
             App(
@@ -221,9 +236,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/apps/{}/users", app)
+        path = _utils.build_path("/apps/{}/users", app)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -261,7 +279,7 @@ class Admin(RequestsMixin):
         """
 
         if group:
-            path = build_path("/groups/{}/dashboards", group)
+            path = _utils.build_path("/groups/{}/dashboards", group)
         else:
             path = "/dashboards"
 
@@ -274,7 +292,11 @@ class Admin(RequestsMixin):
             "$top": top,
         }
 
-        raw = self.get_raw(url, self.session, params=params)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
 
         dashboards = [
             Dashboard(
@@ -307,9 +329,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/dashboards/{}/subscriptions", dashboard)
+        path = _utils.build_path("/dashboards/{}/subscriptions", dashboard)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -332,9 +357,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/dashboards/{}/tiles", dashboard)
+        path = _utils.build_path("/dashboards/{}/tiles", dashboard)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         tiles = [
             Tile(
@@ -367,9 +395,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/dashboards/{}/users", dashboard)
+        path = _utils.build_path("/dashboards/{}/users", dashboard)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -403,7 +434,10 @@ class Admin(RequestsMixin):
             return Dataflow
 
         resource = self.base_path + f"/dataflows/{dataflow}/export"
-        raw = self.get_raw(resource, self.session)
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
 
         dataflow = Dataflow(
             raw.get("objectId"),
@@ -463,7 +497,11 @@ class Admin(RequestsMixin):
         }
 
         url = self.base_path + path
-        raw = self.get_raw(url, self.session, params=params)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
 
         dataflows = [
             Dataflow(
@@ -491,9 +529,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/dataflows/{}/datasources", dataflow)
+        path = _utils.build_path("/dataflows/{}/datasources", dataflow)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -519,9 +560,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
+        path = _utils.build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -544,9 +588,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/dataflows/{}/users", dataflow)
+        path = _utils.build_path("/dataflows/{}/users", dataflow)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -610,7 +657,11 @@ class Admin(RequestsMixin):
             path = "/datasets"
 
         url = self.base_path + path
-        raw = self.get_raw(url, self.session, params=params)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
 
         datasets = [
             Dataset(
@@ -643,9 +694,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/datasets/{}/datasources", dataset)
+        path = _utils.build_path("/datasets/{}/datasources", dataset)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -668,9 +722,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/datasets/{}/users", dataset)
+        path = _utils.build_path("/datasets/{}/users", dataset)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -696,9 +753,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/groups/{}/datasets/upstreamDataflows", group)
+        path = _utils.build_path("/groups/{}/datasets/upstreamDataflows", group)
         url = self.base_path + path
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -728,10 +788,10 @@ class Admin(RequestsMixin):
 
         params = {"$expand": expand}
 
-        path = build_path("/groups/{}", group)
+        path = _utils.build_path("/groups/{}", group)
         url = self.base_path + path
 
-        raw = self.get_raw(
+        raw = _utils.get_raw(
             url,
             self.session,
             params=params,
@@ -752,7 +812,7 @@ class Admin(RequestsMixin):
         Parameters
         ----------
         `top` : `int`, optional
-            Returns only the first n results. This parameter is considered 
+            Returns only the first n results. This parameter is considered
             mandatory by the end point and must be in the range of 1-5000.
             If not provided, will default to 5000, the maximum value permitted.
         `expand` : `str`, optional
@@ -781,7 +841,11 @@ class Admin(RequestsMixin):
         }
 
         url = self.base_path + "/groups"
-        raw = self.get_raw(url, self.session, params=params)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
 
         groups = [
             Group(
@@ -813,10 +877,13 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/groups/{}/users", group)
+        path = _utils.build_path("/groups/{}/users", group)
         url = self.base_path + path
 
-        users = self.get_raw(url, self.session)
+        users = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return users
 
@@ -874,12 +941,16 @@ class Admin(RequestsMixin):
             "userType": user_type,
         }
 
-        payload = remove_no_values(group_user)
+        payload = _utils.remove_no_values(group_user)
 
-        path = build_path("/groups/{}/users", group)
+        path = _utils.build_path("/groups/{}/users", group)
         url = self.base_path + path
 
-        self.post(url, self.session, payload=payload)
+        _utils.post(
+            url,
+            self.session,
+            payload=payload,
+        )
 
     def delete_group_user(
         self,
@@ -903,10 +974,10 @@ class Admin(RequestsMixin):
 
         params = {"profileId": profile_id}
 
-        path = build_path("/groups/{}/users/{}", group, user)
+        path = _utils.build_path("/groups/{}/users/{}", group, user)
         url = self.base_path + path
 
-        self.delete(
+        _utils.delete(
             url,
             self.session,
             params=params,
@@ -936,12 +1007,12 @@ class Admin(RequestsMixin):
             "emailAddress": email_address,
             "name": name,
         }
-        request_body = remove_no_values(request_body)
+        request_body = _utils.remove_no_values(request_body)
 
-        path = build_path("/groups/{}/restore", group)
+        path = _utils.build_path("/groups/{}/restore", group)
         url = self.base_path + path
 
-        self.post(
+        _utils.post(
             url,
             self.session,
             payload=request_body,
@@ -984,7 +1055,7 @@ class Admin(RequestsMixin):
             "name": name,
             "description": description,
         }
-        request_body = remove_no_values(request_body)
+        request_body = _utils.remove_no_values(request_body)
 
         # To disable, the caller passes in None. Excluding implies logAnalyticsWorkspace
         # remains unchanged.
@@ -1000,10 +1071,10 @@ class Admin(RequestsMixin):
                 "No options were provided to update. Please specify an option to update."
             )
 
-        path = build_path("/groups/{}", group)
+        path = _utils.build_path("/groups/{}", group)
         url = self.base_path + path
 
-        self.patch(
+        _utils.patch(
             url,
             self.session,
             payload=request_body,
@@ -1047,7 +1118,7 @@ class Admin(RequestsMixin):
                 group_id = group
 
         if group:
-            path = build_path("/groups/{}/reports", group)
+            path = _utils.build_path("/groups/{}/reports", group)
         else:
             path = "/reports"
 
@@ -1057,7 +1128,11 @@ class Admin(RequestsMixin):
             "$skip": skip,
             "$top": top,
         }
-        raw = self.get_raw(url, self.session, params=params)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
 
         reports = [
             Report(
@@ -1091,10 +1166,13 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/reports/{}/subscriptions", report)
+        path = _utils.build_path("/reports/{}/subscriptions", report)
         url = self.base_path + path
 
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
 
@@ -1117,9 +1195,12 @@ class Admin(RequestsMixin):
 
         """
 
-        path = build_path("/reports/{}/users", report)
+        path = _utils.build_path("/reports/{}/users", report)
         url = self.base_path + path
 
-        raw = self.get_raw(url, self.session)
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
 
         return raw
