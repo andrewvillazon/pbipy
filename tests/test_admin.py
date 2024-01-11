@@ -351,6 +351,11 @@ def test_dataflows(admin, get_dataflows_as_admin):
     assert isinstance(dataflows, list)
     assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)
 
+    assert dataflows[0].id == "bd32e5c0-363f-430b-a03b-5535a4804b9b"
+    assert dataflows[0].name
+    assert dataflows[0].description
+    assert dataflows[0].model_url
+    assert dataflows[0].configured_by
     assert dataflows[0].group_id == dataflows[0].workspace_id
 
 
@@ -370,6 +375,7 @@ def test_dataflows_with_group(admin, get_dataflows_in_group_as_admin):
     assert isinstance(dataflows, list)
     assert all(isinstance(dataflow, Dataflow) for dataflow in dataflows)
 
+    assert dataflows[0].id
     assert dataflows[0].group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert not hasattr(dataflows[0], "workspace_id")
 

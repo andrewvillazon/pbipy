@@ -519,7 +519,7 @@ class Admin:
 
         dataflows = [
             Dataflow(
-                id=dataflow_js.get("id"),
+                id=dataflow_js.get("objectId"),
                 session=self.session,
                 group_id=dataflow_js.get("workspaceId", group_id),
                 raw=dataflow_js,
