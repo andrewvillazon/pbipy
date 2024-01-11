@@ -1,9 +1,35 @@
+"""
+Module implements a wrapper around the Power BI Rest API Dataflow operations.
+
+Full Dataflow Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/dataflows
+
+"""
+
 from requests import Session
+
 from pbipy.resources import Resource
 from pbipy import _utils
 
 
 class Dataflow(Resource):
+    """
+    A Power BI Dataflow.
+
+    Users should initialize a `Dataflow` object by calling the `dataflow()` method
+    on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving a `Dataflow` object using a `pbi` client object.
+
+    ```
+    >>> my_dataflow = pbi.dataflow("bd32e5c0-363f-430b-a03b-5535a4804b9b")
+    ```
+
+    """
+
     _REPR = [
         "id",
         "name",

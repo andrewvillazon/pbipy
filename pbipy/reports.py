@@ -1,3 +1,12 @@
+"""
+Module implements a wrapper around the Power BI Rest API Report operations.
+
+Full Report Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/reports
+
+"""
+
 import mimetypes
 from pathlib import Path
 
@@ -10,6 +19,29 @@ from pbipy import _utils
 
 
 class Report(Resource):
+    """
+    A Power BI Report.
+    
+    Users should initialize a `Report` object by calling the `report()` 
+    method on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving a `Report` object using a `pbi` client object.
+    
+    ```
+    >>> my_report = pbi.report("5b218778-e7a5-4d73-8187-f10824047715")
+    ```
+
+    Retrieve the list of datasources for a report.
+
+    ```
+    >>> my_report = pbi.report("5b218778-e7a5-4d73-8187-f10824047715")
+    >>> my_report.datasources()
+    ```
+
+    """
+
     _REPR = [
         "id",
         "name",

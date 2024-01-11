@@ -1,3 +1,12 @@
+"""
+Module implements a wrapper around the Power BI Rest API Admin Operations.
+
+Full Admin Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/admin
+
+"""
+
 from datetime import datetime
 
 import requests
@@ -14,10 +23,15 @@ from pbipy import _utils
 
 class Admin:
     """
-    Groups methods that wrap around the Power BI Rest API Admin Endpoints.
+    Groups methods that wrap the Power BI Rest API Admin Operations, specialized 
+    endpoints available to Power BI administrators.
 
-    This object should be initialized by calling the `admin()` method on a
-    `PowerBI` client object.
+    The `Admin` object should be initialized by calling the `admin()` method 
+    of the `PowerBI` client object, rather than creating directly.
+
+    Users are free to instantiate the `Admin` object and call its methods, 
+    but must have administrator rights on their Power BI instance to successfully 
+    retrieve data from these endpoints.
 
     """
 

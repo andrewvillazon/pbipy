@@ -1,8 +1,18 @@
+"""
+Module implments representations of a Power BI Dashboard and Tile.
+
+These objects are minimal representations and not yet fully implemented.
+
+"""
+
 from requests import Session
+
 from pbipy.resources import Resource
 
 
 class Dashboard(Resource):
+    """A Power BI Dashboard."""
+    
     _REPR = [
         "id",
         "display_name",
@@ -36,6 +46,8 @@ class Dashboard(Resource):
 
 
 class Tile(Resource):
+    """A Power BI Dashboard Tile."""
+
     _REPR = [
         "id",
         "title",

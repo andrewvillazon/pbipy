@@ -1,11 +1,11 @@
 """
-Module implements a wrapper around the Power BI Rest API.
-
-Users construct an instance of the PowerBI client and call its methods.
+Module implements a Power BI client that wraps around the Power BI Rest 
+API.
 
 Full API documentation can be found at:
 
 https://learn.microsoft.com/en-us/rest/api/power-bi/
+
 """
 
 import requests
@@ -29,12 +29,10 @@ class PowerBI:
     of this object and calling its methods.
 
     Authentication with the Power BI service requires a `bearer_token` which
-    must be generated in advance before creating the `PowerBI` object.
-    How you the token is generated depends on the user's Azure and Power
-    BI configuration.
+    must be generated in advance of initializing the `PowerBI` client. How 
+    the token is generated depends on the user's Azure and Power BI configuration.
 
-    In general, `PowerBI()` methods (mostly) follow the operations described
-    here:
+    In general, `PowerBI()` methods wrap the operations described here:
 
     https://learn.microsoft.com/en-us/rest/api/power-bi/
 
@@ -42,6 +40,33 @@ class PowerBI:
     ----------
     `bearer_token` : `str`
         Bearer token used to authenticate with your Power BI service.
+    `session` : `requests.Session`, optional
+        `Session` object used to make http requests. Users can subclass
+        a `Session` and pass to the constructor of the client to implement 
+        customized request handling, e.g., implementing a retry strategy.
+    
+    Examples
+    --------
+    Initializing the client.
+
+    ```
+    >>> from powerbi import PowerBI
+    >>> pbi = PowerBI(bearer_token="aBCdEFGhijK123456xYz")
+    ```
+
+    Using the client to retrieve a report and then initiate a refresh.
+
+    ```
+    >>> my_report = pbi.report("5b218778-e7a5-4d73-8187-f10824047715")
+    >>> my_report.refresh()
+    ```
+
+    Using the client to create a new Workspace (Group) in the user's Power 
+    BI instance.
+
+    ```
+    >>> my_workspace = pbi.create_group("Workspace Name")
+    ```
 
     """
 
