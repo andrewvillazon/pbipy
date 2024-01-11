@@ -1,3 +1,12 @@
+"""
+Module implements a wrapper around the Power BI Rest API App operations.
+
+Full App Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/apps
+
+"""
+
 from requests import Session
 
 from pbipy.dashboards import Dashboard, Tile
@@ -7,6 +16,22 @@ from pbipy import _utils
 
 
 class App(Resource):
+    """
+    A Power BI installed App.
+    
+    Users should initialize an `App` object by calling the `app()` method
+    on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving an `App` object using a `pbi` client object.
+    
+    ```
+    >>> my_app = pbi.app("f089354e-8366-4e18-aea3-4cb4a3a50b48")
+    ```
+
+    """
+
     _REPR = [
         "id",
         "name",
