@@ -21,14 +21,14 @@ from pbipy import _utils
 class Report(Resource):
     """
     A Power BI Report.
-    
-    Users should initialize a `Report` object by calling the `report()` 
+
+    Users should initialize a `Report` object by calling the `report()`
     method on the `PowerBI` client, rather than creating directly.
 
     Examples
     --------
     Retrieving a `Report` object using a `pbi` client object.
-    
+
     ```
     >>> my_report = pbi.report("5b218778-e7a5-4d73-8187-f10824047715")
     ```
@@ -211,6 +211,12 @@ class Report(Resource):
             f_name = file_name
 
         content_type = response.headers.get("content-type")
+
+        # Try and ensure more consistent extension guessing
+        mimetypes.add_type(
+            "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+            ".pptx",
+        )
         ext = mimetypes.guess_extension(content_type)
 
         file_path = _utils.file_path_from_components(
