@@ -1,3 +1,12 @@
+"""
+Module implements a wrapper around the Power BI Rest API Dataset operations.
+
+Full Dataset Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/datasets
+
+"""
+
 from requests import Session
 
 from pbipy.resources import Resource
@@ -5,6 +14,22 @@ from pbipy import _utils
 
 
 class Dataset(Resource):
+    """
+    A Power BI Dataset.
+    
+    Users should initialize a `Dataset` object by calling the `dataset()` 
+    method on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving a `Dataset` object using a `pbi` client object.
+    
+    ```
+    >>> my_dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
+    ```
+
+    """
+
     _REPR = [
         "id",
         "name",
