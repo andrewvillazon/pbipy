@@ -1,3 +1,12 @@
+"""
+Module implements a wrapper around the Power BI Rest API Group operations.
+
+Full Group Operations documentation can be found at:
+
+https://learn.microsoft.com/en-us/rest/api/power-bi/groups
+
+"""
+
 from pbipy.resources import Resource
 from pbipy import _utils
 
@@ -5,6 +14,29 @@ from requests import Session
 
 
 class Group(Resource):
+    """
+    A Power BI Group (better know as a Workspace).
+    
+    Users should initialize a `Group` object by calling the `group()` method
+    on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving a `Group` object using a `pbi` client object.
+    
+    ```
+    >>> my_group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+    ```
+
+    Retrieve a list of users with access to a Group.
+
+    ```
+    >>> my_group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
+    >>> group_users = my_group.users()
+    ```
+
+    """
+
     _REPR = [
         "id",
         "name",
