@@ -63,9 +63,9 @@ def test_file_path_from_components():
 
 
 def test_file_path_from_components_path_object():
-    expected_path = Path("C:\sample_dir\sample_report.pbix")
+    expected_path = Path("C:/sample_dir/sample_report.pbix")
 
-    directory = Path("C:\sample_dir")
+    directory = Path("C:/sample_dir")
     path = _utils.file_path_from_components(
         file_name="sample_report",
         directory=directory,
@@ -77,11 +77,11 @@ def test_file_path_from_components_path_object():
 
 
 def test_file_path_from_components_str_directory():
-    expected_path = Path("C:\sample_dir\sample_report.pbix")
+    expected_path = Path("C:/sample_dir/sample_report.pbix")
 
     path = _utils.file_path_from_components(
         file_name="sample_report",
-        directory="C:\sample_dir",
+        directory="C:/sample_dir",
         extension="pbix",
     )
 
@@ -90,11 +90,11 @@ def test_file_path_from_components_str_directory():
 
 
 def test_file_path_from_components_dot_ext():
-    expected_path = Path("C:\sample_dir\sample_report.pbix")
+    expected_path = Path("C:/sample_dir/sample_report.pbix")
 
     path = _utils.file_path_from_components(
         file_name="sample_report",
-        directory="C:\sample_dir",
+        directory="C:/sample_dir",
         extension=".pbix",
     )
 

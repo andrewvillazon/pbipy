@@ -487,9 +487,9 @@ def test_download_with_dir():
 
     m = mock_open()
     with patch("builtins.open", m):
-        report.download(save_to="C:\\temp")
+        report.download(save_to="C:/temp")
 
-    expected_path = Path("C:\\temp\SalesMarketing.pbix")
+    expected_path = Path("C:/temp/SalesMarketing.pbix")
 
     m.assert_called_with(expected_path, "wb")
 
@@ -662,7 +662,7 @@ def test_download_export_pdf():
 
     m = mock_open()
     with patch("builtins.open", m):
-        report.download_export("Mi9C5419i....PS4=", "C:\\temp")
+        report.download_export("Mi9C5419i....PS4=", "C:/temp")
 
-    m.assert_called_with(Path("C:\\temp\SalesMarketing.pdf"), "wb")
+    m.assert_called_with(Path("C:/temp/SalesMarketing.pdf"), "wb")
     m.return_value.write.assert_called_once_with(response_file)
