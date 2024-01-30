@@ -6,6 +6,8 @@ from responses import matchers
 
 from pbipy.datasets import Dataset
 
+REQUEST_ID = "foo"
+
 
 @responses.activate
 def test_get_refresh_history():
@@ -626,6 +628,7 @@ def test_refresh_call_simple():
         match=[
             matchers.json_params_matcher(json_parms),
         ],
+        headers={"requestId": REQUEST_ID},
     )
 
     dataset = Dataset(
@@ -633,7 +636,9 @@ def test_refresh_call_simple():
         session=requests.Session(),
     )
 
-    dataset.refresh(notify_option="MailOnFailure")
+    refresh_id = dataset.refresh(notify_option="MailOnFailure")
+
+    assert refresh_id == REQUEST_ID
 
 
 @responses.activate
@@ -657,6 +662,7 @@ def test_refresh_call_complex():
         match=[
             matchers.json_params_matcher(json_parms),
         ],
+        headers={"requestId": REQUEST_ID},
     )
 
     dataset = Dataset(
@@ -664,7 +670,7 @@ def test_refresh_call_complex():
         session=requests.Session(),
     )
 
-    dataset.refresh(
+    refresh_id = dataset.refresh(
         notify_option="MailOnFailure",
         retry_count=3,
         type="full",
@@ -678,6 +684,7 @@ def test_refresh_call_complex():
         ],
     )
 
+    assert refresh_id == REQUEST_ID
 
 @responses.activate
 def test_take_over_call():
