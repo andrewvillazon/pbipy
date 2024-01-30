@@ -6,8 +6,6 @@ from responses import matchers
 
 from pbipy.datasets import Dataset
 
-REQUEST_ID = "foo"
-
 
 @responses.activate
 def test_get_refresh_history():
@@ -694,30 +692,36 @@ def test_update_user_raises_http_error():
 
 @responses.activate
 def test_refresh_call_simple():
+    dataset_id = "dataset_id"
+    request_id = "request_id"
+
     json_parms = {
         "notifyOption": "MailOnFailure",
     }
 
     responses.post(
-        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
         match=[
             matchers.json_params_matcher(json_parms),
         ],
-        headers={"requestId": REQUEST_ID},
+        headers={"requestId": request_id},
     )
 
     dataset = Dataset(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        id=dataset_id,
         session=requests.Session(),
     )
 
     refresh_id = dataset.refresh(notify_option="MailOnFailure")
 
-    assert refresh_id == REQUEST_ID
+    assert refresh_id == request_id
 
 
 @responses.activate
 def test_refresh_call_complex():
+    dataset_id = "dataset_id"
+    request_id = "request_id"
+
     json_parms = {
         "notifyOption": "MailOnFailure",
         "retryCount": 3,
@@ -733,15 +737,15 @@ def test_refresh_call_complex():
     }
 
     responses.post(
-        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
         match=[
             matchers.json_params_matcher(json_parms),
         ],
-        headers={"requestId": REQUEST_ID},
+        headers={"requestId": request_id},
     )
 
     dataset = Dataset(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        id=dataset_id,
         session=requests.Session(),
     )
 
@@ -759,7 +763,7 @@ def test_refresh_call_complex():
         ],
     )
 
-    assert refresh_id == REQUEST_ID
+    assert refresh_id == request_id
 
 
 @responses.activate
