@@ -325,6 +325,20 @@ def get_refresh_execution_details():
 
 
 @pytest.fixture
+def get_refresh_execution_details_failed():
+    return """
+    {
+      "startTime": "2021-12-10T08:40:31.57",
+      "endTime": "2021-12-10T08:40:43.87",
+      "type": "Full",
+      "commitMode": "Transactional",
+      "status": "Failed",
+      "extendedStatus": "Failed"
+    }
+    """
+
+
+@pytest.fixture
 def get_groups():
     return """
     {
