@@ -7,10 +7,16 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/datasets
 
 """
 
+import time
+
 from requests import Session
 
 from pbipy.resources import Resource
 from pbipy import _utils
+
+
+class RefreshDatasetError(Exception):
+    """Error raised when a Refresh dataset meets an error"""
 
 
 class Dataset(Resource):
@@ -388,6 +394,47 @@ class Dataset(Resource):
             resource,
             self.session,
         )
+
+    def refresh_and_wait(
+        self,
+        notify_option: str,
+        type: str = "Full",
+        wait_time: int = 30,
+        **kwargs,
+    ) -> None:
+        """
+        Trigger a enhanced refresh of the dataset and wait until it finishes or e
+        ncounters and error. To get refresh status, the refresh must be an enhanced one,
+        that is why `notify_option` and `type` should be specified at least.
+
+        Parameters
+        ----------
+        `notify_option` : `str`
+            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
+            or "NoNotification".
+        `type` : `str` (default: "Full")
+           The type of processing to perform, e.g., "Automatic", "Calculate",
+           "ClearValues", "DataOnly", "Defragment", or "Full".
+        `wait_time` : `int` (default: 30)
+            Wait time
+
+        Raises
+        ------
+        `DatasetRefreshError`
+            When the refresh status finished with a `Failed` status
+
+        """
+
+        refresh_id: str = self.refresh(notify_option=notify_option, type=type, **kwargs)
+
+        status: str = self.refresh_details(refresh_id).get("status", "Unknown")
+
+        while status not in ("Completed", "Failed", "Disabled", "Cancelled"):
+            time.sleep(wait_time)
+            status = self.refresh_details(refresh_id).get("status", "Unknown")
+
+        if status == "Failed":
+            raise RefreshDatasetError
 
     def refresh_history(
         self,
