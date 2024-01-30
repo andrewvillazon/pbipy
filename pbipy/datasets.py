@@ -297,7 +297,7 @@ class Dataset(Resource):
         objects: list[dict] = None,
         retry_count: int = None,
         type: str = None,
-    ) -> None:
+    ) -> str:
         """
         Trigger a refresh of the dataset. An enhanced refresh is triggered
         only if a request option other than `notify_option` is set.
@@ -355,11 +355,13 @@ class Dataset(Resource):
         prepared_request = _utils.remove_no_values(refresh_request)
         resource = self.base_path + "/refreshes"
 
-        _utils.post(
+        response = _utils.post(
             resource,
             self.session,
             prepared_request,
         )
+
+        return response.headers["RequestId"]
 
     def refresh_details(
         self,
