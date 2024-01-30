@@ -692,7 +692,6 @@ def test_update_user_raises_http_error():
 
 @responses.activate
 def test_refresh_call_simple():
-    dataset_id = "dataset_id"
     request_id = "request_id"
 
     json_parms = {
@@ -700,7 +699,7 @@ def test_refresh_call_simple():
     }
 
     responses.post(
-        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
         match=[
             matchers.json_params_matcher(json_parms),
         ],
@@ -708,7 +707,7 @@ def test_refresh_call_simple():
     )
 
     dataset = Dataset(
-        id=dataset_id,
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         session=requests.Session(),
     )
 
@@ -719,7 +718,6 @@ def test_refresh_call_simple():
 
 @responses.activate
 def test_refresh_call_complex():
-    dataset_id = "dataset_id"
     request_id = "request_id"
 
     json_parms = {
@@ -737,7 +735,7 @@ def test_refresh_call_complex():
     }
 
     responses.post(
-        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
         match=[
             matchers.json_params_matcher(json_parms),
         ],
@@ -745,7 +743,7 @@ def test_refresh_call_complex():
     )
 
     dataset = Dataset(
-        id=dataset_id,
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         session=requests.Session(),
     )
 
