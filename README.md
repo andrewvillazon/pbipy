@@ -29,7 +29,7 @@ To acquire a `bearer_token` you'll need to authenticate against your [Registered
 
 To authenticate against the Registered App, Microsoft provides the `MSAL` and `azure-identity` python libraries. These libraries support different ways of acquiring a `bearer_token` and which to use will depend on how your cloud/tenant is configured.
 
-Because there are multiple ways to acquire the token, `pbipy` leaves it up to do this in the way that suits, rather than directly handling authentication (of course, this might change in future).
+Because there are multiple ways to acquire the token, `pbipy` leaves it up to the user do this in the way that suits, rather than directly handling authentication (of course, this might change in future).
 
 This `README` doesn't cover authentication in detail, however, these are some helpful resources that look at acquiring a `bearer_token` in the context of Power BI:
 
