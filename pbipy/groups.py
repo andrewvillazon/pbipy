@@ -16,14 +16,14 @@ from requests import Session
 class Group(Resource):
     """
     A Power BI Group (better know as a Workspace).
-    
+
     Users should initialize a `Group` object by calling the `group()` method
     on the `PowerBI` client, rather than creating directly.
 
     Examples
     --------
     Retrieving a `Group` object using a `pbi` client object.
-    
+
     ```
     >>> my_group = pbi.group("a2f89923-421a-464e-bf4c-25eab39bb09f")
     ```
@@ -190,6 +190,62 @@ class Group(Resource):
         resource = self.base_path + "/users"
 
         _utils.put(resource, self.session, prepared_payload)
+
+    def update(
+        self,
+        name: str = None,
+        default_dataset_storage_format: str = None,
+    ) -> "Group":
+        """
+        Update properties for this Group on the Power BI instance. First attempts
+        to update the Group on the Power BI instance, and then reflects these
+        changes in the Group.
+
+        Parameters
+        ----------
+        `name` : `str`, optional
+            The new name for the group.
+        `default_dataset_storage_format` : `str`, optional
+            The new Default Dataset Storage Format for the group.
+
+        Returns
+        -------
+        `Group`
+            The group with the specified values updated.
+
+        Raises
+        ------
+        `ValueError`
+            If no values to update were provided.
+
+        """
+
+        request_body = {
+            "name": name,
+            "defaultDatasetStorageFormat": default_dataset_storage_format,
+        }
+        request_body = _utils.remove_no_values(request_body)
+
+        if not request_body:
+            raise ValueError(
+                "No options were provided to update. Please specify an option to update."
+            )
+
+        _utils.patch(
+            self.base_path,
+            self.session,
+            request_body,
+        )
+
+        # Update existing group to reflect changes
+        self.raw.update(request_body)
+
+        for k, v in request_body.items():
+            attr = _utils.to_identifier(k)
+            attr = _utils.to_snake_case(attr)
+            setattr(self, attr, v)
+
+        return self
 
     def users(
         self,
