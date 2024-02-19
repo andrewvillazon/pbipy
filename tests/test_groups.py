@@ -1,9 +1,27 @@
+import pytest
 import responses
 from responses import matchers
+import requests
+
 from pbipy.groups import Group
 
 
-import requests
+@pytest.fixture
+def group():
+    raw = {
+        "id": "e2284830-c8dc-416b-b19a-8cdcd2729332",
+        "isReadOnly": False,
+        "isOnDedicatedCapacity": False,
+        "name": "sample group",
+    }
+
+    group = Group(
+        raw.get("id"),
+        session=requests.Session(),
+        raw=raw,
+    )
+
+    return group
 
 
 def test_group_creation_from_raw():
@@ -211,3 +229,56 @@ def test_create_group_result(powerbi, create_group):
     assert group.id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
     assert not group.is_on_dedicated_capacity
     assert group.name == "sample group"
+
+
+@responses.activate
+def test_group_update(group):
+    json_params = {
+        "name": "Sample Group 1",
+        "defaultDatasetStorageFormat": "Small",
+    }
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/groups/e2284830-c8dc-416b-b19a-8cdcd2729332",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    group.update(name="Sample Group 1", default_dataset_storage_format="Small")
+
+    # Changes were made
+    assert group.name == "Sample Group 1"
+    assert group.default_dataset_storage_format == "Small"
+    assert group.raw.get("defaultDatasetStorageFormat") == "Small"
+
+    # Existing values unaffected
+    assert group.is_read_only == False
+    assert group.raw.get("isOnDedicatedCapacity") == False
+
+
+@responses.activate
+def test_group_update_name(group):
+    json_params = {
+        "name": "Sample Group 1",
+    }
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/groups/e2284830-c8dc-416b-b19a-8cdcd2729332",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    group.update(name="Sample Group 1")
+
+    assert group.name == "Sample Group 1"
+    assert group.raw.get("name") == "Sample Group 1"
+
+
+@responses.activate
+def test_group_update_raises(group):
+    responses.patch(
+        "https://api.powerbi.com/v1.0/myorg/groups/e2284830-c8dc-416b-b19a-8cdcd2729332",
+    )
+
+    with pytest.raises(ValueError):
+        group.update()
