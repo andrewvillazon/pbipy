@@ -1446,3 +1446,17 @@ def get_dashboard_in_group():
       "isReadOnly": false
     }
     """
+
+
+@pytest.fixture
+def get_modified_workspaces():
+    return """
+    [
+      {
+        "Id": "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
+      },
+      {
+        "Id": "19cb346c-9839-4e19-81e6-76364d0b836f"
+      }
+    ]
+    """

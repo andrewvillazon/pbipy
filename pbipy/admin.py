@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/admin
 
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 
@@ -23,14 +23,14 @@ from pbipy import _utils
 
 class Admin:
     """
-    Groups methods that wrap the Power BI Rest API Admin Operations, specialized 
+    Groups methods that wrap the Power BI Rest API Admin Operations, specialized
     endpoints available to Power BI administrators.
 
-    The `Admin` object should be initialized by calling the `admin()` method 
+    The `Admin` object should be initialized by calling the `admin()` method
     of the `PowerBI` client object, rather than creating directly.
 
-    Users are free to instantiate the `Admin` object and call its methods, 
-    but must have administrator rights on their Power BI instance to successfully 
+    Users are free to instantiate the `Admin` object and call its methods,
+    but must have administrator rights on their Power BI instance to successfully
     retrieve data from these endpoints.
 
     """
@@ -574,7 +574,9 @@ class Admin:
 
         """
 
-        path = _utils.build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
+        path = _utils.build_path(
+            "/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow
+        )
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -1215,6 +1217,65 @@ class Admin:
         raw = _utils.get_raw(
             url,
             self.session,
+        )
+
+        return raw
+
+    def workspaces(
+        self,
+        exclude_inactive_workspaces: bool = None,
+        exclude_personal_workspaces: bool = None,
+        modified_since: datetime = None,
+    ) -> list[dict]:
+        """
+        Gets a list of Workspace IDs in the Organization.
+
+        Parameters
+        ----------
+        `exclude_inactive_workspaces` : `bool`, optional
+            Whether to exclude inactive Workspaces.
+        `exclude_personal_workspaces` : `bool`, optional
+            Whether to exclude personal workspaces.
+        `modified_since` : `datetime`, optional
+            Only include Workspaces modified after this datetime. If not
+            supplied then all Workspaces in the Organization are returned.
+            The datetime provided is assumed to be UTC and will be supplied
+            to the PowerBI API without any conversion to UTC.
+
+            The datetime specified must be in the range of 30 minutes (to
+            allow workspace changes to take effect) to 30 days prior to the
+            current time.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Workspaces with each Workspace represented as a dict
+            and a single "ID" key.
+
+        """
+
+        url = self.base_path + "/workspaces/modified"
+
+        # Comment here: http://disq.us/p/2dsf5lg, the datetime should follow
+        # the 'O' or 'o' standard format string of the C# ToString method:
+        # yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK
+        # See: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#the-round-trip-o-o-format-specifier
+
+        if modified_since:
+            modified_since_formatted = modified_since.strftime("%Y-%m-%dT%H:%M:%S.%f0Z")
+        else:
+            modified_since_formatted = modified_since
+
+        params = {
+            "excludeInActiveWorkspaces": exclude_inactive_workspaces,
+            "excludePersonalWorkspaces": exclude_personal_workspaces,
+            "modifiedSince": modified_since_formatted,
+        }
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
         )
 
         return raw

@@ -844,3 +844,70 @@ def test_activity_events(admin, get_activity_events):
     assert all(isinstance(activity_event, dict) for activity_event in activity_events)
     assert len(activity_events) == 6
     assert activity_events[5]["Id"] == "1db4c464-3e5d-4a89-b412-c2ce6fbae88e"
+
+
+@responses.activate
+def test_workspaces(admin, get_modified_workspaces):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
+        body=get_modified_workspaces,
+    )
+
+    workspaces = admin.workspaces()
+
+    assert isinstance(workspaces, list)
+    assert len(workspaces) == 2
+    assert all(workspace.get("Id") for workspace in workspaces)
+    assert workspaces[0].get("Id") == "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
+
+
+@responses.activate
+def test_workspaces_modified_since(admin, get_modified_workspaces):
+    params = {"modifiedSince": "2020-10-02T05:51:30.0000000Z"}
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
+        body=get_modified_workspaces,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+    )
+
+    modified_since = datetime(2020, 10, 2, 5, 51, 30)
+
+    workspaces = admin.workspaces(modified_since=modified_since)
+
+    assert isinstance(workspaces, list)
+    assert len(workspaces) == 2
+    assert all(workspace.get("Id") for workspace in workspaces)
+    assert workspaces[0].get("Id") == "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
+
+
+@responses.activate
+def test_workspaces_params(admin, get_modified_workspaces):
+    params = params = {
+        "modifiedSince": "2020-10-02T05:51:30.0000000Z",
+        "excludeInActiveWorkspaces": False,
+        "excludePersonalWorkspaces": True,
+    }
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
+        body=get_modified_workspaces,
+        match=[
+            matchers.query_param_matcher(params),
+        ],
+    )
+
+    modified_since = datetime(2020, 10, 2, 5, 51, 30)
+
+    workspaces = admin.workspaces(
+        modified_since=modified_since,
+        exclude_inactive_workspaces=False,
+        exclude_personal_workspaces=True,
+    )
+
+    assert isinstance(workspaces, list)
+    assert len(workspaces) == 2
+    assert all(workspace.get("Id") for workspace in workspaces)
+    assert workspaces[0].get("Id") == "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
