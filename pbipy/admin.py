@@ -1279,3 +1279,71 @@ class Admin:
         )
 
         return raw
+
+    def initiate_scan(
+        self,
+        workspaces: list[str] | str,
+        dataset_expressions: bool = None,
+        dataset_schema: bool = None,
+        datasource_details: bool = None,
+        get_artifact_users: bool = None,
+        lineage: bool = None,
+    ) -> dict:
+        """
+        Initiates a call to receive metadata for the requested workspace
+        or list of workspaces.
+
+        Parameters
+        ----------
+        `workspaces` : `list[str] | str`
+            Workspace ID, or list of Workspace IDs to be scanned.
+        `dataset_expressions` : `bool`, optional
+            Whether to return dataset expressions (DAX and Mashup queries).
+            If you set this parameter to `True`, you must fully enable metadata
+            scanning in order for data to be returned.
+        `dataset_schema` : `bool`, optional
+            Whether to return dataset schema (tables, columns and measures).
+            If you set this parameter to true, you must fully enable metadata
+            scanning in order for data to be returned.
+        `datasource_details` : `bool`, optional
+            Whether to return data source details.
+        `get_artifact_users` : `bool`, optional
+            Whether to return user details for a Power BI item (such as
+            a report or a dashboard).
+        `lineage` : `bool`, optional
+            Whether to return lineage info (upstream dataflows, tiles,
+            data source IDs).
+
+        Returns
+        -------
+        `dict`
+            Dict representation of the Scan Request. Use the `"id"` key to
+            access the scan request id.
+
+        """
+
+        url = self.base_path + "/workspaces/getInfo"
+
+        if isinstance(workspaces, str):
+            workspaces = [workspaces]
+
+        request_body = {
+            "workspaces": workspaces,
+        }
+
+        params = {
+            "datasetExpressions": dataset_expressions,
+            "datasetSchema": dataset_schema,
+            "datasourceDetails": datasource_details,
+            "getArtifactUsers": get_artifact_users,
+            "lineage": lineage,
+        }
+
+        raw = _utils.post_raw(
+            url,
+            self.session,
+            payload=request_body,
+            params=params,
+        )
+
+        return raw

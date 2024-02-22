@@ -911,3 +911,73 @@ def test_workspaces_params(admin, get_modified_workspaces):
     assert len(workspaces) == 2
     assert all(workspace.get("Id") for workspace in workspaces)
     assert workspaces[0].get("Id") == "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
+
+
+@responses.activate
+def test_initiate_scan(admin, post_workspace_info):
+    json_params = {
+        "workspaces": [
+            "97d03602-4873-4760-b37e-1563ef5358e3",
+        ]
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/getInfo",
+        body=post_workspace_info,
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        content_type="application/json",
+    )
+
+    workspaces = "97d03602-4873-4760-b37e-1563ef5358e3"
+
+    scan_request = admin.initiate_scan(workspaces)
+
+    assert isinstance(scan_request, dict)
+    assert scan_request["id"] == "e7d03602-4873-4760-b37e-1563ef5358e3"
+    assert scan_request["createdDateTime"] == "2020-06-15T16:46:28.0487687Z"
+    assert scan_request["status"] == "NotStarted"
+
+
+@responses.activate
+def test_initiate_scan_params(admin, post_workspace_info):
+    json_params = {
+        "workspaces": [
+            "97d03602-4873-4760-b37e-1563ef5358e3",
+            "67b7e93a-3fb3-493c-9e41-2c5051008f24",
+        ]
+    }
+
+    params = {
+        "datasetExpressions": True,
+        "lineage": True,
+        "datasourceDetails": False,
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/getInfo",
+        body=post_workspace_info,
+        match=[
+            matchers.json_params_matcher(json_params),
+            matchers.query_param_matcher(params),
+        ],
+        content_type="application/json",
+    )
+
+    workspaces = [
+        "97d03602-4873-4760-b37e-1563ef5358e3",
+        "67b7e93a-3fb3-493c-9e41-2c5051008f24",
+    ]
+
+    scan_request = admin.initiate_scan(
+        workspaces,
+        lineage=True,
+        dataset_expressions=True,
+        datasource_details=False,
+    )
+
+    assert isinstance(scan_request, dict)
+    assert scan_request["id"] == "e7d03602-4873-4760-b37e-1563ef5358e3"
+    assert scan_request["createdDateTime"] == "2020-06-15T16:46:28.0487687Z"
+    assert scan_request["status"] == "NotStarted"

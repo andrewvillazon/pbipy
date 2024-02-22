@@ -1460,3 +1460,14 @@ def get_modified_workspaces():
       }
     ]
     """
+
+
+@pytest.fixture
+def post_workspace_info():
+    return """
+    {
+      "id": "e7d03602-4873-4760-b37e-1563ef5358e3",
+      "createdDateTime": "2020-06-15T16:46:28.0487687Z",
+      "status": "NotStarted"
+    }
+    """
