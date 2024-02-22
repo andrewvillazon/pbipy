@@ -14,7 +14,7 @@ from setuptools.command.test import test as TestCommand
 
 requires = [
     "python-dateutil==2.8.2",
-    "requests==2.28.1",
+    "requests>=2.28.1",
 ]
 
 extras = {"dev":["black"]}
