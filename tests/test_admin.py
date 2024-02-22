@@ -851,6 +851,7 @@ def test_workspaces(admin, get_modified_workspaces):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
         body=get_modified_workspaces,
+        content_type="application/json",
     )
 
     workspaces = admin.workspaces()
@@ -868,6 +869,7 @@ def test_workspaces_modified_since(admin, get_modified_workspaces):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
         body=get_modified_workspaces,
+        content_type="application/json",
         match=[
             matchers.query_param_matcher(params),
         ],
@@ -894,6 +896,7 @@ def test_workspaces_params(admin, get_modified_workspaces):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/admin/workspaces/modified",
         body=get_modified_workspaces,
+        content_type="application/json",
         match=[
             matchers.query_param_matcher(params),
         ],
