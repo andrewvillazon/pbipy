@@ -1318,7 +1318,8 @@ class Admin:
         -------
         `dict`
             Dict representation of the Scan Request. Use the `"id"` key to
-            access the scan request id.
+            access the scan request id. To check the status of the scan
+            request, use the `scan_status` method.
 
         """
 
@@ -1344,6 +1345,46 @@ class Admin:
             self.session,
             payload=request_body,
             params=params,
+        )
+
+        return raw
+
+    def scan_status(
+        self,
+        scan_id: str,
+    ) -> dict:
+        """
+        Gets the scan status for the specified scan id.
+
+        Parameters
+        ----------
+        `scan_id` : `str`
+            The scan id to get the status for. To initiate a scan use the
+            `initate_scan` method, which will initiate a metadata scan
+            on the Power BI instance and return a scan request that includes
+            a scan id.
+
+        Returns
+        -------
+        `dict`
+            Dict representation of the scan request. Use the `"status"`
+            key to identify the scan status.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/scanStatus` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        path = f"/workspaces/scanStatus/{scan_id}"
+        url = self.base_path + path
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
         )
 
         return raw

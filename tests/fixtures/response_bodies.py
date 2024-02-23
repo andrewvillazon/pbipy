@@ -1471,3 +1471,14 @@ def post_workspace_info():
       "status": "NotStarted"
     }
     """
+
+
+@pytest.fixture
+def get_scan_status():
+    return """
+    {
+      "id": "e7d03602-4873-4760-b37e-1563ef5358e3",
+      "createdDateTime": "2020-06-15T16:46:28.0487687Z",
+      "status": "Succeeded"
+    }
+    """

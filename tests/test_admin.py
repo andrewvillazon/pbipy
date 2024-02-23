@@ -984,3 +984,18 @@ def test_initiate_scan_params(admin, post_workspace_info):
     assert scan_request["id"] == "e7d03602-4873-4760-b37e-1563ef5358e3"
     assert scan_request["createdDateTime"] == "2020-06-15T16:46:28.0487687Z"
     assert scan_request["status"] == "NotStarted"
+
+
+@responses.activate
+def test_scan_status(admin, get_scan_status):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/scanStatus/e7d03602-4873-4760-b37e-1563ef5358e3",
+        body=get_scan_status,
+        content_type="application/json",
+    )
+
+    scan_status = admin.scan_status("e7d03602-4873-4760-b37e-1563ef5358e3")
+
+    assert isinstance(scan_status, dict)
+    assert scan_status["id"] == "e7d03602-4873-4760-b37e-1563ef5358e3"
+    assert scan_status["status"] == "Succeeded"
