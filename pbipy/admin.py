@@ -1252,6 +1252,13 @@ class Admin:
             List of Workspaces with each Workspace represented as a dict
             and a single "ID" key.
 
+        Notes
+        -----
+        Wraps the `/admin/workspaces/modified` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
         """
 
         url = self.base_path + "/workspaces/modified"
@@ -1290,8 +1297,8 @@ class Admin:
         lineage: bool = None,
     ) -> dict:
         """
-        Initiates a call to receive metadata for the requested workspace
-        or list of workspaces.
+        Initiates a Metadata Scan for the requested workspace or list of
+        workspaces.
 
         Parameters
         ----------
@@ -1320,6 +1327,13 @@ class Admin:
             Dict representation of the Scan Request. Use the `"id"` key to
             access the scan request id. To check the status of the scan
             request, use the `scan_status` method.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/getInfo` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
 
         """
 
