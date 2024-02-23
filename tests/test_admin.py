@@ -999,3 +999,22 @@ def test_scan_status(admin, get_scan_status):
     assert isinstance(scan_status, dict)
     assert scan_status["id"] == "e7d03602-4873-4760-b37e-1563ef5358e3"
     assert scan_status["status"] == "Succeeded"
+
+
+@responses.activate
+def test_scan_result(admin, get_scan_result):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/admin/workspaces/scanResult/e7d03602-4873-4760-b37e-1563ef5358e3",
+        body=get_scan_result,
+        content_type="application/json",
+    )
+
+    scan_result = admin.scan_result("e7d03602-4873-4760-b37e-1563ef5358e3")
+
+    assert isinstance(scan_result, dict)
+    assert len(scan_result["workspaces"]) == 1
+    assert scan_result["workspaces"][0]["id"] == "d507422c-8d6d-4361-ac7a-30074a8cd0a1"
+    assert all(
+        k in scan_result["workspaces"][0].keys()
+        for k in ("reports", "dashboards", "datasets", "dataflows")
+    )

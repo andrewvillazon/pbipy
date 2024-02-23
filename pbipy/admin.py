@@ -1388,3 +1388,42 @@ class Admin:
         )
 
         return raw
+
+    def scan_result(
+        self,
+        scan_id: str,
+    ) -> dict:
+        """
+        Gets the scan result for the specified scan id. This should be
+        called on a scan request with a `"Successful"` status. To determine
+        the status of the scan, use the `scan_status` method with a scan
+        id.
+
+        Parameters
+        ----------
+        `scan_id` : `str`
+            The scan id to get the scan result for.
+
+        Returns
+        -------
+        `dict`
+            The scan result (Workspace Info Details) as a dict.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/scanResult` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        path = f"/workspaces/scanResult/{scan_id}"
+        url = self.base_path + path
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
+
+        return raw
