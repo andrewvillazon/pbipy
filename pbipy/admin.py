@@ -7,7 +7,7 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/admin
 
 """
 
-from datetime import datetime
+from datetime import datetime, timezone
 
 import requests
 
@@ -23,14 +23,14 @@ from pbipy import _utils
 
 class Admin:
     """
-    Groups methods that wrap the Power BI Rest API Admin Operations, specialized 
+    Groups methods that wrap the Power BI Rest API Admin Operations, specialized
     endpoints available to Power BI administrators.
 
-    The `Admin` object should be initialized by calling the `admin()` method 
+    The `Admin` object should be initialized by calling the `admin()` method
     of the `PowerBI` client object, rather than creating directly.
 
-    Users are free to instantiate the `Admin` object and call its methods, 
-    but must have administrator rights on their Power BI instance to successfully 
+    Users are free to instantiate the `Admin` object and call its methods,
+    but must have administrator rights on their Power BI instance to successfully
     retrieve data from these endpoints.
 
     """
@@ -574,7 +574,9 @@ class Admin:
 
         """
 
-        path = _utils.build_path("/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow)
+        path = _utils.build_path(
+            "/groups/{}/dataflows/{}/upstreamDataflows", group, dataflow
+        )
         url = self.base_path + path
         raw = _utils.get_raw(
             url,
@@ -1210,6 +1212,227 @@ class Admin:
         """
 
         path = _utils.build_path("/reports/{}/users", report)
+        url = self.base_path + path
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
+
+        return raw
+
+    def workspaces(
+        self,
+        exclude_inactive_workspaces: bool = None,
+        exclude_personal_workspaces: bool = None,
+        modified_since: datetime = None,
+    ) -> list[dict]:
+        """
+        Gets a list of Workspace IDs in the Organization.
+
+        Parameters
+        ----------
+        `exclude_inactive_workspaces` : `bool`, optional
+            Whether to exclude inactive Workspaces.
+        `exclude_personal_workspaces` : `bool`, optional
+            Whether to exclude personal workspaces.
+        `modified_since` : `datetime`, optional
+            Only include Workspaces modified after this datetime. If not
+            supplied then all Workspaces in the Organization are returned.
+            The datetime provided is assumed to be UTC and will be supplied
+            to the PowerBI API without any conversion to UTC.
+
+            The datetime specified must be in the range of 30 minutes (to
+            allow workspace changes to take effect) to 30 days prior to the
+            current time.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Workspaces with each Workspace represented as a dict
+            and a single "ID" key.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/modified` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        url = self.base_path + "/workspaces/modified"
+
+        # Comment here: http://disq.us/p/2dsf5lg, the datetime should follow
+        # the 'O' or 'o' standard format string of the C# ToString method:
+        # yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fffffffK
+        # See: https://learn.microsoft.com/en-us/dotnet/standard/base-types/standard-date-and-time-format-strings#the-round-trip-o-o-format-specifier
+
+        if modified_since:
+            modified_since_formatted = modified_since.strftime("%Y-%m-%dT%H:%M:%S.%f0Z")
+        else:
+            modified_since_formatted = modified_since
+
+        params = {
+            "excludeInActiveWorkspaces": exclude_inactive_workspaces,
+            "excludePersonalWorkspaces": exclude_personal_workspaces,
+            "modifiedSince": modified_since_formatted,
+        }
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
+            params=params,
+        )
+
+        return raw
+
+    def initiate_scan(
+        self,
+        workspaces: list[str] | str,
+        dataset_expressions: bool = None,
+        dataset_schema: bool = None,
+        datasource_details: bool = None,
+        get_artifact_users: bool = None,
+        lineage: bool = None,
+    ) -> dict:
+        """
+        Initiates a Metadata Scan for the requested workspace or list of
+        workspaces.
+
+        Parameters
+        ----------
+        `workspaces` : `list[str] | str`
+            Workspace ID, or list of Workspace IDs to be scanned.
+        `dataset_expressions` : `bool`, optional
+            Whether to return dataset expressions (DAX and Mashup queries).
+            If you set this parameter to `True`, you must fully enable metadata
+            scanning in order for data to be returned.
+        `dataset_schema` : `bool`, optional
+            Whether to return dataset schema (tables, columns and measures).
+            If you set this parameter to true, you must fully enable metadata
+            scanning in order for data to be returned.
+        `datasource_details` : `bool`, optional
+            Whether to return data source details.
+        `get_artifact_users` : `bool`, optional
+            Whether to return user details for a Power BI item (such as
+            a report or a dashboard).
+        `lineage` : `bool`, optional
+            Whether to return lineage info (upstream dataflows, tiles,
+            data source IDs).
+
+        Returns
+        -------
+        `dict`
+            Dict representation of the Scan Request. Use the `"id"` key to
+            access the scan request id. To check the status of the scan
+            request, use the `scan_status` method.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/getInfo` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        url = self.base_path + "/workspaces/getInfo"
+
+        if isinstance(workspaces, str):
+            workspaces = [workspaces]
+
+        request_body = {
+            "workspaces": workspaces,
+        }
+
+        params = {
+            "datasetExpressions": dataset_expressions,
+            "datasetSchema": dataset_schema,
+            "datasourceDetails": datasource_details,
+            "getArtifactUsers": get_artifact_users,
+            "lineage": lineage,
+        }
+
+        raw = _utils.post_raw(
+            url,
+            self.session,
+            payload=request_body,
+            params=params,
+        )
+
+        return raw
+
+    def scan_status(
+        self,
+        scan_id: str,
+    ) -> dict:
+        """
+        Gets the scan status for the specified scan id.
+
+        Parameters
+        ----------
+        `scan_id` : `str`
+            The scan id to get the status for. To initiate a scan use the
+            `initate_scan` method, which will initiate a metadata scan
+            on the Power BI instance and return a scan request that includes
+            a scan id.
+
+        Returns
+        -------
+        `dict`
+            Dict representation of the scan request. Use the `"status"`
+            key to identify the scan status.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/scanStatus` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        path = f"/workspaces/scanStatus/{scan_id}"
+        url = self.base_path + path
+
+        raw = _utils.get_raw(
+            url,
+            self.session,
+        )
+
+        return raw
+
+    def scan_result(
+        self,
+        scan_id: str,
+    ) -> dict:
+        """
+        Gets the scan result for the specified scan id. This should be
+        called on a scan request with a `"Successful"` status. To determine
+        the status of the scan, use the `scan_status` method with a scan
+        id.
+
+        Parameters
+        ----------
+        `scan_id` : `str`
+            The scan id to get the scan result for.
+
+        Returns
+        -------
+        `dict`
+            The scan result (Workspace Info Details) as a dict.
+
+        Notes
+        -----
+        Wraps the `/admin/workspaces/scanResult` endpoint which forms part
+        of the 'scanner APIs'.
+
+        See: https://learn.microsoft.com/en-us/fabric/governance/metadata-scanning-overview
+
+        """
+
+        path = f"/workspaces/scanResult/{scan_id}"
         url = self.base_path + path
 
         raw = _utils.get_raw(

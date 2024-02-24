@@ -1446,3 +1446,339 @@ def get_dashboard_in_group():
       "isReadOnly": false
     }
     """
+
+
+@pytest.fixture
+def get_modified_workspaces():
+    return """
+    [
+      {
+        "Id": "3740504d-1f93-42f9-8e9d-c8ba9b787a3b"
+      },
+      {
+        "Id": "19cb346c-9839-4e19-81e6-76364d0b836f"
+      }
+    ]
+    """
+
+
+@pytest.fixture
+def post_workspace_info():
+    return """
+    {
+      "id": "e7d03602-4873-4760-b37e-1563ef5358e3",
+      "createdDateTime": "2020-06-15T16:46:28.0487687Z",
+      "status": "NotStarted"
+    }
+    """
+
+
+@pytest.fixture
+def get_scan_status():
+    return """
+    {
+      "id": "e7d03602-4873-4760-b37e-1563ef5358e3",
+      "createdDateTime": "2020-06-15T16:46:28.0487687Z",
+      "status": "Succeeded"
+    }
+    """
+
+
+@pytest.fixture
+def get_scan_result():
+    return """
+    {
+      "workspaces": [
+        {
+          "id": "d507422c-8d6d-4361-ac7a-30074a8cd0a1",
+          "name": "V2 shared",
+          "type": "Workspace",
+          "state": "Active",
+          "isOnDedicatedCapacity": true,
+          "capacityId": "0f084df7-c13d-451b-af5f-ed0c466403b2",
+          "defaultDatasetStorageFormat": "Small",
+          "reports": [
+            {
+              "id": "c6d072d1-ed20-4b60-8329-16c4b934203b",
+              "name": "CompositeModelParams-RLS",
+              "datasetId": "132593c4-bf8d-4548-8f25-1ebb16a1613c",
+              "createdDateTime": "2020-06-16T08:22:49.14",
+              "modifiedDateTime": "2020-06-16T08:22:49.14",
+              "modifiedBy": "john@contoso.com",
+              "reportType": "PaginatedReport",
+              "endorsementDetails": {
+                "endorsement": "Certified",
+                "certifiedBy": "john@contoso.com"
+              },
+              "sensitivityLabel": {
+                "labelId": "85b38049-4259-43a2-8feb-244e222d96c0"
+              },
+              "users": [
+                {
+                  "displayName": "John Nick",
+                  "emailAddress": "john@contoso.com",
+                  "appUserAccessRight": "ReadExplore",
+                  "identifier": "john@contoso.com",
+                  "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+                  "principalType": "User"
+                }
+              ]
+            }
+          ],
+          "dashboards": [
+            {
+              "id": "80814ece-9302-49e3-b6bc-bad2f7a86c1a",
+              "displayName": "CompositeModelParamsDashboard",
+              "isReadOnly": false,
+              "tiles": [
+                {
+                  "id": "e687cc21-5b32-48f5-8c5e-4b844f190579",
+                  "title": "CompositeModelParamsDashboard",
+                  "reportId": "c6d072d1-ed20-4b60-8329-16c4b934203b",
+                  "datasetId": "132593c4-bf8d-4548-8f25-1ebb16a1613c"
+                }
+              ],
+              "sensitivityLabel": {
+                "labelId": "d9b9581a-0594-4c39-81c5-91ddf40baeda"
+              },
+              "users": [
+                {
+                  "displayName": "John Nick",
+                  "emailAddress": "john@contoso.com",
+                  "appUserAccessRight": "ReadExplore",
+                  "identifier": "john@contoso.com",
+                  "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+                  "principalType": "User"
+                }
+              ]
+            }
+          ],
+          "datasets": [
+            {
+              "id": "e7e8a355-e77b-4418-a7b8-ae5972fdaa03",
+              "name": "ExportB",
+              "tables": [
+                {
+                  "name": "DW_Revenues",
+                  "columns": [
+                    {
+                      "name": "RowNumber-2662979B-1795-4F74-8F37-6A1BA8059B61",
+                      "dataType": "Int64",
+                      "isHidden": true
+                    }
+                  ],
+                  "measures": [
+                    {
+                      "name": "MyMeasure",
+                      "expression": "CALCULATE(SELECTEDVALUE('DW_Revenues DW_RevenuesTestToBeDeleted'[Numbers])*10)",
+                      "description": "My measure",
+                      "isHidden": false
+                    }
+                  ],
+                  "isHidden": false,
+                  "description": "My table",
+                  "source": [
+                    {
+                      "expression": "let\\n    Source = Revenues,\\n    Param = RevenuesParam\\nin\\n    Source"
+                    }
+                  ]
+                }
+              ],
+              "relationships": [],
+              "configuredBy": "john@contoso.com",
+              "targetStorageMode": "Abf",
+              "endorsementDetails": {
+                "endorsement": "Certified",
+                "certifiedBy": "john@contoso.com"
+              },
+              "expressions": [
+                {
+                  "name": "Revenues",
+                  "description": "revenues",
+                  "expression": "let\\n    Source = Sql.Database(\\"sqlserver.database.windows.net\\", \\"DB\\"),\\n    RevenuesTable = Source{[Schema=\\"DB_SCHEMA\\",Item=\\"DB_SCHEMA_ITEM\\"]}[Data]\\nin\\n    RevenuesTable"
+                },
+                {
+                  "name": "RevenuesParam",
+                  "description": "revenues param",
+                  "expression": "\\"revenues param value\\" meta [IsParameterQuery=true, Type=\\"Text\\", IsParameterQueryRequired=true]"
+                }
+              ],
+              "roles": [
+                {
+                  "name": "Teams",
+                  "modelPermission": "Read",
+                  "members": [
+                    {
+                      "memberName": "john@contoso.com",
+                      "memberId": "ee96296b-fb71-4f65-a8af-c0ec5a7daced",
+                      "memberType": "User",
+                      "identityProvider": "AzureAD"
+                    },
+                    {
+                      "memberName": "group@contoso.com",
+                      "memberId": "0a1cdbc3-f82c-4001-8b96-be04ae9d25a3",
+                      "memberType": "Group",
+                      "identityProvider": "AzureAD"
+                    }
+                  ],
+                  "tablePermissions": [
+                    {
+                      "name": "DW_Revenues DW_RevenuesTest",
+                      "filterExpression": "[InTeams] = \\"True\\""
+                    }
+                  ]
+                }
+              ],
+              "upstreamDataflows": [
+                {
+                  "targetDataflowId": "a842dbb1-32ca-46b0-9648-498b2c2d5e38",
+                  "groupId": "b7416115-7421-42c0-b525-1505ce40d2f0"
+                },
+                {
+                  "targetDataflowId": "06898194-2eaf-4122-bacc-133db1f8585d",
+                  "groupId": "7263838d-80d7-4b8d-a1f6-50fc27e74a97"
+                }
+              ],
+              "datasourceUsages": [
+                {
+                  "datasourceInstanceId": "c79ad907-df19-43fe-a0f7-d9f365d67070"
+                }
+              ],
+              "misconfiguredDatasourceUsages": [
+                {
+                  "datasourceInstanceId": "80ec28bc-fe81-43ea-be52-a07a95cfbcab"
+                }
+              ],
+              "sensitivityLabel": {
+                "labelId": "bf3dc57d-d796-41c0-bbe9-a47f5ee3331e"
+              },
+              "users": [
+                {
+                  "displayName": "John Nick",
+                  "emailAddress": "john@contoso.com",
+                  "appUserAccessRight": "ReadExplore",
+                  "identifier": "john@contoso.com",
+                  "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+                  "principalType": "User"
+                }
+              ]
+            }
+          ],
+          "dataflows": [
+            {
+              "objectId": "a842dbb1-32ca-46b0-9648-498b2c2d5e38",
+              "name": "Azure SQL",
+              "description": "Azure SQL dataflow",
+              "configuredBy": "john@contoso.com",
+              "modifiedBy": "john@contoso.com",
+              "modifiedDateTime": "2020-06-16T08:27:47.783Z",
+              "endorsementDetails": {
+                "endorsement": "Certified",
+                "certifiedBy": "john@contoso.com"
+              },
+              "datasourceUsages": [
+                {
+                  "datasourceInstanceId": "c79ad907-df19-43fe-a0f7-d9f365d67070"
+                }
+              ],
+              "misconfiguredDatasourceUsages": [
+                {
+                  "datasourceInstanceId": "80ec28bc-fe81-43ea-be52-a07a95cfbcab"
+                }
+              ],
+              "sensitivityLabel": {
+                "labelId": "5c9f8c24-2a94-4fd2-a105-9a8b096c5af1"
+              },
+              "users": [
+                {
+                  "displayName": "John Nick",
+                  "emailAddress": "john@contoso.com",
+                  "appUserAccessRight": "ReadExplore",
+                  "identifier": "john@contoso.com",
+                  "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+                  "principalType": "User"
+                }
+              ]
+            }
+          ],
+          "datamarts": [
+            {
+              "id": "9df8d63c-db5b-44c3-a8e3-9f8c8ec1eec2",
+              "name": "MyDatamart",
+              "description": "SQL datamart",
+              "type": "Sql",
+              "configuredBy": "john@contoso.com",
+              "configuredById": "5c9f8c24-2a94-4fd2-a105-9a8b096cdsew",
+              "modifiedBy": "john@contoso.com",
+              "modifiedDateTime": "2020-06-16T08:27:47.783Z",
+              "sensitivityLabel": {
+                "labelId": "5c9f8c24-2a94-4fd2-a105-9a8b096c5af1"
+              },
+              "endorsementDetails": {
+                "endorsement": "Certified",
+                "certifiedBy": "john@contoso.com"
+              },
+              "UpstreamDataflows": [
+                {
+                  "targetDataflowId": "5c9f8c24-2a94-34fd-a105-9a8b096c4555",
+                  "groupId": "5c9f8c24-4dsc-4fd2-a105-9a8b096c4fgt"
+                }
+              ],
+              "datasourceUsages": [
+                {
+                  "datasourceInstanceId": "c79ad907-df19-43fe-a0f7-d9f365d67070"
+                }
+              ],
+              "Users": [
+                {
+                  "displayName": "John Nick",
+                  "emailAddress": "john@contoso.com",
+                  "identifier": "john@contoso.com",
+                  "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+                  "principalType": "User",
+                  "userType": "User",
+                  "profile": {
+                    "id": "45416453",
+                    "displayName": "John's profile"
+                  },
+                  "datamartUserAccessRight": "Read"
+                }
+              ]
+            }
+          ],
+          "users": [
+            {
+              "displayName": "John Nick",
+              "emailAddress": "john@contoso.com",
+              "appUserAccessRight": "ReadExplore",
+              "identifier": "john@contoso.com",
+              "graphId": "3fadb6e4-130c-4a8f-aeac-416e38b66756",
+              "principalType": "User"
+            }
+          ]
+        }
+      ],
+      "datasourceInstances": [
+        {
+          "datasourceType": "Sql",
+          "connectionDetails": {
+            "server": "qlserver.database.windows.net",
+            "database": "dbo.largest_table"
+          },
+          "datasourceId": "c79ad907-df19-43fe-a0f7-d9f365d67070",
+          "gatewayId": "e820592e-f8cf-4a6f-b1ed-566799d29565"
+        }
+      ],
+      "misconfiguredDatasourceInstances": [
+        {
+          "datasourceType": "Sql",
+          "connectionDetails": {
+            "server": "sqlserver.database.windows.net",
+            "database": "dbo.table"
+          },
+          "datasourceId": "80ec28bc-fe81-43ea-be52-a07a95cfbcab",
+          "gatewayId": "505a19c1-4190-4e8e-a4f6-dd72722feced"
+        }
+      ]
+    }
+    """
