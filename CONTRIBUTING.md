@@ -58,7 +58,7 @@ Sometimes, the API documentation does not provide a sample response, or you may 
 
 ### Docstrings
 
-Any new functions, methods, classes, and modules should include docstrings. Docstrings follow the numpy style guide. Currently, pbipy does not have dedicated documentation, so docstrings are the next best option.
+Any new functions, methods, classes, and modules should include docstrings. Docstrings follow the [numpy style guide](https://numpydoc.readthedocs.io/en/latest/format.html). Currently, pbipy does not have dedicated documentation, so docstrings are the next best option.
 
 ### Formatting
 
