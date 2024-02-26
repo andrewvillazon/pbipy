@@ -560,6 +560,81 @@ def test_refresh_details_result(get_refresh_execution_details):
 
 
 @responses.activate
+def test_refresh_and_wait_success(get_refresh_execution_details):
+    notify_option = "NoNotification"
+
+    dataset_id = "dataset_id"
+    request_id = "request_id"
+
+    json_parms = {
+        "notifyOption": notify_option,
+        "type": "Full",
+    }
+
+    resp_refresh: responses.Response = responses.post(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        match=[
+            matchers.json_params_matcher(json_parms),
+        ],
+        headers={"requestId": request_id},
+    )
+
+    resp_refresh_details: responses.Response = responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id=dataset_id,
+        session=requests.Session(),
+    )
+
+    dataset.refresh_and_wait(notify_option=notify_option)
+
+    assert resp_refresh.call_count == 1
+    assert resp_refresh_details.call_count == 1
+
+
+@responses.activate
+def test_refresh_and_wait_fail(get_refresh_execution_details_failed):
+
+    from pbipy.datasets import RefreshDatasetError
+
+    notify_option = "NoNotification"
+
+    dataset_id = "dataset_id"
+    request_id = "request_id"
+
+    json_parms = {
+        "notifyOption": notify_option,
+        "type": "Full",
+    }
+
+    responses.post(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        match=[
+            matchers.json_params_matcher(json_parms),
+        ],
+        headers={"requestId": request_id},
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_failed,
+        content_type="application/json",
+    )
+
+    dataset = Dataset(
+        id=dataset_id,
+        session=requests.Session(),
+    )
+
+    with pytest.raises(RefreshDatasetError):
+        dataset.refresh_and_wait(notify_option=notify_option)
+
+
+@responses.activate
 def test_update_user_call():
     json_params = {
         "datasetUserAccessRight": "Read",
@@ -617,6 +692,8 @@ def test_update_user_raises_http_error():
 
 @responses.activate
 def test_refresh_call_simple():
+    request_id = "request_id"
+
     json_parms = {
         "notifyOption": "MailOnFailure",
     }
@@ -626,6 +703,7 @@ def test_refresh_call_simple():
         match=[
             matchers.json_params_matcher(json_parms),
         ],
+        headers={"requestId": request_id},
     )
 
     dataset = Dataset(
@@ -633,11 +711,15 @@ def test_refresh_call_simple():
         session=requests.Session(),
     )
 
-    dataset.refresh(notify_option="MailOnFailure")
+    refresh_id = dataset.refresh(notify_option="MailOnFailure")
+
+    assert refresh_id == request_id
 
 
 @responses.activate
 def test_refresh_call_complex():
+    request_id = "request_id"
+
     json_parms = {
         "notifyOption": "MailOnFailure",
         "retryCount": 3,
@@ -657,6 +739,7 @@ def test_refresh_call_complex():
         match=[
             matchers.json_params_matcher(json_parms),
         ],
+        headers={"requestId": request_id},
     )
 
     dataset = Dataset(
@@ -664,7 +747,7 @@ def test_refresh_call_complex():
         session=requests.Session(),
     )
 
-    dataset.refresh(
+    refresh_id = dataset.refresh(
         notify_option="MailOnFailure",
         retry_count=3,
         type="full",
@@ -677,6 +760,8 @@ def test_refresh_call_complex():
             },
         ],
     )
+
+    assert refresh_id == request_id
 
 
 @responses.activate
