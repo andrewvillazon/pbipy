@@ -11,6 +11,8 @@ import mimetypes
 from pathlib import Path
 
 from requests import Session
+import gzip
+from urllib.request import Request, urlopen
 
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
@@ -175,10 +177,17 @@ class Report(Resource):
         )
 
         resource = self.base_path + "/Export"
-        response = _utils.get(resource, self.session)
-
-        with open(file_path, "wb") as out_file:
-            out_file.write(response.content)
+        request = Request(resource, headers=self.session.headers)
+        with (
+            urlopen(request) as response, 
+            gzip.GzipFile(fileobj=response, mode='rb') as uncompressed, 
+            open(file_path, "wb") as out_file
+        ):
+            while True:
+                chunk = uncompressed.read(1024 * 1024)
+                if not chunk:
+                    break
+                out_file.write(chunk)
 
     def download_export(
         self,
