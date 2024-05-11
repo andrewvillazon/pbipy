@@ -1109,3 +1109,20 @@ def test_update_parameters_multiple():
     ]
 
     dataset.update_parameters(update_details)
+
+
+@responses.activate
+def test_refresh():
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
+        headers={"x-ms-request-id": "03f22bb5-2e98-4ae8-8113-329bec3987b1"},
+    )
+
+    dataset = Dataset(
+        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        session=requests.Session(),
+    )
+
+    refresh_id = dataset.refresh("NoNotification")
+
+    assert refresh_id == "03f22bb5-2e98-4ae8-8113-329bec3987b1"
