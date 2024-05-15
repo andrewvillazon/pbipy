@@ -305,15 +305,15 @@ class Dataset(Resource):
         type: str = None,
     ) -> str:
         """
-        Triggers a refresh, or enhanced refresh, of the Dataset and returns 
+        Triggers a refresh, or enhanced refresh, of the Dataset and returns
         the generated Refresh Id.
 
-        If no parameters, or only `notify_option`, are provided then a 
+        If no parameters, or only `notify_option`, are provided then a
         standard refresh is triggered.
-        
+
         To trigger an enhanced refresh, provide one or more of the optional
-        parameters other than `notify_option`. When the enhanced refresh 
-        specifies parameters, the API sets unspecified parameters to their 
+        parameters other than `notify_option`. When the enhanced refresh
+        specifies parameters, the API sets unspecified parameters to their
         default values.
 
         Parameters
@@ -321,7 +321,7 @@ class Dataset(Resource):
         `notify_option` : `str`, optional
             Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
             or "NoNotification".
-        `apply_refresh_policy` : bool, optional
+        `apply_refresh_policy` : `bool`, optional
             Determine if the policy is applied or not.
         `commit_mode` : `str`, optional
             Determines if objects will be committed in batches or only when
