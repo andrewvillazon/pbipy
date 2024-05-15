@@ -295,7 +295,7 @@ class Dataset(Resource):
 
     def refresh(
         self,
-        notify_option: str,
+        notify_option: str = None,
         apply_refresh_policy: bool = None,
         commit_mode: str = None,
         effective_date: str = None,
@@ -305,12 +305,20 @@ class Dataset(Resource):
         type: str = None,
     ) -> str:
         """
-        Trigger a refresh of the dataset. An enhanced refresh is triggered
-        only if a request option other than `notify_option` is set.
+        Triggers a refresh, or enhanced refresh, of the Dataset and returns 
+        the generated Refresh Id.
+
+        If no parameters, or only `notify_option`, are provided then a 
+        standard refresh is triggered.
+        
+        To trigger an enhanced refresh, provide one or more of the optional
+        parameters other than `notify_option`. When the enhanced refresh 
+        specifies parameters, the API sets unspecified parameters to their 
+        default values.
 
         Parameters
         ----------
-        `notify_option` : `str`
+        `notify_option` : `str`, optional
             Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
             or "NoNotification".
         `apply_refresh_policy` : bool, optional
@@ -339,11 +347,22 @@ class Dataset(Resource):
         `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
+        
+        Returns
+        -------
+        `str`
+            Refresh Id that was created by triggering the refresh. If the 
+            triggered refresh was an enhanced refresh, the Refresh Id can 
+            be passed to `Dataset.refresh_details` to retrieve execution 
+            details for the refresh.
 
         Notes
         -----
         See here for request options in greater detail:
         https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/refresh-dataset#definitions
+
+        Enhanced refresh with the Power BI REST API:
+        https://learn.microsoft.com/en-us/power-bi/connect-data/asynchronous-refresh
 
         """
 

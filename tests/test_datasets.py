@@ -1115,7 +1115,7 @@ def test_update_parameters_multiple():
 def test_refresh():
     responses.post(
         "https://api.powerbi.com/v1.0/myorg/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229/refreshes",
-        headers={"x-ms-request-id": "03f22bb5-2e98-4ae8-8113-329bec3987b1"},
+        headers={"RequestId": "03f22bb5-2e98-4ae8-8113-329bec3987b1"},
     )
 
     dataset = Dataset(
@@ -1123,6 +1123,6 @@ def test_refresh():
         session=requests.Session(),
     )
 
-    refresh_id = dataset.refresh("NoNotification")
+    refresh_id = dataset.refresh()
 
     assert refresh_id == "03f22bb5-2e98-4ae8-8113-329bec3987b1"
