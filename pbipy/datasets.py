@@ -15,6 +15,7 @@ from pbipy.resources import Resource
 from pbipy import _utils
 
 
+# TODO: Move to an exceptions.py module
 class RefreshDatasetError(Exception):
     """Error raised when a Refresh dataset meets an error"""
 
@@ -22,14 +23,14 @@ class RefreshDatasetError(Exception):
 class Dataset(Resource):
     """
     A Power BI Dataset.
-    
-    Users should initialize a `Dataset` object by calling the `dataset()` 
+
+    Users should initialize a `Dataset` object by calling the `dataset()`
     method on the `PowerBI` client, rather than creating directly.
 
     Examples
     --------
     Retrieving a `Dataset` object using a `pbi` client object.
-    
+
     ```
     >>> my_dataset = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
     ```
@@ -347,13 +348,13 @@ class Dataset(Resource):
         `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
-        
+
         Returns
         -------
         `str`
-            Refresh Id that was created by triggering the refresh. If the 
-            triggered refresh was an enhanced refresh, the Refresh Id can 
-            be passed to `Dataset.refresh_details` to retrieve execution 
+            Refresh Id that was created by triggering the refresh. If the
+            triggered refresh was an enhanced refresh, the Refresh Id can
+            be passed to `Dataset.refresh_details` to retrieve execution
             details for the refresh.
 
         Notes
@@ -416,43 +417,118 @@ class Dataset(Resource):
 
     def refresh_and_wait(
         self,
-        notify_option: str,
-        type: str = "Full",
-        wait_time: int = 30,
-        **kwargs,
+        apply_refresh_policy: bool = None,
+        commit_mode: str = None,
+        effective_date: str = None,
+        max_parallelism: int = None,
+        objects: list[dict] = None,
+        retry_count: int = None,
+        type: str = None,
+        check_interval: int = 30,
     ) -> None:
         """
-        Trigger a enhanced refresh of the dataset and wait until it finishes or e
-        ncounters and error. To get refresh status, the refresh must be an enhanced one,
-        that is why `notify_option` and `type` should be specified at least.
+        Triggers an enhanced refresh of the dataset and periodically checks
+        the refresh status until the refresh operation completes. If the
+        refresh completes successfully, control is returned to the caller.
+        If the refresh did not complete successfully an exception is raised.
+
+        Convenience method that triggers an enhanced refresh using `Dataset.refresh`,
+        and then periodically checks the status of the refresh using `Dataset.refreh_details`.
+        The frequency of checking is set via the `check_interval` parameter.
 
         Parameters
         ----------
-        `notify_option` : `str`
-            Mail notification options, e.g., "MailOnCompletion", "MailOnFailure",
-            or "NoNotification".
-        `type` : `str` (default: "Full")
+        `apply_refresh_policy` : `bool`, optional
+            Determine if the policy is applied or not.
+        `commit_mode` : `str`, optional
+            Determines if objects will be committed in batches or only when
+            complete, e.g., "PartialBatch", or "Transactional".
+        `effective_date` : `str`, optional
+            If an incremental refresh policy is applied, the `effective_date`
+            parameter overrides the current date.
+        `max_parallelism` : `int`, optional
+            The maximum number of threads on which to run parallel processing
+            commands.
+        `objects` : `list[dict]`, optional
+            A list of objects to be processed, e.g.,
+            ```
+            [
+                {
+                "table": "Customer",
+                "partition": "Robert"
+                }
+            ]
+            ```
+        `retry_count` : `int`, optional
+            Number of times the operation will retry before failing.
+        `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
-        `wait_time` : `int` (default: 30)
-            Wait time
+        `check_interval` : `int`
+            How often, in seconds, to check the status of the triggered
+            refresh.
 
         Raises
         ------
+        `ValueError`
+            If no options were provided for the refresh. At least one of the
+            refresh options must be provided to the endpoint to trigger an enhanced
+            refresh.
         `DatasetRefreshError`
-            When the refresh status finished with a `Failed` status
+            When the refresh status finished with an unsuccessful status.
+
+        Notes
+        -----
+        An enhanced refresh is triggered when additional parameters, other
+        than "notifyOption" are provided to the Refresh Dataset endpoint.
+        Due to the Refresh Execution Details endpoint only supporting enhanced
+        refreshes, this method also only supports enhanced refreshes.
+
+        Enhanced refresh with the Power BI REST API:
+        https://learn.microsoft.com/en-us/power-bi/connect-data/asynchronous-refresh
+
+        Refresh Dataset endpoint:
+        https://learn.microsoft.com/en-us/rest/api/power-bi/datasets/refresh-dataset
 
         """
 
-        refresh_id: str = self.refresh(notify_option=notify_option, type=type, **kwargs)
+        if not any(
+            [
+                apply_refresh_policy,
+                commit_mode,
+                effective_date,
+                max_parallelism,
+                objects,
+                retry_count,
+                type,
+            ]
+        ):
+            raise ValueError(
+                "No options were provided for the refresh. Must provide at least one of: apply_refresh_policy, commit_mode, effective_date, max_parallelism, objects, or retry_count."
+            )
 
-        status: str = self.refresh_details(refresh_id).get("status", "Unknown")
+        refresh_id = self.refresh(
+            apply_refresh_policy=apply_refresh_policy,
+            commit_mode=commit_mode,
+            effective_date=effective_date,
+            max_parallelism=max_parallelism,
+            objects=objects,
+            retry_count=retry_count,
+            type=type,
+        )
 
-        while status not in ("Completed", "Failed", "Disabled", "Cancelled"):
-            time.sleep(wait_time)
-            status = self.refresh_details(refresh_id).get("status", "Unknown")
+        refresh_details = self.refresh_details(refresh_id)
+        status = refresh_details.get("status", "Unknown")
 
-        if status == "Failed":
+        finished = ("Completed", "Failed", "Disabled", "Cancelled")
+
+        while status not in finished:
+            time.sleep(check_interval)
+
+            refresh_details = self.refresh_details(refresh_id)
+            status = refresh_details.get("status", "Unknown")
+
+        if status != "Completed":
             raise RefreshDatasetError
 
     def refresh_history(

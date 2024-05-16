@@ -325,7 +325,46 @@ def get_refresh_execution_details():
 
 
 @pytest.fixture
+def get_refresh_execution_details_in_progress():
+    return """
+    {
+        "startTime": "2020-12-07T02:06:57.1838734Z",
+        "endTime": "2020-12-07T02:07:00.4929675Z",
+        "type": "Full",
+        "status": "InProgress",
+        "currentRefreshType": "Full",
+        "objects": [
+            {
+                "table": "DimCustomer",
+                "partition": "DimCustomer",
+                "status": "InProgress"
+            },
+            {
+                "table": "DimDate",
+                "partition": "DimDate",
+                "status": "InProgress"
+            }
+        ]
+    }
+    """
+
+
+@pytest.fixture
 def get_refresh_execution_details_failed():
+    return """
+    {
+      "startTime": "2021-12-10T08:40:31.57",
+      "endTime": "2021-12-10T08:40:43.87",
+      "type": "Full",
+      "commitMode": "Transactional",
+      "status": "Failed",
+      "extendedStatus": "Failed"
+    }
+    """
+
+
+@pytest.fixture
+def get_refresh_execution_details_cancelled():
     return """
     {
       "startTime": "2021-12-10T08:40:31.57",

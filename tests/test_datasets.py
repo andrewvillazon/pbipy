@@ -4,7 +4,7 @@ import responses
 from requests.exceptions import HTTPError
 from responses import matchers
 
-from pbipy.datasets import Dataset
+from pbipy.datasets import Dataset, RefreshDatasetError
 
 
 @responses.activate
@@ -559,64 +559,150 @@ def test_refresh_details_result(get_refresh_execution_details):
     assert len(refresh_detail["objects"]) == 18
 
 
+@pytest.fixture
+def sleepless(monkeypatch):
+    """Patches time.sleep to make unit tests complete without delay."""
+
+    import time
+
+    def sleep(seconds):
+        pass
+
+    monkeypatch.setattr(time, "sleep", sleep)
+
+
 @responses.activate
-def test_refresh_and_wait_success(get_refresh_execution_details):
-    notify_option = "NoNotification"
-
-    dataset_id = "dataset_id"
-    request_id = "request_id"
-
-    json_parms = {
-        "notifyOption": notify_option,
-        "type": "Full",
-    }
-
-    resp_refresh: responses.Response = responses.post(
-        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
-        match=[
-            matchers.json_params_matcher(json_parms),
-        ],
-        headers={"requestId": request_id},
-    )
-
-    resp_refresh_details: responses.Response = responses.get(
-        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
-        body=get_refresh_execution_details,
-        content_type="application/json",
-    )
+def test_refresh_and_wait_success(
+    get_refresh_execution_details_in_progress,
+    get_refresh_execution_details,
+    sleepless,
+):
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    request_id = "03f22bb5-2e98-4ae8-8113-329bec3987b1"
 
     dataset = Dataset(
         id=dataset_id,
         session=requests.Session(),
     )
 
-    dataset.refresh_and_wait(notify_option=notify_option)
-
-    assert resp_refresh.call_count == 1
-    assert resp_refresh_details.call_count == 1
-
-
-@responses.activate
-def test_refresh_and_wait_fail(get_refresh_execution_details_failed):
-
-    from pbipy.datasets import RefreshDatasetError
-
-    notify_option = "NoNotification"
-
-    dataset_id = "dataset_id"
-    request_id = "request_id"
-
-    json_parms = {
-        "notifyOption": notify_option,
-        "type": "Full",
-    }
+    json_params = {"type": "Full"}
 
     responses.post(
         f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
         match=[
-            matchers.json_params_matcher(json_parms),
+            matchers.json_params_matcher(json_params),
         ],
-        headers={"requestId": request_id},
+        headers={"RequestId": request_id},
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset.refresh_and_wait(type="Full", check_interval=60)
+    assert len(responses.calls) == 3
+
+
+@responses.activate
+def test_refresh_and_wait_success_longer(
+    get_refresh_execution_details_in_progress,
+    get_refresh_execution_details,
+    sleepless,
+):
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    request_id = "03f22bb5-2e98-4ae8-8113-329bec3987b1"
+
+    dataset = Dataset(
+        id=dataset_id,
+        session=requests.Session(),
+    )
+
+    json_params = {"type": "Full", "retryCount": 3}
+
+    responses.post(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        headers={"RequestId": request_id},
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details,
+        content_type="application/json",
+    )
+
+    dataset.refresh_and_wait(type="Full", retry_count=3)
+    assert len(responses.calls) == 5
+
+
+def test_refresh_and_wait_raises_ValueError():
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+
+    dataset = Dataset(
+        id=dataset_id,
+        session=requests.Session(),
+    )
+
+    with pytest.raises(ValueError):
+        dataset.refresh_and_wait()
+
+
+@responses.activate
+def test_refresh_and_wait_failed_raises_RefreshDatasetError(
+    get_refresh_execution_details_in_progress,
+    get_refresh_execution_details_failed,
+    sleepless,
+):
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    request_id = "03f22bb5-2e98-4ae8-8113-329bec3987b1"
+
+    dataset = Dataset(
+        id=dataset_id,
+        session=requests.Session(),
+    )
+
+    json_params = {"type": "Full"}
+
+    responses.post(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        headers={"RequestId": request_id},
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
     )
 
     responses.get(
@@ -625,13 +711,52 @@ def test_refresh_and_wait_fail(get_refresh_execution_details_failed):
         content_type="application/json",
     )
 
+    with pytest.raises(RefreshDatasetError):
+        dataset.refresh_and_wait(type="Full", check_interval=60)
+
+    assert len(responses.calls) == 3
+
+
+@responses.activate
+def test_refresh_and_wait_cancelled_raises_RefreshDatasetError(
+    get_refresh_execution_details_in_progress,
+    get_refresh_execution_details_cancelled,
+    sleepless,
+):
+    dataset_id = "cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    request_id = "03f22bb5-2e98-4ae8-8113-329bec3987b1"
+
     dataset = Dataset(
         id=dataset_id,
         session=requests.Session(),
     )
 
+    json_params = {"type": "Full"}
+
+    responses.post(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+        headers={"RequestId": request_id},
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_in_progress,
+        content_type="application/json",
+    )
+
+    responses.get(
+        f"https://api.powerbi.com/v1.0/myorg/datasets/{dataset_id}/refreshes/{request_id}",
+        body=get_refresh_execution_details_cancelled,
+        content_type="application/json",
+    )
+
     with pytest.raises(RefreshDatasetError):
-        dataset.refresh_and_wait(notify_option=notify_option)
+        dataset.refresh_and_wait(type="Full", check_interval=60)
+
+    assert len(responses.calls) == 3
 
 
 @responses.activate
