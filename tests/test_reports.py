@@ -1,6 +1,6 @@
 from io import BytesIO
 from pathlib import Path
-from unittest.mock import Mock, mock_open, patch
+from unittest.mock import mock_open, patch
 
 import pytest
 import requests
@@ -413,12 +413,8 @@ def test_clone_report_call_with_group_and_dataset(report_with_group):
     )
 
 
-@responses.activate
-def test_download():
-    responses.get(
-        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
-    )
-
+@patch("pbipy.reports.urlopen")
+def test_download(mock_urlopen):
     raw = {
         "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         "name": "SalesMarketing",
@@ -431,21 +427,22 @@ def test_download():
         raw=raw,
     )
 
-    m = mock_open()
-    with patch("builtins.open", m):
+    mock_urlopen.return_value = BytesIO()
+    mo = mock_open()
+
+    with patch("builtins.open", mo):
         report.download()
 
+    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export"
+    actual_url = mock_urlopen.call_args.args[0].full_url
     expected_path = Path("SalesMarketing.pbix")
 
-    m.assert_called_with(expected_path, "wb")
+    assert actual_url == expected_url
+    mo.assert_called_with(expected_path, "wb")
 
 
-@responses.activate
-def test_download_rename():
-    responses.get(
-        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
-    )
-
+@patch("pbipy.reports.urlopen")
+def test_download_with_dir(mock_urlopen):
     raw = {
         "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         "name": "SalesMarketing",
@@ -458,70 +455,18 @@ def test_download_rename():
         raw=raw,
     )
 
-    m = mock_open()
-    with patch("builtins.open", m):
-        report.download(file_name="NotSalesMarketing")
+    mock_urlopen.return_value = BytesIO()
+    mo = mock_open()
 
-    expected_path = Path("NotSalesMarketing.pbix")
+    with patch("builtins.open", mo):
+        report.download(save_to="C:/temp", file_name="NotSalesMarketing")
 
-    m.assert_called_with(expected_path, "wb")
+    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export"
+    actual_url = mock_urlopen.call_args.args[0].full_url
+    expected_path = Path("C:/temp/NotSalesMarketing.pbix")
 
-
-@responses.activate
-def test_download_with_dir():
-    responses.get(
-        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
-    )
-
-    raw = {
-        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        "name": "SalesMarketing",
-        "reportType": "PowerBIReport",
-    }
-
-    report = Report(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        session=requests.Session(),
-        raw=raw,
-    )
-
-    m = mock_open()
-    with patch("builtins.open", m):
-        report.download(save_to="C:/temp")
-
-    expected_path = Path("C:/temp/SalesMarketing.pbix")
-
-    m.assert_called_with(expected_path, "wb")
-
-
-@responses.activate
-def test_download_with_file():
-    response_file = BytesIO(b"file contents").read()
-
-    responses.get(
-        "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export",
-        body=response_file,
-        content_type="application/zip",
-    )
-
-    raw = {
-        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        "name": "SalesMarketing",
-        "reportType": "PowerBIReport",
-    }
-
-    report = Report(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        session=requests.Session(),
-        raw=raw,
-    )
-
-    m = mock_open()
-    with patch("builtins.open", m):
-        report.download()
-
-    m.assert_called_with(Path("SalesMarketing.pbix"), "wb")
-    m.return_value.write.assert_called_once_with(response_file)
+    assert actual_url == expected_url
+    mo.assert_called_with(expected_path, "wb")
 
 
 @responses.activate
@@ -536,7 +481,7 @@ def test_export_request_call(report, export_to_file):
         body=export_to_file,
         status=202,
     )
-    
+
     report.export_request("pdf")
 
 
@@ -552,7 +497,7 @@ def test_export_request_result(report, export_to_file):
         body=export_to_file,
         status=202,
     )
-    
+
     export_job = report.export_request("pdf")
 
     assert isinstance(export_job, dict)
@@ -564,7 +509,7 @@ def test_export_request_result(report, export_to_file):
 def test_export_status_raw_only(report, get_export_to_file_status):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/exports/Mi9C5419i....PS4=",
-        body=get_export_to_file_status
+        body=get_export_to_file_status,
     )
 
     status = report.export_status("Mi9C5419i....PS4=")
@@ -580,7 +525,7 @@ def test_export_status_retry_after(report, get_export_to_file_status):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/exports/Mi9C5419i....PS4=",
         body=get_export_to_file_status,
-        headers={"Retry-After": "5"}
+        headers={"Retry-After": "5"},
     )
 
     status = report.export_status("Mi9C5419i....PS4=", include_retry_after=True)
