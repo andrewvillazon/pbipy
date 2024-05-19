@@ -33,9 +33,16 @@ def report_with_group():
 
 @pytest.fixture
 def report():
+    raw = {
+        "id": "879445d6-3a9e-4a74-b5ae-7c0ddabf0f11",
+        "name": "SalesMarketing",
+        "reportType": "PowerBIReport",
+    }
+
     report = Report(
-        id="879445d6-3a9e-4a74-b5ae-7c0ddabf0f11",
+        id=raw["id"],
         session=requests.Session(),
+        raw=raw,
     )
 
     return report
@@ -414,26 +421,14 @@ def test_clone_report_call_with_group_and_dataset(report_with_group):
 
 
 @patch("pbipy.reports.urlopen")
-def test_download(mock_urlopen):
-    raw = {
-        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        "name": "SalesMarketing",
-        "reportType": "PowerBIReport",
-    }
-
-    report = Report(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        session=requests.Session(),
-        raw=raw,
-    )
-
+def test_download(mock_urlopen, report):
     mock_urlopen.return_value = BytesIO()
     mo = mock_open()
 
     with patch("builtins.open", mo):
         report.download()
 
-    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export"
+    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/Export"
     actual_url = mock_urlopen.call_args.args[0].full_url
     expected_path = Path("SalesMarketing.pbix")
 
@@ -442,26 +437,14 @@ def test_download(mock_urlopen):
 
 
 @patch("pbipy.reports.urlopen")
-def test_download_with_dir(mock_urlopen):
-    raw = {
-        "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        "name": "SalesMarketing",
-        "reportType": "PowerBIReport",
-    }
-
-    report = Report(
-        id="cfafbeb1-8037-4d0c-896e-a46fb27ff229",
-        session=requests.Session(),
-        raw=raw,
-    )
-
+def test_download_with_dir(mock_urlopen, report):
     mock_urlopen.return_value = BytesIO()
     mo = mock_open()
 
     with patch("builtins.open", mo):
         report.download(save_to="C:/temp", file_name="NotSalesMarketing")
 
-    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/Export"
+    expected_url = "https://api.powerbi.com/v1.0/myorg/reports/879445d6-3a9e-4a74-b5ae-7c0ddabf0f11/Export"
     actual_url = mock_urlopen.call_args.args[0].full_url
     expected_path = Path("C:/temp/NotSalesMarketing.pbix")
 
