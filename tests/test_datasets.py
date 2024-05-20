@@ -4,7 +4,7 @@ import responses
 from requests.exceptions import HTTPError
 from responses import matchers
 
-from pbipy.datasets import Dataset, RefreshDatasetError
+from pbipy.datasets import Dataset, DatasetRefreshError
 
 
 @responses.activate
@@ -711,7 +711,7 @@ def test_refresh_and_wait_failed_raises_RefreshDatasetError(
         content_type="application/json",
     )
 
-    with pytest.raises(RefreshDatasetError):
+    with pytest.raises(DatasetRefreshError):
         dataset.refresh_and_wait(type="Full", check_interval=60)
 
     assert len(responses.calls) == 3
@@ -753,7 +753,7 @@ def test_refresh_and_wait_cancelled_raises_RefreshDatasetError(
         content_type="application/json",
     )
 
-    with pytest.raises(RefreshDatasetError):
+    with pytest.raises(DatasetRefreshError):
         dataset.refresh_and_wait(type="Full", check_interval=60)
 
     assert len(responses.calls) == 3

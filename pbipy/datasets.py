@@ -16,8 +16,22 @@ from pbipy import _utils
 
 
 # TODO: Move to an exceptions.py module
-class RefreshDatasetError(Exception):
-    """Error raised when a Refresh dataset meets an error"""
+class DatasetRefreshError(Exception):
+    """Error raised when a Dataset refresh did not complete successfully."""
+
+    def __init__(
+        self,
+        refresh_id: str,
+        status: str,
+        refresh_details: dict,
+    ):
+        self.refresh_id = refresh_id
+        self.status = status
+        self.refresh_details = refresh_details
+
+        message = f"Refresh {self.refresh_id} did not complete successfully. Status: {self.status}. See the 'refresh_details' property for more information."
+
+        super().__init__(message)
 
 
 class Dataset(Resource):
@@ -529,7 +543,7 @@ class Dataset(Resource):
             status = refresh_details.get("status", "Unknown")
 
         if status != "Completed":
-            raise RefreshDatasetError
+            raise DatasetRefreshError(refresh_id, status, refresh_details)
 
     def refresh_history(
         self,
