@@ -15,6 +15,7 @@ import gzip
 from urllib.request import Request, urlopen
 
 from pbipy.datasets import Dataset
+from pbipy.embedtokens import EmbedToken
 from pbipy.groups import Group
 from pbipy.resources import Resource
 from pbipy import _utils
@@ -179,9 +180,9 @@ class Report(Resource):
         resource = self.base_path + "/Export"
         request = Request(resource, headers=self.session.headers)
         with (
-            urlopen(request) as response, 
-            gzip.GzipFile(fileobj=response, mode='rb') as uncompressed, 
-            open(file_path, "wb") as out_file
+            urlopen(request) as response,
+            gzip.GzipFile(fileobj=response, mode="rb") as uncompressed,
+            open(file_path, "wb") as out_file,
         ):
             while True:
                 chunk = uncompressed.read(1024 * 1024)
@@ -306,6 +307,83 @@ class Report(Resource):
             return raw, retry_after
         else:
             return raw
+
+    def generate_token(
+        self,
+        access_level: str = None,
+        allow_save_as: bool = None,
+        dataset_id: str = None,
+        identities: list[dict] = None,
+        lifetime_in_minutes: int = None,
+    ) -> EmbedToken:
+        """
+        Generates an Embed Token to view or edit the Report from the it's
+        workspace.
+
+        Parameters
+        ----------
+        `access_level` : `str`, optional
+            The required access level. Can be one of "Create", "Edit",
+            or "View".
+        `allow_save_as` : `bool`, optional
+            Whether an embedded report can be saved as a new report. API
+            defaults to `false`. Only applies when you generate an embed
+            token for report embedding.
+        `dataset_id` : `str`, optional
+            The dataset ID used for report creation. Only applies when you
+            generate an embed token for report creation.
+        `identities` : `list[dict]`, optional
+            A list of identities to use for row-level security rules. See
+            'Notes' below for documentation describing how to define these.
+        `lifetime_in_minutes` : `int`, optional
+            The maximum lifetime of the token in minutes, starting from
+            the time it was generated. Can be used to shorten the expiration
+            time of a token, but not to extend it. The value must be a positive
+            integer. Zero (0) is equivalent to `null` and will be ignored,
+            resulting in the default expiration time.
+
+        Returns
+        -------
+        `EmbedToken`
+            A Power BI Embed Token.
+
+        Raises
+        ------
+        `TypeError`
+            If the report does not have a `group_id` property, i.e., the
+            report is not in a Workspace.
+
+        Notes
+        -----
+        See below for API Documentation and how to define parameter options.
+
+        https://learn.microsoft.com/en-us/rest/api/power-bi/embed-token/reports-generate-token-for-create-in-group
+
+        """
+
+        if not self.group_id:
+            raise TypeError(
+                "Report does not have a 'group_id'. Generating a token can only be performed on a Report in a Group (Workspace)."
+            )
+
+        initial_payload = {
+            "accessLevel": access_level,
+            "allowSaveAs": allow_save_as,
+            "datasetId": dataset_id,
+            "identities": identities,
+            "lifetimeInMinutes": lifetime_in_minutes,
+        }
+
+        payload = _utils.remove_no_values(initial_payload)
+
+        resource = self.base_path + "/GenerateToken"
+        raw = _utils.post_raw(resource, self.session, payload)
+
+        return EmbedToken(
+            token=raw["token"],
+            token_id=raw["tokenId"],
+            expiration=raw["expiration"],
+        )
 
     def page(
         self,

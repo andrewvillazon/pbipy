@@ -7,6 +7,7 @@ import requests
 import responses
 from responses import matchers
 
+from pbipy.embedtokens import EmbedToken
 from pbipy.groups import Group
 from pbipy.reports import Report
 
@@ -594,3 +595,37 @@ def test_download_export_pdf():
 
     m.assert_called_with(Path("C:/temp/SalesMarketing.pdf"), "wb")
     m.return_value.write.assert_called_once_with(response_file)
+
+
+@responses.activate
+def test_generate_token(
+    report_with_group,
+    reports_generate_token_in_group,
+):
+    json_params = {
+        "accessLevel": "Edit",
+        "allowSaveAs": True,
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/GenerateToken",
+        body=reports_generate_token_in_group,
+        content_type="application/json",
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    token = report_with_group.generate_token(
+        access_level="Edit",
+        allow_save_as=True,
+    )
+
+    assert isinstance(token, EmbedToken)
+    assert token.token == "H4sI....AAA="
+    assert token.token_id == "49ae3742-54c0-4c29-af52-619ff93b5c80"
+
+
+def test_generate_token_raises_TypeError(report):
+    with pytest.raises(TypeError):
+        report.generate_token()
