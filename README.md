@@ -87,7 +87,7 @@ sales = pbi.dataset("cfafbeb1-8037-4d0c-896e-a46fb27ff229")
 print(type(sales))
 print(hasattr(sales, "configured_by"))
 
-# <class 'pbipy.resources.Dataset'>
+# <class 'pbipy.Dataset'>
 # True
 ```
 
