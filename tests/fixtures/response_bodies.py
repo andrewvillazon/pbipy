@@ -1835,3 +1835,14 @@ def get_scan_result():
       ]
     }
     """
+
+
+@pytest.fixture
+def reports_generate_token_in_group():
+    return """
+      {
+      "token": "H4sI....AAA=",
+      "tokenId": "49ae3742-54c0-4c29-af52-619ff93b5c80",
+      "expiration": "2018-07-29T17:58:19Z"
+    }
+    """
