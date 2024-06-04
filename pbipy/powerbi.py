@@ -17,6 +17,7 @@ from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
+from pbipy.imports import Import
 from pbipy.reports import Report
 from pbipy import _utils
 
@@ -29,7 +30,7 @@ class PowerBI:
     of this object and calling its methods.
 
     Authentication with the Power BI service requires a `bearer_token` which
-    must be generated in advance of initializing the `PowerBI` client. How 
+    must be generated in advance of initializing the `PowerBI` client. How
     the token is generated depends on the user's Azure and Power BI configuration.
 
     In general, `PowerBI()` methods wrap the operations described here:
@@ -42,9 +43,9 @@ class PowerBI:
         Bearer token used to authenticate with your Power BI service.
     `session` : `requests.Session`, optional
         `Session` object used to make http requests. Users can subclass
-        a `Session` and pass to the constructor of the client to implement 
+        a `Session` and pass to the constructor of the client to implement
         customized request handling, e.g., implementing a retry strategy.
-    
+
     Examples
     --------
     Initializing the client.
@@ -61,7 +62,7 @@ class PowerBI:
     >>> my_report.refresh()
     ```
 
-    Using the client to create a new Workspace (Group) in the user's Power 
+    Using the client to create a new Workspace (Group) in the user's Power
     BI instance.
 
     ```
@@ -728,6 +729,46 @@ class PowerBI:
         report.load()
 
         return report
+
+    def imported_file(
+        self,
+        import_id: str | Import,
+        group: str | Group = None,
+    ) -> Import:
+        """
+        Return details of the specified import (an imported file) from MyWorkspace
+        or the specified group. Does not return the imported file itself.
+
+        Parameters
+        ----------
+        `import_id` : `str | Import`
+            Import Id to retrieve
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the import resides.
+
+        Returns
+        -------
+        `Import`
+            The specified `Import` object.
+
+        """
+
+        if isinstance(import_id, Import):
+            return import_id
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        imported_file = Import(
+            import_id,
+            self.session,
+            group_id=group_id,
+        )
+        imported_file.load()
+
+        return imported_file
 
     def reports(
         self,

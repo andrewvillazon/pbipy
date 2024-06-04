@@ -8,6 +8,7 @@ from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 
 from pbipy.groups import Group
+from pbipy.imports import Import
 from pbipy.reports import Report
 
 
@@ -532,3 +533,36 @@ def test_dashboard_with_group(powerbi, get_dashboard_in_group):
     assert isinstance(dashboard, Dashboard)
     assert dashboard.display_name == "SalesMarketing"
     assert dashboard.group_id == group.id
+
+
+@responses.activate
+def test_imported_file(powerbi, get_import):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/imports/82d9a37a-2b45-4221-b012-cb109b8e30c7",
+        body=get_import,
+        content_type="application/json",
+    )
+
+    imported_file = powerbi.imported_file("82d9a37a-2b45-4221-b012-cb109b8e30c7")
+
+    assert isinstance(imported_file, Import)
+    assert imported_file.import_state == "Succeeded"
+    assert imported_file.name == "SalesMarketing"
+    assert imported_file.connection_type == "import"
+    assert isinstance(imported_file.datasets, list)
+
+
+@responses.activate
+def test_imported_file_with_group(powerbi, get_import):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/82d9a37a-2b45-4221-b012-cb109b8e30c7",
+        body=get_import,
+        content_type="application/json",
+    )
+
+    imported_file = powerbi.imported_file(
+        import_id="82d9a37a-2b45-4221-b012-cb109b8e30c7",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert imported_file.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
