@@ -737,6 +737,18 @@ def get_dataflow():
 
 
 @pytest.fixture
+def get_dataflow_no_id():
+    return """
+    {
+      "name": "AdventureWorks",
+      "description": "Our Adventure Works",
+      "modelUrl": "https://MyDataflowStorageAccount.dfs.core.windows.net/powerbi/contoso/AdventureWorks/model.json",
+      "ppdf:outputFileFormat": "csv"
+    }
+  """
+
+
+@pytest.fixture
 def get_dataflows():
     return """
     {

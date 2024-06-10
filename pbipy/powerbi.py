@@ -29,7 +29,7 @@ class PowerBI:
     of this object and calling its methods.
 
     Authentication with the Power BI service requires a `bearer_token` which
-    must be generated in advance of initializing the `PowerBI` client. How 
+    must be generated in advance of initializing the `PowerBI` client. How
     the token is generated depends on the user's Azure and Power BI configuration.
 
     In general, `PowerBI()` methods wrap the operations described here:
@@ -42,9 +42,9 @@ class PowerBI:
         Bearer token used to authenticate with your Power BI service.
     `session` : `requests.Session`, optional
         `Session` object used to make http requests. Users can subclass
-        a `Session` and pass to the constructor of the client to implement 
+        a `Session` and pass to the constructor of the client to implement
         customized request handling, e.g., implementing a retry strategy.
-    
+
     Examples
     --------
     Initializing the client.
@@ -61,7 +61,7 @@ class PowerBI:
     >>> my_report.refresh()
     ```
 
-    Using the client to create a new Workspace (Group) in the user's Power 
+    Using the client to create a new Workspace (Group) in the user's Power
     BI instance.
 
     ```
@@ -332,7 +332,7 @@ class PowerBI:
         )
 
         dataflow = Dataflow(
-            raw.get("objectId"),
+            raw.get("objectId", dataflow),
             self.session,
             group_id=group_id,
             raw=raw,
