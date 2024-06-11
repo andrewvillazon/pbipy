@@ -10,6 +10,17 @@ class Import(Resource):
 
     """
 
+    _REPR = [
+        "id",
+        "name",
+        "group_id",
+        "created_date_time",
+        "updated_date_time",
+        "import_state",
+        "connection_type",
+        "source",
+    ]
+
     def __init__(
         self,
         id: str,
