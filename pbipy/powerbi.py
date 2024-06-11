@@ -770,6 +770,55 @@ class PowerBI:
 
         return imported_file
 
+    def imported_files(
+        self,
+        group: str | Group = None,
+    ) -> list[Import]:
+        """
+        Return a list of imports (imported files) from MyWorkspace or the specified group
+        (workspace).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the imports reside.
+
+        Returns
+        -------
+        `list[Import]`
+            List of `Import` objects from MyWorkspace or the specified group
+            (workspace).
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
+
+        resource = self.BASE_URL + path
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        imports = [
+            Import(
+                import_js.get("id"),
+                self.session,
+                group_id=group_id,
+                raw=import_js,
+            )
+            for import_js in raw
+        ]
+
+        return imports
+
     def reports(
         self,
         group: str | Group = None,

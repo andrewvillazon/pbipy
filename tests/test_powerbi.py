@@ -566,3 +566,20 @@ def test_imported_file_with_group(powerbi, get_import):
     )
 
     assert imported_file.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+
+
+@responses.activate
+def test_imported_files(powerbi, get_imports):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/imports",
+        body=get_imports,
+        content_type="application/json",
+    )
+
+    imported_files = powerbi.imported_files()
+
+    assert isinstance(imported_files, list)
+    assert all(isinstance(imported_file, Import) for imported_file in imported_files)
+    assert imported_files[0].id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
+    assert imported_files[0].import_state == "Succeeded"
+    assert imported_files[0].name == "SalesMarketing"
