@@ -1,3 +1,5 @@
+from types import SimpleNamespace
+
 from requests import Session
 
 from pbipy.groups import Group
@@ -44,3 +46,26 @@ class Import(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+
+class TemporaryUploadLocation(SimpleNamespace):
+    """
+    Temporary blob storage location for importing large Power BI `.pbix`
+    files.
+
+    Parameters
+    ----------
+    `expiration_time` : `str`
+        The expiration date and time of the shared access signature URL.
+    `url` : `str`
+        The shared access signature URL for the temporary blob storage.
+
+    """
+
+    def __init__(
+        self,
+        expiration_time: str,
+        url: str,
+    ) -> None:
+        self.expiration_time = expiration_time
+        self.url = url

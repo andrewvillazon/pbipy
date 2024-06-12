@@ -17,7 +17,7 @@ from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.groups import Group
-from pbipy.imports import Import
+from pbipy.imports import Import, TemporaryUploadLocation
 from pbipy.reports import Report
 from pbipy import _utils
 
@@ -818,6 +818,49 @@ class PowerBI:
         ]
 
         return imports
+
+    def create_temporary_upload_location(
+        self,
+        group: str | Group = None,
+    ) -> TemporaryUploadLocation:
+        """
+        Creates a temporary blob storage upload location for importing large
+        Power BI `.pbix` files that are between 1 GB and 10 GB in size.
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to associate with the location.
+
+        Returns
+        -------
+        `TemporaryUploadLocation`
+            Temporary blob storage upload location.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports/createTemporaryUploadLocation"
+        else:
+            path = "/imports/createTemporaryUploadLocation"
+
+        resource = self.BASE_URL + path
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+        )
+
+        temporary_upload_location = TemporaryUploadLocation(
+            expiration_time=raw.get("expirationTime"),
+            url=raw.get("url"),
+        )
+
+        return temporary_upload_location
 
     def reports(
         self,

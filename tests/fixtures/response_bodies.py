@@ -1910,3 +1910,14 @@ def get_imports():
       ]
     }
     """
+
+
+@pytest.fixture
+def create_temporary_upload_location():
+    return """
+    {
+      "@odata.context": "https://example.com",
+      "url": "https://anotherexample.com",
+      "expirationTime": "2024-01-01T12:00:00.1234567Z"
+    }
+    """

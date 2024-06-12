@@ -8,7 +8,7 @@ from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 
 from pbipy.groups import Group
-from pbipy.imports import Import
+from pbipy.imports import Import, TemporaryUploadLocation
 from pbipy.reports import Report
 
 
@@ -583,3 +583,35 @@ def test_imported_files(powerbi, get_imports):
     assert imported_files[0].id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
     assert imported_files[0].import_state == "Succeeded"
     assert imported_files[0].name == "SalesMarketing"
+
+
+@responses.activate
+def test_create_temporary_upload_location(powerbi, create_temporary_upload_location):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/imports/createTemporaryUploadLocation",
+        body=create_temporary_upload_location,
+    )
+
+    temporary_upload_location = powerbi.create_temporary_upload_location()
+
+    assert isinstance(temporary_upload_location, TemporaryUploadLocation)
+    assert temporary_upload_location.url == "https://anotherexample.com"
+    assert temporary_upload_location.expiration_time == "2024-01-01T12:00:00.1234567Z"
+
+
+@responses.activate
+def test_create_temporary_upload_location_with_group(
+    powerbi, create_temporary_upload_location
+):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/createTemporaryUploadLocation",
+        body=create_temporary_upload_location,
+    )
+
+    temporary_upload_location = powerbi.create_temporary_upload_location(
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert isinstance(temporary_upload_location, TemporaryUploadLocation)
+    assert temporary_upload_location.url == "https://anotherexample.com"
+    assert temporary_upload_location.expiration_time == "2024-01-01T12:00:00.1234567Z"
