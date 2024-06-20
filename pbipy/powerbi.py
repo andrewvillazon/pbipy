@@ -333,7 +333,7 @@ class PowerBI:
         )
 
         dataflow = Dataflow(
-            raw.get("objectId"),
+            raw.get("objectId", dataflow),
             self.session,
             group_id=group_id,
             raw=raw,
