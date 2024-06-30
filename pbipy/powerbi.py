@@ -8,6 +8,8 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 
 """
 
+from pathlib import Path
+
 import requests
 
 from pbipy import settings
@@ -861,6 +863,122 @@ class PowerBI:
         )
 
         return temporary_upload_location
+
+    def _upload_large_file(
+        self,
+        file_path: Path,
+        group_id: str = None,
+    ) -> str:
+        """
+        Creates a temporary upload location and then uploads the provided
+        file to the location.
+
+        Parameters
+        ----------
+        `file_path` : `Path`
+            The file path of the file to upload.
+        `group_id` : `str`, optional
+            The group id associated with the upload location.
+
+        Returns
+        -------
+        `str`
+            Shared access signature URL. For large files (greater than 1GB),
+            the shared access signature URL is provided to the import endpoint
+            instead of the file.
+
+        Raises
+        ------
+        `Exception`
+            If any errors were encountered during the upload.
+
+        """
+
+        temporary_upload_location = self.create_temporary_upload_location(group_id)
+
+        try:
+            with open(file_path, "rb") as file_contents:
+                response = self.session.post(
+                    temporary_upload_location.url,
+                    files={"file": file_contents},
+                )
+
+                _utils.raise_error(response)
+
+        except Exception as ex:
+            raise ex
+
+        return temporary_upload_location.url
+
+    def import_file(
+        self,
+        file_path: Path | str,
+        dataset_display_name: str,
+        name_conflict: str = None,
+        override_model_label: bool = None,
+        override_report_label: bool = None,
+        skip_report: bool = None,
+        subfolder_object_id: str = None,
+        group: str | Group = None,
+    ) -> Import:
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if isinstance(file_path, str):
+            fp = Path(file_path)
+        else:
+            fp = file_path
+
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
+
+        resource = self.BASE_URL + path
+
+        params = {
+            "datasetDisplayName": dataset_display_name,
+            "nameConflict": name_conflict,
+            "overrideModelLabel": override_model_label,
+            "overrideReportLabel": override_report_label,
+            "skipReport": skip_report,
+            "subfolderObjectId": subfolder_object_id,
+        }
+
+        is_large_file = fp.stat().st_size >= 1_000_000_000
+
+        if is_large_file:
+            file_url = self._upload_large_file(fp, group_id)
+            payload = {"fileUrl": file_url}
+
+            raw = _utils.post_raw(
+                resource,
+                self.session,
+                params=params,
+                payload=payload,
+            )
+        else:
+            try:
+                with open(file_path, "rb") as file_contents:
+                    response = self.session.post(
+                        resource,
+                        files={"file": file_contents},
+                        params=params,
+                    )
+
+                    _utils.raise_error(response)
+
+                    raw = _utils.parse_raw(response.json())
+
+            except Exception as ex:
+                raise ex
+
+        import_id = raw.get("id")
+
+        return self.imported_file(import_id, group=group_id)
 
     def reports(
         self,

@@ -1933,3 +1933,10 @@ def create_temporary_upload_location():
       "expirationTime": "2024-01-01T12:00:00.1234567Z"
     }
     """
+
+
+@pytest.fixture
+def post_import():
+    return """
+      {"id": "82d9a37a-2b45-4221-b012-cb109b8e30c7"}
+    """
