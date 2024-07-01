@@ -921,6 +921,54 @@ class PowerBI:
         subfolder_object_id: str = None,
         group: str | Group = None,
     ) -> Import:
+        """
+        Import a file into MyWorkspace or the specified Group, and return
+        an `Import` object representing the newly imported file.
+
+        Parameters
+        ----------
+        `file_path` : `Path | str`
+            File path of the file to import.
+        `dataset_display_name` : `str`
+            The display name of the file, should include file extension.
+        `name_conflict` : `str`, optional
+            Specifies what to do if file already exists. Available values: `Ignore` (default), `Abort`, or `Overwrite`
+        `override_model_label` : `bool`, optional
+            Whether to override the existing label on a model when republishing a Power BI `.pbix` file. The service default value is `true`.
+        `override_report_label` : `bool`, optional
+            Whether to override the existing report label when republishing a Power BI `.pbix` file. The service default value is `true`.
+        `skip_report` : `bool`, optional
+            Whether to skip report import. If specified, the value must be true. Only supported for Power BI `.pbix` files.
+        `subfolder_object_id` : `str`, optional
+            The subfolder ID to import the file to subfolder.
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to import the file into.
+
+        Returns
+        -------
+        `Import`
+            `Import` object representing the newly imported file.
+
+        Raises
+        ------
+        `Exception`
+            If an error was encountered during the import proess.
+
+        Notes
+        -----
+        * If the file exceeds 1GB in size, this method will use the Create
+        Temporary Upload endpoint to create a temporary blob storage location
+        and upload the file there. The shared access signature url will then
+        be supplied to the Post Import endpoint, following the large Power
+        BI `.pbix` process outlined here: https://learn.microsoft.com/en-us/rest/api/power-bi/imports/create-temporary-upload-location
+
+        * Following a successful upload, the method will query the Get Import
+        endpoint to retrieve the complete details of the newly imported file.
+
+        * Method does not currently support importing an .`xlsx` file from
+        OneDrive for Business.
+
+        """
 
         if isinstance(group, Group):
             group_id = group.id
