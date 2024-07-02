@@ -551,3 +551,18 @@ def test_dashboard_with_group(powerbi, get_dashboard_in_group):
     assert isinstance(dashboard, Dashboard)
     assert dashboard.display_name == "SalesMarketing"
     assert dashboard.group_id == group.id
+
+
+@responses.activate
+def test_gateway(powerbi, get_gateway):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        body=get_gateway,
+        content_type="application/json",
+    )
+
+    gateway = powerbi.gateway(gateway="1f69e798-5852-4fdd-ab01-33bb14b6e934")
+
+    assert gateway.id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert gateway.name == "My_Sample_Gateway"
+    assert isinstance(gateway.public_key, dict)

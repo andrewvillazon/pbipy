@@ -16,6 +16,7 @@ from pbipy.apps import App
 from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
+from pbipy.gateways import Gateway
 from pbipy.groups import Group
 from pbipy.reports import Report
 from pbipy import _utils
@@ -826,3 +827,30 @@ class PowerBI:
             resource,
             self.session,
         )
+
+    def gateway(
+        self,
+        gateway: str,
+    ) -> Gateway:
+        """
+        Retrieve the specified Gateway.
+
+        Parameters
+        ----------
+        `gateway` : `str`
+            The id of the Gateway to retrieve.
+
+        Returns
+        -------
+        `Gateway`
+            The specified Gateway.
+
+        """
+
+        gateway = Gateway(
+            gateway,
+            self.session,
+        )
+        gateway.load()
+
+        return gateway

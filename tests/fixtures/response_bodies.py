@@ -1858,3 +1858,18 @@ def reports_generate_token_in_group():
       "expiration": "2018-07-29T17:58:19Z"
     }
     """
+
+
+@pytest.fixture
+def get_gateway():
+    return """
+    {
+      "id": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+      "name": "My_Sample_Gateway",
+      "type": "Resource",
+      "publicKey": {
+        "exponent": "AQAB",
+        "modulus": "o6j2....cLk="
+      }
+    }
+    """
