@@ -7,6 +7,7 @@ from pbipy.apps import App
 from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 
+from pbipy.gateways import Gateway
 from pbipy.groups import Group
 from pbipy.reports import Report
 
@@ -566,3 +567,19 @@ def test_gateway(powerbi, get_gateway):
     assert gateway.id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
     assert gateway.name == "My_Sample_Gateway"
     assert isinstance(gateway.public_key, dict)
+
+
+@responses.activate
+def test_gateways(powerbi, get_gateways):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways",
+        body=get_gateways,
+        content_type="application/json",
+    )
+
+    gateways = powerbi.gateways()
+
+    assert isinstance(gateways[0], Gateway)
+    assert gateways[0].id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert gateways[0].name == "My_Sample_Gateway"
+    assert isinstance(gateways[0].public_key, dict)

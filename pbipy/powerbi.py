@@ -854,3 +854,34 @@ class PowerBI:
         gateway.load()
 
         return gateway
+
+    def gateways(
+        self,
+    ) -> list[Gateway]:
+        """
+        Retrieve a list of Gateways for which the user is an admin.
+
+        Returns
+        -------
+        `list[Gateway]`
+            List of `Gateway` objects for which the user is an admin.
+
+        """
+
+        resource = self.BASE_URL + "/gateways"
+
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        gateways = [
+            Gateway(
+                gateway_js.get("id"),
+                self.session,
+                raw=gateway_js,
+            )
+            for gateway_js in raw
+        ]
+
+        return gateways

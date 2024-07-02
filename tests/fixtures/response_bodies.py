@@ -1873,3 +1873,22 @@ def get_gateway():
       }
     }
     """
+
+
+@pytest.fixture
+def get_gateways():
+    return """
+    {
+      "value": [
+        {
+          "id": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+          "name": "My_Sample_Gateway",
+          "type": "Resource",
+          "publicKey": {
+            "exponent": "AQAB",
+            "modulus": "o6j2....cLk="
+          }
+        }
+      ]
+    }
+    """
