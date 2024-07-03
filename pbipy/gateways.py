@@ -1,6 +1,7 @@
 from requests import Session
 
 from pbipy.resources import Resource
+from pbipy import _utils
 
 
 class Gateway(Resource):
@@ -17,3 +18,14 @@ class Gateway(Resource):
 
         if raw:
             self._load_from_raw(raw)
+
+    def datasources(
+        self,
+    ) -> list[dict]:
+        resource = self.base_path + "/datasources"
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        return raw

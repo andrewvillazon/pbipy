@@ -1892,3 +1892,29 @@ def get_gateways():
       ]
     }
     """
+
+
+@pytest.fixture
+def gateways_get_datasources():
+    return """
+    {
+      "value": [
+        {
+          "id": "252b9de8-d915-4788-aaeb-ec8c2395f970",
+          "gatewayId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+          "datasourceType": "Sql",
+          "connectionDetails": "{\\"server\\":\\"localSQL\\",\\"database\\":\\"salesDB\\"}",
+          "credentialType": "Windows",
+          "datasourceName": "SQL Datasource"
+        },
+        {
+          "id": "91f8aec2-4b32-476f-909b-3241999620ec",
+          "gatewayId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+          "datasourceType": "AnalysisServices",
+          "connectionDetails": "{\\"server\\":\\"localAS\\",\\"database\\":\\"marketingDB\\"}",
+          "credentialType": "Windows",
+          "datasourceName": "AS Datasource"
+        }
+      ]
+    }
+    """
