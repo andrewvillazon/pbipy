@@ -865,55 +865,6 @@ class PowerBI:
 
         return temporary_upload_location
 
-    def _upload_large_file(
-        self,
-        filepath_or_filelike: Path | IO,
-        group_id: str = None,
-    ) -> str:
-        """
-        Creates a temporary upload location and then uploads the provided
-        file to the location.
-
-        Parameters
-        ----------
-        `filepath_or_filelike` : `Path | IO`
-            File path object or file-like object.
-        `group_id` : `str`, optional
-            The group id associated with the upload location.
-
-        Returns
-        -------
-        `str`
-            Shared access signature URL. For large files (greater than 1GB),
-            the shared access signature URL is provided to the import endpoint
-            instead of the file.
-
-        Raises
-        ------
-        `Exception`
-            If any errors were encountered during the upload.
-
-        """
-
-        temporary_upload_location = self.create_temporary_upload_location(group_id)
-
-        try:
-            with open(filepath_or_filelike, "rb") as file_contents:
-                response = self.session.post(
-                    temporary_upload_location.url,
-                    files={"file": file_contents},
-                )
-
-        except TypeError:
-            response = self.session.post(
-                temporary_upload_location.url,
-                files={"file": filepath_or_filelike},
-            )
-
-        _utils.raise_error(response)
-
-        return temporary_upload_location.url
-
     def import_file(
         self,
         filepath_or_filelike: str | Path | IO,
