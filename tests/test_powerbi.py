@@ -713,7 +713,7 @@ def test_upload_large_file_raises(
 
 
 @responses.activate
-def test_import_file_small_file(
+def test_import_file_filepath(
     powerbi,
     post_import,
     get_import,
@@ -740,25 +740,62 @@ def test_import_file_small_file(
         content_type="application/json",
     )
 
-    with (
-        patch("pbipy.powerbi.Path.stat") as mock_stat,
-        patch("builtins.open", mock_open(read_data=file_contents)) as mock_file,
-    ):
-        mock_stat.return_value.st_size = 12345
+    test_path = pathlib.Path("/a/nonexistent/file.pbix")
 
+    with patch("builtins.open", mock_open(read_data=file_contents)) as mock_file:
         my_import = powerbi.import_file(
-            "/a/nonexistent/file.pbix",
+            test_path,
             dataset_display_name="file.pbix",
             name_conflict="Abort",
         )
 
-    mock_file.assert_called_with("/a/nonexistent/file.pbix", "rb")
+    mock_file.assert_called_with(test_path, "rb")
     assert my_import.id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
     assert my_import.import_state == "Succeeded"
 
 
 @responses.activate
-def test_import_file_large_file(
+def test_import_file_filelike(
+    powerbi,
+    post_import,
+    get_import,
+):
+    file_contents = b"pbix contents"
+    filelike = BytesIO(file_contents)
+    req_files = {"file": file_contents}
+
+    params = {
+        "datasetDisplayName": "file.pbix",
+        "nameConflict": "Abort",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/imports",
+        body=post_import,
+        match=[
+            matchers.multipart_matcher(files=req_files),
+            matchers.query_param_matcher(params=params),
+        ],
+    )
+
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/imports/82d9a37a-2b45-4221-b012-cb109b8e30c7",
+        body=get_import,
+        content_type="application/json",
+    )
+
+    my_import = powerbi.import_file(
+        filelike,
+        dataset_display_name="file.pbix",
+        name_conflict="Abort",
+    )
+
+    assert my_import.id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
+    assert my_import.import_state == "Succeeded"
+
+
+@responses.activate
+def test_import_large_file_filepath(
     powerbi,
     create_temporary_upload_location,
     post_import,
@@ -770,7 +807,7 @@ def test_import_file_large_file(
         body=create_temporary_upload_location,
     )
 
-    # Upload the large file
+    # Upload the file to the shared access signature url
     file_contents = b"pbix contents"
     req_files = {"file": file_contents}
     responses.post(
@@ -780,10 +817,18 @@ def test_import_file_large_file(
 
     # Post the file details
     json_params = {"fileUrl": "https://anotherexample.com"}
+    params = {
+        "datasetDisplayName": "file.pbix",
+        "nameConflict": "Abort",
+    }
+
     responses.post(
         "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports",
         body=post_import,
-        match=[matchers.json_params_matcher(params=json_params)],
+        match=[
+            matchers.json_params_matcher(params=json_params),
+            matchers.query_param_matcher(params=params),
+        ],
     )
 
     # Get the details
@@ -793,14 +838,10 @@ def test_import_file_large_file(
         content_type="application/json",
     )
 
-    with (
-        patch("pbipy.powerbi.Path.stat") as mock_stat,
-        patch("builtins.open", mock_open(read_data=file_contents)) as mock_file,
-    ):
-        mock_stat.return_value.st_size = 1_000_000_005
+    with patch("builtins.open", mock_open(read_data=file_contents)) as mock_file:
         test_path = pathlib.Path("/a/nonexistent/file.pbix")
 
-        my_import = powerbi.import_file(
+        my_import = powerbi.import_large_file(
             test_path,
             dataset_display_name="file.pbix",
             name_conflict="Abort",
@@ -808,6 +849,64 @@ def test_import_file_large_file(
         )
 
     mock_file.assert_called_with(test_path, "rb")
+    assert my_import.id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
+    assert my_import.import_state == "Succeeded"
+    assert my_import.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+
+
+@responses.activate
+def test_import_large_file_filelike(
+    powerbi,
+    create_temporary_upload_location,
+    post_import,
+    get_import,
+):
+    # Create temporary upload location
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/createTemporaryUploadLocation",
+        body=create_temporary_upload_location,
+    )
+
+    # Upload the file to the shared access signature url
+    file_contents = b"pbix contents"
+    filelike = BytesIO(file_contents)
+    req_files = {"file": file_contents}
+
+    responses.post(
+        "https://anotherexample.com",
+        match=[matchers.multipart_matcher(files=req_files)],
+    )
+
+    # Post the file details
+    json_params = {"fileUrl": "https://anotherexample.com"}
+    params = {
+        "datasetDisplayName": "file.pbix",
+        "nameConflict": "Abort",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports",
+        body=post_import,
+        match=[
+            matchers.json_params_matcher(params=json_params),
+            matchers.query_param_matcher(params=params),
+        ],
+    )
+
+    # Get the details
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/82d9a37a-2b45-4221-b012-cb109b8e30c7",
+        body=get_import,
+        content_type="application/json",
+    )
+
+    my_import = powerbi.import_large_file(
+        filelike,
+        dataset_display_name="file.pbix",
+        name_conflict="Abort",
+        group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
     assert my_import.id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
     assert my_import.import_state == "Succeeded"
     assert my_import.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"

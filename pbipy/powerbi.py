@@ -916,7 +916,7 @@ class PowerBI:
 
     def import_file(
         self,
-        file_path: Path | str,
+        filepath_or_filelike: str | Path | IO,
         dataset_display_name: str,
         name_conflict: str = None,
         override_model_label: bool = None,
@@ -926,13 +926,17 @@ class PowerBI:
         group: str | Group = None,
     ) -> Import:
         """
-        Import a file into MyWorkspace or the specified Group, and return
-        an `Import` object representing the newly imported file.
+        Import a file, or file-like object, into MyWorkspace or the specified
+        Group, and return an `Import` object representing the newly imported
+        file.
+
+        If the importing a file between 1GB and 10GB, see the `import_large_file`
+        method.
 
         Parameters
         ----------
-        `file_path` : `Path | str`
-            File path of the file to import.
+        `filepath_or_filelike` : `str | Path | IO`
+            File path or file-like object to import.
         `dataset_display_name` : `str`
             The display name of the file, should include file extension.
         `name_conflict` : `str`, optional
@@ -960,12 +964,6 @@ class PowerBI:
 
         Notes
         -----
-        * If the file exceeds 1GB in size, this method will use the Create
-        Temporary Upload endpoint to create a temporary blob storage location
-        and upload the file there. The shared access signature url will then
-        be supplied to the Post Import endpoint, following the large Power
-        BI `.pbix` process outlined here: https://learn.microsoft.com/en-us/rest/api/power-bi/imports/create-temporary-upload-location
-
         * Following a successful upload, the method will query the Get Import
         endpoint to retrieve the complete details of the newly imported file.
 
@@ -978,11 +976,6 @@ class PowerBI:
             group_id = group.id
         else:
             group_id = group
-
-        if isinstance(file_path, str):
-            fp = Path(file_path)
-        else:
-            fp = file_path
 
         if group_id:
             path = f"/groups/{group_id}/imports"
@@ -1000,33 +993,143 @@ class PowerBI:
             "subfolderObjectId": subfolder_object_id,
         }
 
-        is_large_file = fp.stat().st_size >= 1_000_000_000
+        if isinstance(filepath_or_filelike, str):
+            filepath_or_filelike = Path(filepath_or_filelike)
 
-        if is_large_file:
-            file_url = self._upload_large_file(fp, group_id)
-            payload = {"fileUrl": file_url}
+        try:
+            with open(filepath_or_filelike, "rb") as file_contents:
+                response = self.session.post(
+                    resource,
+                    files={"file": file_contents},
+                    params=params,
+                )
 
-            raw = _utils.post_raw(
+        except TypeError:
+            response = self.session.post(
                 resource,
-                self.session,
+                files={"file": filepath_or_filelike},
                 params=params,
-                payload=payload,
             )
+
+        _utils.raise_error(response)
+        raw = _utils.parse_raw(response.json())
+
+        import_id = raw.get("id")
+
+        return self.imported_file(import_id, group=group_id)
+
+    def import_large_file(
+        self,
+        filepath_or_filelike: str | Path | IO,
+        dataset_display_name: str,
+        name_conflict: str = None,
+        override_model_label: bool = None,
+        override_report_label: bool = None,
+        skip_report: bool = None,
+        subfolder_object_id: str = None,
+        group: str | Group = None,
+    ) -> Import:
+        """
+        Import a large (between 1GB and 10GB) file, or file-like object, into
+        MyWorkspace or the specified Group, and return an `Import` object
+        representing the newly imported file.
+
+        Convenience function that handles the process of importing large
+        files.
+
+        Parameters
+        ----------
+        `filepath_or_filelike` : `str | Path | IO`
+            File path or file-like object to import.
+        `dataset_display_name` : `str`
+            The display name of the file, should include file extension.
+        `name_conflict` : `str`, optional
+            Specifies what to do if file already exists. Available values: `Ignore` (default), `Abort`, or `Overwrite`
+        `override_model_label` : `bool`, optional
+            Whether to override the existing label on a model when republishing a Power BI `.pbix` file. The service default value is `true`.
+        `override_report_label` : `bool`, optional
+            Whether to override the existing report label when republishing a Power BI `.pbix` file. The service default value is `true`.
+        `skip_report` : `bool`, optional
+            Whether to skip report import. If specified, the value must be true. Only supported for Power BI `.pbix` files.
+        `subfolder_object_id` : `str`, optional
+            The subfolder ID to import the file to subfolder.
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to import the file into.
+
+        Returns
+        -------
+        `Import`
+            `Import` object representing the newly imported file.
+
+        Raises
+        ------
+        `Exception`
+            If an error was encountered during the import proess.
+
+        Notes
+        -----
+        * This method uses the Create Temporary Upload endpoint to create
+        a temporary blob storage location and upload the file there. The
+        shared access signature url is then be supplied to the Post Import
+        endpoint, following the large Power BI `.pbix` process outlined here:
+        https://learn.microsoft.com/en-us/rest/api/power-bi/imports/create-temporary-upload-location
+
+        * Following a successful upload, the method will query the Get Import
+        endpoint to retrieve the complete details of the newly imported file.
+
+        * Method does not currently support importing an .`xlsx` file from
+        OneDrive for Business.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
         else:
-            try:
-                with open(file_path, "rb") as file_contents:
-                    response = self.session.post(
-                        resource,
-                        files={"file": file_contents},
-                        params=params,
-                    )
+            group_id = group
 
-                    _utils.raise_error(response)
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
 
-                    raw = _utils.parse_raw(response.json())
+        params = {
+            "datasetDisplayName": dataset_display_name,
+            "nameConflict": name_conflict,
+            "overrideModelLabel": override_model_label,
+            "overrideReportLabel": override_report_label,
+            "skipReport": skip_report,
+            "subfolderObjectId": subfolder_object_id,
+        }
 
-            except Exception as ex:
-                raise ex
+        if isinstance(filepath_or_filelike, str):
+            filepath_or_filelike = Path(filepath_or_filelike)
+
+        temporary_upload_location = self.create_temporary_upload_location(group_id)
+
+        try:
+            with open(filepath_or_filelike, "rb") as file_contents:
+                response = self.session.post(
+                    temporary_upload_location.url,
+                    files={"file": file_contents},
+                )
+
+        except TypeError:
+            response = self.session.post(
+                temporary_upload_location.url,
+                files={"file": filepath_or_filelike},
+            )
+
+        _utils.raise_error(response)
+
+        resource = self.BASE_URL + path
+        payload = {"fileUrl": temporary_upload_location.url}
+
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+            params=params,
+            payload=payload,
+        )
 
         import_id = raw.get("id")
 
