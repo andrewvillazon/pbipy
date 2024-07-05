@@ -881,7 +881,7 @@ class PowerBI:
         Group, and return an `Import` object representing the newly imported
         file.
 
-        If the importing a file between 1GB and 10GB, see the `import_large_file`
+        For file sizes between 1GB and 10GB, see the `import_large_file`
         method.
 
         Parameters
