@@ -891,13 +891,17 @@ class PowerBI:
         `dataset_display_name` : `str`
             The display name of the file, should include file extension.
         `name_conflict` : `str`, optional
-            Specifies what to do if file already exists. Available values: `Ignore` (default), `Abort`, or `Overwrite`
+            Specifies what to do if file already exists. Available values:
+            `Ignore` (default), `Abort`, or `Overwrite`
         `override_model_label` : `bool`, optional
-            Whether to override the existing label on a model when republishing a Power BI `.pbix` file. The service default value is `true`.
+            Whether to override the existing label on a model when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
         `override_report_label` : `bool`, optional
-            Whether to override the existing report label when republishing a Power BI `.pbix` file. The service default value is `true`.
+            Whether to override the existing report label when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
         `skip_report` : `bool`, optional
-            Whether to skip report import. If specified, the value must be true. Only supported for Power BI `.pbix` files.
+            Whether to skip report import. If specified, the value must
+            be true. Only supported for Power BI `.pbix` files.
         `subfolder_object_id` : `str`, optional
             The subfolder ID to import the file to subfolder.
         `group` : `str | Group`, optional
@@ -911,7 +915,7 @@ class PowerBI:
         Raises
         ------
         `Exception`
-            If an error was encountered during the import proess.
+            If an error was encountered during the import process.
 
         Notes
         -----
@@ -995,13 +999,17 @@ class PowerBI:
         `dataset_display_name` : `str`
             The display name of the file, should include file extension.
         `name_conflict` : `str`, optional
-            Specifies what to do if file already exists. Available values: `Ignore` (default), `Abort`, or `Overwrite`
+            Specifies what to do if file already exists. Available values:
+            `Ignore` (default), `Abort`, or `Overwrite`
         `override_model_label` : `bool`, optional
-            Whether to override the existing label on a model when republishing a Power BI `.pbix` file. The service default value is `true`.
+            Whether to override the existing label on a model when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
         `override_report_label` : `bool`, optional
-            Whether to override the existing report label when republishing a Power BI `.pbix` file. The service default value is `true`.
+            Whether to override the existing report label when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
         `skip_report` : `bool`, optional
-            Whether to skip report import. If specified, the value must be true. Only supported for Power BI `.pbix` files.
+            Whether to skip report import. If specified, the value must be
+            true. Only supported for Power BI `.pbix` files.
         `subfolder_object_id` : `str`, optional
             The subfolder ID to import the file to subfolder.
         `group` : `str | Group`, optional
@@ -1015,7 +1023,7 @@ class PowerBI:
         Raises
         ------
         `Exception`
-            If an error was encountered during the import proess.
+            If an error was encountered during the import process.
 
         Notes
         -----
