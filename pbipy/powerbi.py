@@ -916,6 +916,10 @@ class PowerBI:
         ------
         `Exception`
             If an error was encountered during the import process.
+        
+        See Also
+        --------
+        `PowerBI.import_large_file`
 
         Notes
         -----
