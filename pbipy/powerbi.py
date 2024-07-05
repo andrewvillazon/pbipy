@@ -9,6 +9,7 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 """
 
 from pathlib import Path
+from typing import IO
 
 import requests
 
@@ -866,7 +867,7 @@ class PowerBI:
 
     def _upload_large_file(
         self,
-        file_path: Path,
+        filepath_or_filelike: Path | IO,
         group_id: str = None,
     ) -> str:
         """
@@ -875,8 +876,8 @@ class PowerBI:
 
         Parameters
         ----------
-        `file_path` : `Path`
-            The file path of the file to upload.
+        `filepath_or_filelike` : `Path | IO`
+            File path object or file-like object.
         `group_id` : `str`, optional
             The group id associated with the upload location.
 
@@ -897,16 +898,19 @@ class PowerBI:
         temporary_upload_location = self.create_temporary_upload_location(group_id)
 
         try:
-            with open(file_path, "rb") as file_contents:
+            with open(filepath_or_filelike, "rb") as file_contents:
                 response = self.session.post(
                     temporary_upload_location.url,
                     files={"file": file_contents},
                 )
 
-                _utils.raise_error(response)
+        except TypeError:
+            response = self.session.post(
+                temporary_upload_location.url,
+                files={"file": filepath_or_filelike},
+            )
 
-        except Exception as ex:
-            raise ex
+        _utils.raise_error(response)
 
         return temporary_upload_location.url
 

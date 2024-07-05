@@ -1,3 +1,4 @@
+from io import BytesIO
 import pathlib
 from unittest.mock import mock_open, patch
 
@@ -640,7 +641,7 @@ def test_create_temporary_upload_location_with_group(
 
 
 @responses.activate
-def test_upload_large_file(
+def test_upload_large_file_filepath(
     powerbi,
     create_temporary_upload_location,
 ):
@@ -665,6 +666,50 @@ def test_upload_large_file(
 
     mock_file.assert_called_with("/a/large/file.pbix", "rb")
     assert file_url == "https://anotherexample.com"
+
+
+@responses.activate
+def test_upload_large_file_filelike(
+    powerbi,
+    create_temporary_upload_location,
+):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/createTemporaryUploadLocation",
+        body=create_temporary_upload_location,
+    )
+
+    file_contents = b"pbix contents"
+    filelike = BytesIO(file_contents)
+    req_files = {"file": file_contents}
+
+    responses.post(
+        "https://anotherexample.com",
+        match=[matchers.multipart_matcher(files=req_files)],
+    )
+
+    file_url = powerbi._upload_large_file(
+        filelike,
+        group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+    assert file_url == "https://anotherexample.com"
+
+
+@responses.activate
+def test_upload_large_file_raises(
+    powerbi,
+    create_temporary_upload_location,
+):
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/imports/createTemporaryUploadLocation",
+        body=create_temporary_upload_location,
+    )
+
+    with pytest.raises(Exception):
+        file_url = powerbi._upload_large_file(
+            None,
+            group_id="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+        )
 
 
 @responses.activate
