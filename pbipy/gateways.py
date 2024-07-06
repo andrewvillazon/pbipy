@@ -117,3 +117,32 @@ class Gateway(Resource):
         )
 
         return raw
+
+    def remove_datasource_user(
+        self,
+        datasource: str,
+        email_address: str,
+        profile_id: str = None,
+    ) -> None:
+        """
+        Remove the specified user from the specified data source.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+        `email_address` : `str`
+            The user's email address or the object Id of the service principal.
+        `profile_id` : `str`, optional
+            Service principal profile Id to delete.
+
+        """
+
+        resource = self.base_path + f"/datasources/{datasource}/users/{email_address}"
+        params = {"profileId": profile_id}
+
+        _utils.delete(
+            resource,
+            self.session,
+            params=params,
+        )
