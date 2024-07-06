@@ -118,7 +118,7 @@ class Gateway(Resource):
 
         return raw
 
-    def remove_datasource_user(
+    def delete_datasource_user(
         self,
         datasource: str,
         email_address: str,
