@@ -76,7 +76,7 @@ class Gateway(Resource):
 
         Notes
         ------
-        When the data source is unreachable, the Get Datasource Status endpoint
+        * When the data source is unreachable, the Get Datasource Status endpoint
         returns a 400 status code. This method will raise the 400 as a `RequestsException`.
         To get the gateway error details, handle the exception and inspect
         it's `response` attribute. e.g., `error_js = error.response.json()`
