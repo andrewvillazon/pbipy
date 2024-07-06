@@ -1932,3 +1932,26 @@ def gateways_get_datasource():
       "datasourceName": "Sample Datasource"
     }
     """
+
+
+@pytest.fixture
+def gateways_get_datasource_users():
+    return """
+    {
+      "value": [
+        {
+          "datasourceAccessRight": "Read",
+          "displayName": "John Nick",
+          "emailAddress": "john@contoso.com",
+          "identifier": "john@contoso.com",
+          "principalType": "User"
+        },
+        {
+          "datasourceAccessRight": "ReadOverrideEffectiveIdentity",
+          "displayName": "ContosoTestApp",
+          "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+          "principalType": "App"
+        }
+      ]
+    }
+    """

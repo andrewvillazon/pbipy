@@ -65,3 +65,19 @@ def test_datasource_status(gateway):
     )
 
     gateway.datasource_status("252b9de8-d915-4788-aaeb-ec8c2395f970")
+
+
+@responses.activate
+def test_datasource_users(gateway, gateways_get_datasource_users):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources/252b9de8-d915-4788-aaeb-ec8c2395f970/users",
+        body=gateways_get_datasource_users,
+        content_type="application/json",
+    )
+
+    users = gateway.datasource_users("252b9de8-d915-4788-aaeb-ec8c2395f970")
+
+    assert len(users) == 2
+    assert all(isinstance(user, dict) for user in users)
+    assert users[0]["emailAddress"] == "john@contoso.com"
+    assert users[1]["principalType"] == "App"

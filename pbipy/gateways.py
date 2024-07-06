@@ -90,3 +90,30 @@ class Gateway(Resource):
         )
 
         return raw
+
+    def datasource_users(
+        self,
+        datasource: str,
+    ) -> list[dict]:
+        """
+        Returns a list of users who have access to the specified data source.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+
+        Returns
+        -------
+        `list[dict]`
+            List of Power BI users with access to the data source.
+
+        """
+
+        resource = self.base_path + f"/datasources/{datasource}/users"
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        return raw
