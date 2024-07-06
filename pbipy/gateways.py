@@ -56,3 +56,37 @@ class Gateway(Resource):
         )
 
         return raw
+
+    def datasource_status(
+        self,
+        datasource: str,
+    ) -> dict:
+        """
+        Check the connectivity status of the specified data source.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+
+        Returns
+        -------
+        `dict`
+            The status of the data source.
+
+        Notes
+        ------
+        When the data source is unreachable, the Get Datasource Status endpoint
+        returns a 400 status code. This method will raise the 400 as a `RequestsException`.
+        To get the gateway error details, handle the exception and inspect
+        it's `response` attribute. e.g., `error_js = error.response.json()`
+
+        """
+
+        resource = self.base_path + f"/datasources/{datasource}/status"
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        return raw
