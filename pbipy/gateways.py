@@ -29,3 +29,30 @@ class Gateway(Resource):
         )
 
         return raw
+
+    def datasource(
+        self,
+        datasource: str,
+    ) -> dict:
+        """
+        Return the specified data source from the Gateway.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+
+        Returns
+        -------
+        `dict`
+            The specified data source.
+
+        """
+
+        resource = self.base_path + f"/datasources/{datasource}"
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        return raw

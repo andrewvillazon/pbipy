@@ -1918,3 +1918,17 @@ def gateways_get_datasources():
       ]
     }
     """
+
+
+@pytest.fixture
+def gateways_get_datasource():
+    return """
+    {
+      "id": "252b9de8-d915-4788-aaeb-ec8c2395f970",
+      "gatewayId": "1f69e798-5852-4fdd-ab01-33bb14b6e934",
+      "datasourceType": "Sql",
+      "connectionDetails": "{\\"server\\":\\"MyServer\\",\\"database\\":\\"MyDatabase\\"}",
+      "credentialType": "Windows",
+      "datasourceName": "Sample Datasource"
+    }
+    """

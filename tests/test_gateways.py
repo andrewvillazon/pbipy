@@ -38,3 +38,18 @@ def test_datasources(gateway, gateways_get_datasources):
 
     assert isinstance(datasources, list)
     assert len(datasources) == 2
+
+
+@responses.activate
+def test_datasource(gateway, gateways_get_datasource):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources/252b9de8-d915-4788-aaeb-ec8c2395f970",
+        body=gateways_get_datasource,
+        content_type="application/json",
+    )
+
+    datasource = gateway.datasource("252b9de8-d915-4788-aaeb-ec8c2395f970")
+
+    assert datasource["datasourceType"] == "Sql"
+    assert datasource["gatewayId"] == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert isinstance(datasource["connectionDetails"], str)
