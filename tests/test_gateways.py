@@ -1,5 +1,6 @@
 import pytest
 import responses
+from responses import matchers
 import requests
 
 from pbipy.gateways import Gateway
@@ -92,4 +93,43 @@ def test_delete_datasource_user(gateway):
     gateway.delete_datasource_user(
         "252b9de8-d915-4788-aaeb-ec8c2395f970",
         "john@contoso.com",
+    )
+
+
+@responses.activate
+def test_create_datasource(gateway, gateways_get_datasource):
+    json_params = {
+        "dataSourceType": "AnalysisServices",
+        "connectionDetails": '{"server":"MyServer","database":"MyDatabase"}',
+        "dataSourceName": "Sample Datasource",
+        "credentialDetails": {
+            "credentialType": "Windows",
+            "credentials": "AB....EF==",
+            "encryptedConnection": "Encrypted",
+            "encryptionAlgorithm": "RSA-OAEP",
+            "privacyLevel": "None",
+        },
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources",
+        body=gateways_get_datasource,
+        match=[
+            matchers.json_params_matcher(json_params),
+        ],
+    )
+
+    credential_details = {
+        "credentialType": "Windows",
+        "credentials": "AB....EF==",
+        "encryptedConnection": "Encrypted",
+        "encryptionAlgorithm": "RSA-OAEP",
+        "privacyLevel": "None",
+    }
+
+    new_datasource = gateway.create_datasource(
+        connection_details='{"server":"MyServer","database":"MyDatabase"}',
+        credential_details=credential_details,
+        datasource_name="Sample Datasource",
+        datasource_type="AnalysisServices",
     )

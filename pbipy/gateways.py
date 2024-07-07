@@ -57,6 +57,56 @@ class Gateway(Resource):
 
         return raw
 
+    def create_datasource(
+        self,
+        connection_details: str,
+        credential_details: dict,
+        datasource_name: str,
+        datasource_type: str,
+    ) -> dict:
+        """
+        Create a new data source on the Gateway.
+
+        Parameters
+        ----------
+        `connection_details` : `str`
+            String connection details, e.g., `"{\"server\":\"MyServer\",\"database\":\"MyDatabase\"}"`
+        `credential_details` : `dict`
+            The data source credential details.
+        `datasource_name` : `str`
+            The data source name.
+        `datasource_type` : `str`
+            The type of the data source, e.g., AnalysisServices, Excel, etc.
+
+        Returns
+        -------
+        `dict`
+            The newly created data source.
+        
+        Notes
+        -----
+        See https://learn.microsoft.com/en-us/rest/api/power-bi/gateways/create-datasource
+        for how to specify `connection_details` and `credential_details`.
+
+        """
+
+        resource = self.base_path + "/datasources"
+
+        payload = {
+            "connectionDetails": connection_details,
+            "credentialDetails": credential_details,
+            "dataSourceName": datasource_name,
+            "dataSourceType": datasource_type,
+        }
+
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+            payload=payload,
+        )
+
+        return raw
+
     def datasource_status(
         self,
         datasource: str,
