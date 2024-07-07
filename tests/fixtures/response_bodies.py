@@ -1858,3 +1858,85 @@ def reports_generate_token_in_group():
       "expiration": "2018-07-29T17:58:19Z"
     }
     """
+
+
+@pytest.fixture
+def get_import():
+    return """
+    {
+      "id": "82d9a37a-2b45-4221-b012-cb109b8e30c7",
+      "importState": "Succeeded",
+      "createdDateTime": "2018-05-08T14:56:18.477Z",
+      "updatedDateTime": "2018-05-08T14:56:18.477Z",
+      "name": "SalesMarketing",
+      "connectionType": "import",
+      "source": "Upload",
+      "datasets": [
+        {
+          "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+          "name": "SalesMarketing",
+          "webUrl": "https://app.powerbi.com/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+        }
+      ],
+      "reports": [
+        {
+          "id": "5b218778-e7a5-4d73-8187-f10824047715",
+          "name": "SalesMarketing",
+          "webUrl": "https://app.powerbi.com/reports/5b218778-e7a5-4d73-8187-f10824047715",
+          "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715"
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def get_imports():
+    return """
+    {
+      "value": [
+        {
+          "id": "82d9a37a-2b45-4221-b012-cb109b8e30c7",
+          "importState": "Succeeded",
+          "createdDateTime": "2018-05-08T14:56:18.477Z",
+          "updatedDateTime": "2018-05-08T14:56:18.477Z",
+          "name": "SalesMarketing",
+          "connectionType": "import",
+          "source": "Upload",
+          "datasets": [
+            {
+              "id": "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+              "name": "SalesMarketing",
+              "webUrl": "https://app.powerbi.com/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+            }
+          ],
+          "reports": [
+            {
+              "id": "5b218778-e7a5-4d73-8187-f10824047715",
+              "name": "SalesMarketing",
+              "webUrl": "https://app.powerbi.com/reports/5b218778-e7a5-4d73-8187-f10824047715",
+              "embedUrl": "https://app.powerbi.com/reportEmbed?reportId=5b218778-e7a5-4d73-8187-f10824047715"
+            }
+          ]
+        }
+      ]
+    }
+    """
+
+
+@pytest.fixture
+def create_temporary_upload_location():
+    return """
+    {
+      "@odata.context": "https://example.com",
+      "url": "https://anotherexample.com",
+      "expirationTime": "2024-01-01T12:00:00.1234567Z"
+    }
+    """
+
+
+@pytest.fixture
+def post_import():
+    return """
+      {"id": "82d9a37a-2b45-4221-b012-cb109b8e30c7"}
+    """
