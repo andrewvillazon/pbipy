@@ -8,6 +8,9 @@ https://learn.microsoft.com/en-us/rest/api/power-bi/
 
 """
 
+from pathlib import Path
+from typing import IO
+
 import requests
 
 from pbipy import settings
@@ -18,6 +21,7 @@ from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
 from pbipy.gateways import Gateway
 from pbipy.groups import Group
+from pbipy.imports import Import, TemporaryUploadLocation
 from pbipy.reports import Report
 from pbipy import _utils
 
@@ -729,6 +733,371 @@ class PowerBI:
         report.load()
 
         return report
+
+    def imported_file(
+        self,
+        import_id: str | Import,
+        group: str | Group = None,
+    ) -> Import:
+        """
+        Return details of the specified import (an imported file) from MyWorkspace
+        or the specified group. Does not return the imported file itself.
+
+        Parameters
+        ----------
+        `import_id` : `str | Import`
+            Import Id to retrieve
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the import resides.
+
+        Returns
+        -------
+        `Import`
+            The specified `Import` object.
+
+        """
+
+        if isinstance(import_id, Import):
+            return import_id
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        imported_file = Import(
+            import_id,
+            self.session,
+            group_id=group_id,
+        )
+        imported_file.load()
+
+        return imported_file
+
+    def imported_files(
+        self,
+        group: str | Group = None,
+    ) -> list[Import]:
+        """
+        Return a list of imports (imported files) from MyWorkspace or the specified group
+        (workspace).
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the imports reside.
+
+        Returns
+        -------
+        `list[Import]`
+            List of `Import` objects from MyWorkspace or the specified group
+            (workspace).
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
+
+        resource = self.BASE_URL + path
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        imports = [
+            Import(
+                import_js.get("id"),
+                self.session,
+                group_id=group_id,
+                raw=import_js,
+            )
+            for import_js in raw
+        ]
+
+        return imports
+
+    def create_temporary_upload_location(
+        self,
+        group: str | Group = None,
+    ) -> TemporaryUploadLocation:
+        """
+        Creates a temporary blob storage upload location for importing large
+        Power BI `.pbix` files that are between 1 GB and 10 GB in size.
+
+        Parameters
+        ----------
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to associate with the location.
+
+        Returns
+        -------
+        `TemporaryUploadLocation`
+            Temporary blob storage upload location.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports/createTemporaryUploadLocation"
+        else:
+            path = "/imports/createTemporaryUploadLocation"
+
+        resource = self.BASE_URL + path
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+        )
+
+        temporary_upload_location = TemporaryUploadLocation(
+            expiration_time=raw.get("expirationTime"),
+            url=raw.get("url"),
+        )
+
+        return temporary_upload_location
+
+    def import_file(
+        self,
+        filepath_or_filelike: str | Path | IO,
+        dataset_display_name: str,
+        name_conflict: str = None,
+        override_model_label: bool = None,
+        override_report_label: bool = None,
+        skip_report: bool = None,
+        subfolder_object_id: str = None,
+        group: str | Group = None,
+    ) -> Import:
+        """
+        Import a file, or file-like object, into MyWorkspace or the specified
+        Group, and return an `Import` object representing the newly imported
+        file.
+
+        For file sizes between 1GB and 10GB, see the `import_large_file`
+        method.
+
+        Parameters
+        ----------
+        `filepath_or_filelike` : `str | Path | IO`
+            File path or file-like object to import.
+        `dataset_display_name` : `str`
+            The display name of the file, should include file extension.
+        `name_conflict` : `str`, optional
+            Specifies what to do if file already exists. Available values:
+            `Ignore` (default), `Abort`, or `Overwrite`
+        `override_model_label` : `bool`, optional
+            Whether to override the existing label on a model when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
+        `override_report_label` : `bool`, optional
+            Whether to override the existing report label when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
+        `skip_report` : `bool`, optional
+            Whether to skip report import. If specified, the value must
+            be true. Only supported for Power BI `.pbix` files.
+        `subfolder_object_id` : `str`, optional
+            The subfolder ID to import the file to subfolder.
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to import the file into.
+
+        Returns
+        -------
+        `Import`
+            `Import` object representing the newly imported file.
+
+        Raises
+        ------
+        `Exception`
+            If an error was encountered during the import process.
+        
+        See Also
+        --------
+        `PowerBI.import_large_file`
+
+        Notes
+        -----
+        * Following a successful upload, the method will query the Get Import
+        endpoint to retrieve the complete details of the newly imported file.
+
+        * Method does not currently support importing an .`xlsx` file from
+        OneDrive for Business.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
+
+        resource = self.BASE_URL + path
+
+        params = {
+            "datasetDisplayName": dataset_display_name,
+            "nameConflict": name_conflict,
+            "overrideModelLabel": override_model_label,
+            "overrideReportLabel": override_report_label,
+            "skipReport": skip_report,
+            "subfolderObjectId": subfolder_object_id,
+        }
+
+        if isinstance(filepath_or_filelike, str):
+            filepath_or_filelike = Path(filepath_or_filelike)
+
+        try:
+            with open(filepath_or_filelike, "rb") as file_contents:
+                response = self.session.post(
+                    resource,
+                    files={"file": file_contents},
+                    params=params,
+                )
+
+        except TypeError:
+            response = self.session.post(
+                resource,
+                files={"file": filepath_or_filelike},
+                params=params,
+            )
+
+        _utils.raise_error(response)
+        raw = _utils.parse_raw(response.json())
+
+        import_id = raw.get("id")
+
+        return self.imported_file(import_id, group=group_id)
+
+    def import_large_file(
+        self,
+        filepath_or_filelike: str | Path | IO,
+        dataset_display_name: str,
+        name_conflict: str = None,
+        override_model_label: bool = None,
+        override_report_label: bool = None,
+        skip_report: bool = None,
+        subfolder_object_id: str = None,
+        group: str | Group = None,
+    ) -> Import:
+        """
+        Import a large (between 1GB and 10GB) file, or file-like object, into
+        MyWorkspace or the specified Group, and return an `Import` object
+        representing the newly imported file.
+
+        Convenience function that handles the process of importing large
+        files.
+
+        Parameters
+        ----------
+        `filepath_or_filelike` : `str | Path | IO`
+            File path or file-like object to import.
+        `dataset_display_name` : `str`
+            The display name of the file, should include file extension.
+        `name_conflict` : `str`, optional
+            Specifies what to do if file already exists. Available values:
+            `Ignore` (default), `Abort`, or `Overwrite`
+        `override_model_label` : `bool`, optional
+            Whether to override the existing label on a model when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
+        `override_report_label` : `bool`, optional
+            Whether to override the existing report label when republishing
+            a Power BI `.pbix` file. The service default value is `true`.
+        `skip_report` : `bool`, optional
+            Whether to skip report import. If specified, the value must be
+            true. Only supported for Power BI `.pbix` files.
+        `subfolder_object_id` : `str`, optional
+            The subfolder ID to import the file to subfolder.
+        `group` : `str | Group`, optional
+            Group Id or `Group` object to import the file into.
+
+        Returns
+        -------
+        `Import`
+            `Import` object representing the newly imported file.
+
+        Raises
+        ------
+        `Exception`
+            If an error was encountered during the import process.
+
+        Notes
+        -----
+        * This method uses the Create Temporary Upload endpoint to create
+        a temporary blob storage location and upload the file there. The
+        shared access signature url is then be supplied to the Post Import
+        endpoint, following the large Power BI `.pbix` process outlined here:
+        https://learn.microsoft.com/en-us/rest/api/power-bi/imports/create-temporary-upload-location
+
+        * Following a successful upload, the method will query the Get Import
+        endpoint to retrieve the complete details of the newly imported file.
+
+        * Method does not currently support importing an .`xlsx` file from
+        OneDrive for Business.
+
+        """
+
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/imports"
+        else:
+            path = "/imports"
+
+        params = {
+            "datasetDisplayName": dataset_display_name,
+            "nameConflict": name_conflict,
+            "overrideModelLabel": override_model_label,
+            "overrideReportLabel": override_report_label,
+            "skipReport": skip_report,
+            "subfolderObjectId": subfolder_object_id,
+        }
+
+        if isinstance(filepath_or_filelike, str):
+            filepath_or_filelike = Path(filepath_or_filelike)
+
+        temporary_upload_location = self.create_temporary_upload_location(group_id)
+
+        try:
+            with open(filepath_or_filelike, "rb") as file_contents:
+                response = self.session.post(
+                    temporary_upload_location.url,
+                    files={"file": file_contents},
+                )
+
+        except TypeError:
+            response = self.session.post(
+                temporary_upload_location.url,
+                files={"file": filepath_or_filelike},
+            )
+
+        _utils.raise_error(response)
+
+        resource = self.BASE_URL + path
+        payload = {"fileUrl": temporary_upload_location.url}
+
+        raw = _utils.post_raw(
+            resource,
+            self.session,
+            params=params,
+            payload=payload,
+        )
+
+        import_id = raw.get("id")
+
+        return self.imported_file(import_id, group=group_id)
 
     def reports(
         self,
