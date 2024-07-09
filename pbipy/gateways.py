@@ -5,6 +5,35 @@ from pbipy import _utils
 
 
 class Gateway(Resource):
+    """
+    A Power BI Gateway.
+
+    Users should initialize a `Gateway` object by called the `gateway()`
+    method on the `PowerBI` client, rather than creating directly.
+
+    Examples
+    --------
+    Retrieving a `Gateway` object using a `pbi` client object.
+
+    ```
+    >>> my_gateway = pbi.gateway("1f69e798-5852-4fdd-ab01-33bb14b6e934")
+    ```
+
+    Retrieve a list of datasources attached to the gateway.
+
+    ```
+    >>> my_gateway = pbi.gateway("1f69e798-5852-4fdd-ab01-33bb14b6e934")
+    >>> datasources = my_gateway.datasources()
+    ```
+
+    """
+
+    _REPR = [
+        "id",
+        "name",
+        "type",
+    ]
+
     def __init__(
         self,
         id: str,
