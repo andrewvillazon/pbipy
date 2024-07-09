@@ -133,3 +133,49 @@ def test_create_datasource(gateway, gateways_get_datasource):
         datasource_name="Sample Datasource",
         datasource_type="AnalysisServices",
     )
+
+
+@responses.activate
+def test_add_datasource_user_identity(gateway):
+    json_params = {
+        "identifier": "3d9b93c6-7b6d-4801-a491-1738910904fd",
+        "datasourceAccessRight": "ReadOverrideEffectiveIdentity",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources/252b9de8-d915-4788-aaeb-ec8c2395f970/users",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    gateway.add_datasource_user(
+        datasource="252b9de8-d915-4788-aaeb-ec8c2395f970",
+        datasource_access_right="ReadOverrideEffectiveIdentity",
+        identifier="3d9b93c6-7b6d-4801-a491-1738910904fd",
+    )
+
+
+@responses.activate
+def test_add_datasource_user_email(gateway):
+    json_params = {
+        "emailAddress": "john@contoso.com",
+        "datasourceAccessRight": "Read",
+    }
+
+    responses.post(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources/252b9de8-d915-4788-aaeb-ec8c2395f970/users",
+        match=[matchers.json_params_matcher(json_params)],
+    )
+
+    gateway.add_datasource_user(
+        datasource="252b9de8-d915-4788-aaeb-ec8c2395f970",
+        datasource_access_right="Read",
+        email_address="john@contoso.com",
+    )
+
+
+def test_add_datasource_user_raises(gateway):
+    with pytest.raises(ValueError):
+        gateway.add_datasource_user(
+            datasource="252b9de8-d915-4788-aaeb-ec8c2395f970",
+            datasource_access_right="Read",
+        )

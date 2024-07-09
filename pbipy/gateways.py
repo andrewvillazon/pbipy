@@ -82,7 +82,7 @@ class Gateway(Resource):
         -------
         `dict`
             The newly created data source.
-        
+
         Notes
         -----
         See https://learn.microsoft.com/en-us/rest/api/power-bi/gateways/create-datasource
@@ -167,6 +167,67 @@ class Gateway(Resource):
         )
 
         return raw
+
+    def add_datasource_user(
+        self,
+        datasource: str,
+        datasource_access_right: str,
+        email_address: str = None,
+        display_name: str = None,
+        identifier: str = None,
+        principal_type: str = None,
+        profile: dict = None,
+    ) -> None:
+        """
+        Grants or updates the permissions required to use the specified data
+        source for the specified user.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+        `datasource_access_right` : `str`
+            The access right (permission level) that a user has on the data
+            source.
+        `email_address` : `str`, optional
+            The email address of the user.
+        `display_name` : `str`, optional
+            The display name of the principal.
+        `identifier` : `str`, optional
+            The object ID of the principal.
+        `principal_type` : `str`, optional
+            The principal type.
+        `profile` : `dict`, optional
+            A Power BI service principal profile. Only relevant for Power
+            BI Embedded multi-tenancy solution.
+
+        Raises
+        ------
+        `ValueError`
+            If no `email_address` or `identifier` was provided.
+        
+        """
+
+        if not any([email_address, identifier]):
+            raise ValueError("Must provide either an email_address or identifier.")
+
+        resource = self.base_path + f"/datasources/{datasource}/users"
+
+        payload = {
+            "datasourceAccessRight": datasource_access_right,
+            "displayName": display_name,
+            "emailAddress": email_address,
+            "identifier": identifier,
+            "principalType": principal_type,
+            "profile": profile,
+        }
+        payload = _utils.remove_no_values(payload)
+
+        _utils.post(
+            resource,
+            self.session,
+            payload=payload,
+        )
 
     def delete_datasource_user(
         self,
