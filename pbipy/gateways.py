@@ -107,6 +107,27 @@ class Gateway(Resource):
 
         return raw
 
+    def delete_datasource(
+        self,
+        datasource: str,
+    ) -> None:
+        """
+        Delete the specified data source from the Gateway.
+
+        Parameters
+        ----------
+        `datasource` : `str`
+            Id of the target data source.
+
+        """
+
+        resource = self.base_path + f"/datasources/{datasource}"
+
+        _utils.delete(
+            resource,
+            self.session,
+        )
+
     def datasource_status(
         self,
         datasource: str,
@@ -205,7 +226,7 @@ class Gateway(Resource):
         ------
         `ValueError`
             If no `email_address` or `identifier` was provided.
-        
+
         """
 
         if not any([email_address, identifier]):

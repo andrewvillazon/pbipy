@@ -179,3 +179,12 @@ def test_add_datasource_user_raises(gateway):
             datasource="252b9de8-d915-4788-aaeb-ec8c2395f970",
             datasource_access_right="Read",
         )
+
+
+@responses.activate
+def test_delete_datasource(gateway):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934/datasources/252b9de8-d915-4788-aaeb-ec8c2395f970"
+    )
+
+    gateway.delete_datasource("252b9de8-d915-4788-aaeb-ec8c2395f970")
