@@ -19,6 +19,7 @@ from pbipy.apps import App
 from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
 from pbipy.datasets import Dataset
+from pbipy.gateways import Gateway
 from pbipy.groups import Group
 from pbipy.imports import Import, TemporaryUploadLocation
 from pbipy.reports import Report
@@ -1195,3 +1196,61 @@ class PowerBI:
             resource,
             self.session,
         )
+
+    def gateway(
+        self,
+        gateway: str,
+    ) -> Gateway:
+        """
+        Retrieve the specified Gateway.
+
+        Parameters
+        ----------
+        `gateway` : `str`
+            The id of the Gateway to retrieve.
+
+        Returns
+        -------
+        `Gateway`
+            The specified Gateway.
+
+        """
+
+        gateway = Gateway(
+            gateway,
+            self.session,
+        )
+        gateway.load()
+
+        return gateway
+
+    def gateways(
+        self,
+    ) -> list[Gateway]:
+        """
+        Retrieve a list of Gateways for which the user is an admin.
+
+        Returns
+        -------
+        `list[Gateway]`
+            List of `Gateway` objects for which the user is an admin.
+
+        """
+
+        resource = self.BASE_URL + "/gateways"
+
+        raw = _utils.get_raw(
+            resource,
+            self.session,
+        )
+
+        gateways = [
+            Gateway(
+                gateway_js.get("id"),
+                self.session,
+                raw=gateway_js,
+            )
+            for gateway_js in raw
+        ]
+
+        return gateways

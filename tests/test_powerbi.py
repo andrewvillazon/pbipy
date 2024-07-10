@@ -11,6 +11,7 @@ from requests.exceptions import HTTPError
 from pbipy.apps import App
 from pbipy.dashboards import Dashboard
 from pbipy.dataflows import Dataflow
+from pbipy.gateways import Gateway
 from pbipy.groups import Group
 from pbipy.imports import Import, TemporaryUploadLocation
 from pbipy.reports import Report
@@ -838,3 +839,34 @@ def test_import_large_file_filelike(
     assert my_import.id == "82d9a37a-2b45-4221-b012-cb109b8e30c7"
     assert my_import.import_state == "Succeeded"
     assert my_import.group_id == "f089354e-8366-4e18-aea3-4cb4a3a50b48"
+
+
+@responses.activate
+def test_gateway(powerbi, get_gateway):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways/1f69e798-5852-4fdd-ab01-33bb14b6e934",
+        body=get_gateway,
+        content_type="application/json",
+    )
+
+    gateway = powerbi.gateway(gateway="1f69e798-5852-4fdd-ab01-33bb14b6e934")
+
+    assert gateway.id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert gateway.name == "My_Sample_Gateway"
+    assert isinstance(gateway.public_key, dict)
+
+
+@responses.activate
+def test_gateways(powerbi, get_gateways):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/gateways",
+        body=get_gateways,
+        content_type="application/json",
+    )
+
+    gateways = powerbi.gateways()
+
+    assert isinstance(gateways[0], Gateway)
+    assert gateways[0].id == "1f69e798-5852-4fdd-ab01-33bb14b6e934"
+    assert gateways[0].name == "My_Sample_Gateway"
+    assert isinstance(gateways[0].public_key, dict)
