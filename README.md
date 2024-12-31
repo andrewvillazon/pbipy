@@ -61,7 +61,7 @@ bearer_token = acquire_bearer_token(
 
 The code that follows assumes you've authenticated and acquired your `bearer_token`.
 
-## Useage
+## Usage
 
 Start by creating the `PowerBI()` client. Interactions with the Power BI Rest API go through this object. 
 
