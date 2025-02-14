@@ -77,6 +77,24 @@ def test_get_dataset_group_property_is_set(powerbi, get_dataset):
 
 
 @responses.activate
+def test_get_dataset_calls_correct_get_dataset_in_group_instance(powerbi, get_dataset):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        body=get_dataset,
+        content_type="application/json",
+    )
+
+    group = Group(id="f089354e-8366-4e18-aea3-4cb4a3a50b48", session=requests.Session())
+
+    dataset = powerbi.dataset(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group=group,
+    )
+
+    assert dataset.group_id == group.id
+
+
+@responses.activate
 def test_get_datasets_calls_correct_get_datasets_url(powerbi, get_datasets):
     responses.get(
         "https://api.powerbi.com/v1.0/myorg/datasets",
@@ -129,6 +147,23 @@ def test_get_datasets_sets_js_property(powerbi, get_datasets):
 
 
 @responses.activate
+def test_get_datasets_calls_correct_get_datasets_in_group_instance(
+    powerbi, get_datasets
+):
+    responses.get(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets",
+        body=get_datasets,
+        content_type="application/json",
+    )
+
+    group = Group(id="f089354e-8366-4e18-aea3-4cb4a3a50b48", session=requests.Session())
+
+    datasets = powerbi.datasets(group=group)
+
+    assert all(hasattr(dataset, "raw") for dataset in datasets)
+
+
+@responses.activate
 def test_delete_dataset_call(powerbi):
     responses.delete(
         "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
@@ -137,6 +172,20 @@ def test_delete_dataset_call(powerbi):
     powerbi.delete_dataset(
         "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
         group="f089354e-8366-4e18-aea3-4cb4a3a50b48",
+    )
+
+
+@responses.activate
+def test_delete_dataset_call_from_group_instance(powerbi):
+    responses.delete(
+        "https://api.powerbi.com/v1.0/myorg/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/datasets/cfafbeb1-8037-4d0c-896e-a46fb27ff229"
+    )
+
+    group = Group(id="f089354e-8366-4e18-aea3-4cb4a3a50b48", session=requests.Session())
+
+    powerbi.delete_dataset(
+        "cfafbeb1-8037-4d0c-896e-a46fb27ff229",
+        group=group,
     )
 
 

@@ -1,5 +1,5 @@
 """
-Module implements a Power BI client that wraps around the Power BI Rest 
+Module implements a Power BI client that wraps around the Power BI Rest
 API.
 
 Full API documentation can be found at:
@@ -422,11 +422,10 @@ class PowerBI:
             self.session,
         )
 
-    # TODO: Add support for passing in a group obj
     def dataset(
         self,
         dataset: str | Dataset,
-        group: str = None,
+        group: str | Group = None,
     ) -> Dataset:
         """
         Return the specified dataset from MyWorkspace or the specified
@@ -436,8 +435,8 @@ class PowerBI:
         ----------
         `dataset` : `str | Dataset`
             Dataset Id of the dataset to retrieve.
-        `group` : `str`, optional
-            Group Id where the dataset resides., by default None
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the dataset resides, by default None.
 
         Returns
         -------
@@ -449,22 +448,27 @@ class PowerBI:
         if isinstance(dataset, Dataset):
             return dataset
 
-        dataset = Dataset(dataset, self.session, group_id=group)
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        dataset = Dataset(dataset, self.session, group_id=group_id)
         dataset.load()
 
         return dataset
 
     def datasets(
         self,
-        group: str = None,
+        group: str | Group = None,
     ) -> list[Dataset]:
         """
         Returns a list of datasets from MyWorkspace or the specified group.
 
         Parameters
         ----------
-        `group` : str, optional
-            Group Id where the datasets reside. If not supplied, then datasets
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the datasets reside. If not supplied, then datasets
             will be retrieved from MyWorkspace.
 
         Returns
@@ -473,9 +477,13 @@ class PowerBI:
             List of datasets for MyWorkspace or the specified group.
 
         """
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
 
-        if group:
-            path = f"/groups/{group}/datasets"
+        if group_id:
+            path = f"/groups/{group_id}/datasets"
         else:
             path = "/datasets"
 
@@ -489,7 +497,7 @@ class PowerBI:
             Dataset(
                 dataset_js.get("id"),
                 self.session,
-                group_id=group,
+                group_id=group_id,
                 raw=dataset_js,
             )
             for dataset_js in raw
@@ -500,7 +508,7 @@ class PowerBI:
     def delete_dataset(
         self,
         dataset: str | Dataset,
-        group: str = None,
+        group: str | Group = None,
     ) -> None:
         """
         Delete the specified dataset from MyWorkspace or the specified
@@ -510,8 +518,8 @@ class PowerBI:
         ----------
         `dataset` : `str | Dataset`
             Dataset Id or `Dataset` object to delete.
-        `group` : `str`, optional
-            Group Id where the dataset resides., by default None
+        `group` : `str | Group`, optional
+            Group Id or `Group` object where the dataset resides, by default None
 
         Raises
         ------
@@ -526,8 +534,13 @@ class PowerBI:
         else:
             dataset_id = dataset
 
-        if group:
-            path = f"/groups/{group}/datasets/{dataset_id}"
+        if isinstance(group, Group):
+            group_id = group.id
+        else:
+            group_id = group
+
+        if group_id:
+            path = f"/groups/{group_id}/datasets/{dataset_id}"
         else:
             path = f"/datasets/{dataset_id}"
 
@@ -917,7 +930,7 @@ class PowerBI:
         ------
         `Exception`
             If an error was encountered during the import process.
-        
+
         See Also
         --------
         `PowerBI.import_large_file`
