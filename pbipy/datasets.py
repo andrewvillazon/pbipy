@@ -386,6 +386,8 @@ class Dataset(Resource):
 
         """
 
+        _utils.validate_duration(timeout)
+        
         refresh_request = {
             "applyRefreshPolicy": apply_refresh_policy,
             "commitMode": commit_mode,
