@@ -443,3 +443,31 @@ def test_build_url_with_multiple_obj():
     expected_path = "/groups/f089354e-8366-4e18-aea3-4cb4a3a50b48/reports/cfafbeb1-8037-4d0c-896e-a46fb27ff229/datasources"
 
     assert expected_path == path
+
+
+@pytest.mark.parametrize("valid_input,expected", [
+    ("00:00:00", "0:00:00"),
+    ("01:30:15", "1:30:15"),
+    ("12:34:56", "12:34:56"),
+    ("23:59:59", "23:59:59"),
+])
+def test_valid_durations(valid_input, expected):
+    assert _utils.validate_duration(valid_input) == expected
+
+
+@pytest.mark.parametrize("invalid_input", [
+    "1:2:3",         # not zero-padded
+    "123456",        # no colons
+    "aa:bb:cc",      # letters
+    "24:00:00",      # too long
+    "99:00:00",      # too long
+    "12:60:00",      # invalid minute
+    "12:00:60",      # invalid second
+    "00:00",         # too short
+    "",              # empty string
+    "25:01:01",      # invalid hour
+])
+def test_invalid_durations(invalid_input):
+    with pytest.raises(ValueError):
+        _utils.validate_duration(invalid_input)
+
