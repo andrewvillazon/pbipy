@@ -848,6 +848,7 @@ def test_refresh_call_complex():
     json_parms = {
         "notifyOption": "MailOnFailure",
         "retryCount": 3,
+        "timeout": "01:00:00",
         "type": "full",
         "commitMode": "transactional",
         "objects": [
