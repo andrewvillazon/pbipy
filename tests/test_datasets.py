@@ -885,6 +885,7 @@ def test_refresh_call_complex():
                 "partition": "Robert",
             },
         ],
+        timeout="01:00:00",
     )
 
     assert refresh_id == request_id
