@@ -385,8 +385,6 @@ class Dataset(Resource):
         https://learn.microsoft.com/en-us/power-bi/connect-data/asynchronous-refresh
 
         """
-
-        _utils.validate_duration(timeout)
         
         refresh_request = {
             "applyRefreshPolicy": apply_refresh_policy,
