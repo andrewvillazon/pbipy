@@ -365,7 +365,7 @@ class Dataset(Resource):
            "ClearValues", "DataOnly", "Defragment", or "Full".
         `timeout`: `str`, optional
             The maximum duration the refresh event can last in the format
-            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00:00 
+            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00 
             and a default of 05:00:00.
 
         Returns
@@ -487,7 +487,7 @@ class Dataset(Resource):
            "ClearValues", "DataOnly", "Defragment", or "Full".
         `timeout`: `str`, optional
             The maximum duration the refresh event can last in the format
-            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00:00 
+            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00 
             and a default of 05:00:00.
         `check_interval` : `int`
             How often, in seconds, to check the status of the triggered
