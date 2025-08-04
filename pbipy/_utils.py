@@ -518,22 +518,3 @@ def delete(
         raise ex
 
     return response
-
-
-def validate_duration(input_str: str) -> str:
-    
-    # Check that the user has supplied a valid duration string
-    match = re.fullmatch(r"(\d{2}):([0-5]\d):([0-5]\d)", input_str)
-    if not match:
-        raise ValueError("Invalid duration format. Expected HH:mm:ss with 00 ≤ HH < 24.")
-
-    hours, minutes, seconds = map(int, match.groups())
-    
-    # Convert to timedelta for easy comparison
-    duration = timedelta(hours=hours, minutes=minutes, seconds=seconds)
-    max_duration = timedelta(hours=24)
-
-    if duration >= max_duration:
-        raise ValueError("Duration must be less than 24:00:00")
-
-    return str(duration)
