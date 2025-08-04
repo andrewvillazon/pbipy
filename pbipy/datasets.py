@@ -318,6 +318,7 @@ class Dataset(Resource):
         objects: list[dict] = None,
         retry_count: int = None,
         type: str = None,
+        timeout: str = None
     ) -> str:
         """
         Triggers a refresh, or enhanced refresh, of the Dataset and returns
@@ -362,6 +363,10 @@ class Dataset(Resource):
         `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
+        `timeout`: `str`, optional
+            The maximum duration the refresh event can last in the format
+            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00 
+            and a default of 05:00:00.
 
         Returns
         -------
@@ -380,7 +385,7 @@ class Dataset(Resource):
         https://learn.microsoft.com/en-us/power-bi/connect-data/asynchronous-refresh
 
         """
-
+        
         refresh_request = {
             "applyRefreshPolicy": apply_refresh_policy,
             "commitMode": commit_mode,
@@ -390,6 +395,7 @@ class Dataset(Resource):
             "objects": objects,
             "retryCount": retry_count,
             "type": type,
+            "timeout": timeout
         }
 
         prepared_request = _utils.remove_no_values(refresh_request)
@@ -438,6 +444,7 @@ class Dataset(Resource):
         objects: list[dict] = None,
         retry_count: int = None,
         type: str = None,
+        timeout: str = None,
         check_interval: int = 30,
     ) -> None:
         """
@@ -478,6 +485,10 @@ class Dataset(Resource):
         `type` : `str`, optional
            The type of processing to perform, e.g., "Automatic", "Calculate",
            "ClearValues", "DataOnly", "Defragment", or "Full".
+        `timeout`: `str`, optional
+            The maximum duration the refresh event can last in the format
+            "hh:mm:ss". The PowerBI Service has a hard maximum of 24:00:00 
+            and a default of 05:00:00.
         `check_interval` : `int`
             How often, in seconds, to check the status of the triggered
             refresh.
@@ -529,6 +540,7 @@ class Dataset(Resource):
             objects=objects,
             retry_count=retry_count,
             type=type,
+            timeout=timeout,
         )
 
         refresh_details = self.refresh_details(refresh_id)
