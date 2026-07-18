@@ -10,12 +10,12 @@ class Resource:
     """
     Represents a URL-addressable resource in the Power BI Rest API.
 
-    Resources are Power BI components such as Apps, Reports, Groups, 
+    Resources are Power BI components such as Apps, Reports, Groups,
     Datasets, etc. and closely mirror the REST Operation Groups here:
 
     https://learn.microsoft.com/en-us/rest/api/power-bi/
-    
-    Resources translate the JSON returned by the API into more user-friendly 
+
+    Resources translate the JSON returned by the API into more user-friendly
     Python representations.
 
     """
@@ -36,13 +36,15 @@ class Resource:
         self,
     ) -> str:
         """
-        Provide a readable representation of the class. Looks to the class'
-        `self._REPR` to determine what to show.
+        Provide an unambiguous, developer-facing representation of the
+        class. Looks to the class' `self._REPR` to determine what to
+        show.
 
         Returns
         -------
         `str`
-            Formatted, readable representation of the class.
+            Formatted representation of the class, including its type
+            and identifying attributes.
         """
 
         name = self.__class__.__name__
@@ -54,6 +56,26 @@ class Resource:
                 attrs.append(attr_str)
 
         return f"<{name} {', '.join(attrs)}>"
+
+    def __str__(
+        self,
+    ) -> str:
+        """
+        Provide a concise, human-readable representation of the class,
+        suitable for `print()` or f-string interpolation. Prefers a
+        `name`-like attribute over the full `__repr__`.
+
+        Returns
+        -------
+        `str`
+            Readable string representation of the class.
+        """
+
+        for attr in ("name", "display_name", "id"):
+            if attr in self.__dict__:
+                return str(self.__dict__[attr])
+
+        return repr(self)
 
     def _load_from_raw(self, raw):
         self.raw = raw
