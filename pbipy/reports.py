@@ -180,7 +180,7 @@ class Report(Resource):
         resource = self.base_path + "/Export"
         request = Request(resource, headers=self.session.headers)
         with (
-            urlopen(request) as response,
+            urlopen(request, timeout=30) as response,
             gzip.GzipFile(fileobj=response, mode="rb") as uncompressed,
             open(file_path, "wb") as out_file,
         ):
